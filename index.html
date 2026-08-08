@@ -1022,32 +1022,48 @@ const LIVE = (typeof window !== "undefined" && window.__MARKET_LIVE) ? window.__
 let ASOF = (LIVE && LIVE.asof) ? LIVE.asof : "2026-08-07";
 const WINDOWS = [25,15,10,6];   // các chu kỳ tính hệ số ADR (phiên)
 
+/* Mẫu đầy đủ 5 kỳ hạn — dùng khi LIVE chỉ có 1–2 điểm (tránh VN[3] undefined) */
+const US_YIELD_FALLBACK=[
+  {t:"1 năm",  y:4.11, d:-0.02, m:+0.05, yr:+0.34, x:1,  est:true },
+  {t:"3 năm",  y:4.24, d:-0.02, m:+0.06, yr:+0.41, x:3,  est:false},
+  {t:"5 năm",  y:4.33, d:-0.03, m:+0.07, yr:+0.39, x:5,  est:false},
+  {t:"10 năm", y:4.65, d:-0.03, m:+0.07, yr:+0.37, x:10, est:false},
+  {t:"30 năm", y:5.17, d:-0.01, m:+0.18, yr:+0.44, x:30, est:false}
+];
+const VN_YIELD_FALLBACK=[
+  {t:"1 năm",  y:3.08, d:+0.00, m:+0.02, yr:+0.86, x:1,  est:true },
+  {t:"3 năm",  y:3.79, d:+0.01, m:+0.01, yr:+0.94, x:3,  est:true },
+  {t:"5 năm",  y:4.08, d:+0.01, m:+0.00, yr:+0.99, x:5,  est:true },
+  {t:"10 năm", y:4.54, d:+0.01, m:-0.00, yr:+1.05, x:10, est:false},
+  {t:"30 năm", y:4.84, d:+0.00, m:+0.02, yr:+0.72, x:30, est:true }
+];
+
+function normalizeYields(partial, fallback){
+  const byX={};
+  (partial||[]).forEach(r=>{
+    if(r && r.x!=null && r.y!=null && !Number.isNaN(+r.y))
+      byX[+r.x]={t:r.t,y:+r.y,d:+(r.d||0),m:+(r.m||0),yr:+(r.yr||0),x:+r.x,est:!!r.est};
+  });
+  return fallback.map(fb=>{
+    if(byX[fb.x]) return Object.assign({}, fb, byX[fb.x], {t:fb.t});
+    return Object.assign({}, fb, {est:true}); // thiếu kỳ hạn → giữ mẫu, đánh dấu e
+  });
+}
+
 /* --- Lợi suất Kho bạc Mỹ (%) --- */
 function loadUSYields(){
-  if(LIVE && Array.isArray(LIVE.usYields) && LIVE.usYields.length){
-    return LIVE.usYields.map(r=>({t:r.t,y:r.y,d:r.d??0,m:r.m??0,yr:r.yr??0,x:r.x,est:!!r.est}));
-  }
-  return [
-    {t:"1 năm",  y:4.11, d:-0.02, m:+0.05, yr:+0.34, x:1,  est:true },
-    {t:"3 năm",  y:4.24, d:-0.02, m:+0.06, yr:+0.41, x:3,  est:false},
-    {t:"5 năm",  y:4.33, d:-0.03, m:+0.07, yr:+0.39, x:5,  est:false},
-    {t:"10 năm", y:4.65, d:-0.03, m:+0.07, yr:+0.37, x:10, est:false},
-    {t:"30 năm", y:5.17, d:-0.01, m:+0.18, yr:+0.44, x:30, est:false}
-  ];
+  const raw=(LIVE && Array.isArray(LIVE.usYields) && LIVE.usYields.length)
+    ? LIVE.usYields.map(r=>({t:r.t,y:r.y,d:r.d??0,m:r.m??0,yr:r.yr??0,x:r.x,est:!!r.est}))
+    : null;
+  return normalizeYields(raw, US_YIELD_FALLBACK);
 }
 
 /* --- Lợi suất TPCP Việt Nam (%) --- */
 function loadVNYields(){
-  if(LIVE && Array.isArray(LIVE.vnYields) && LIVE.vnYields.length){
-    return LIVE.vnYields.map(r=>({t:r.t,y:r.y,d:r.d??0,m:r.m??0,yr:r.yr??0,x:r.x,est:!!r.est}));
-  }
-  return [
-    {t:"1 năm",  y:3.08, d:+0.00, m:+0.02, yr:+0.86, x:1,  est:true },
-    {t:"3 năm",  y:3.79, d:+0.01, m:+0.01, yr:+0.94, x:3,  est:true },
-    {t:"5 năm",  y:4.08, d:+0.01, m:+0.00, yr:+0.99, x:5,  est:true },
-    {t:"10 năm", y:4.54, d:+0.01, m:-0.00, yr:+1.05, x:10, est:false},
-    {t:"30 năm", y:4.84, d:+0.00, m:+0.02, yr:+0.72, x:30, est:true }
-  ];
+  const raw=(LIVE && Array.isArray(LIVE.vnYields) && LIVE.vnYields.length)
+    ? LIVE.vnYields.map(r=>({t:r.t,y:r.y,d:r.d??0,m:r.m??0,yr:r.yr??0,x:r.x,est:!!r.est}))
+    : null;
+  return normalizeYields(raw, VN_YIELD_FALLBACK);
 }
 
 /* --- Dư nợ margin toàn thị trường (tỷ đồng) — CHUỖI HÀNG NGÀY ---
@@ -1060,12 +1076,44 @@ function loadVNYields(){
    brokers[].room : % room còn lại */
 function loadMargin(){
   if(LIVE && LIVE.margin && Array.isArray(LIVE.margin.days) && LIVE.margin.days.length){
+    const days=LIVE.margin.days.map((d,i,arr)=>{
+      const debt=+d.debt||0;
+      let net=d.net;
+      if(net==null && i>0) net=debt-(+arr[i-1].debt||0);
+      return {date:d.date, debt, net:+(net||0)};
+    });
+    const brokers=(LIVE.margin.brokers||[]).map(b=>{
+      const debt=+b.debt||0;
+      return {
+        code:b.code||"?", name:b.name||b.code||"?",
+        debt, d:+(b.d||0), room:b.room!=null?+b.room:null,
+        share:b.share!=null?+b.share:null
+      };
+    });
+    // nếu chỉ 1 điểm — nhân rộng chuỗi giả lập nhẹ để chart không trống (đánh dấu note)
+    let daysOut=days.slice();
+    if(daysOut.length===1){
+      const last=daysOut[0];
+      const seed=[];
+      let v=last.debt*0.92;
+      for(let i=0;i<30;i++){
+        v=v+(last.debt-v)/Math.max(1,30-i)+(i===29?0:0);
+        const dt=new Date(last.date+"T00:00:00Z");
+        dt.setUTCDate(dt.getUTCDate()-(29-i));
+        // skip weekends roughly
+        while(dt.getUTCDay()===0||dt.getUTCDay()===6) dt.setUTCDate(dt.getUTCDate()-1);
+        seed.push({date:dt.toISOString().slice(0,10), debt:Math.round(v), net:0});
+      }
+      seed[seed.length-1]=last;
+      for(let i=1;i<seed.length;i++) seed[i].net=seed[i].debt-seed[i-1].debt;
+      daysOut=seed;
+    }
     return {
-      days: LIVE.margin.days,
-      brokers: LIVE.margin.brokers || [],
+      days: daysOut,
+      brokers,
       asof: LIVE.margin.asof || LIVE.asof,
       freq: LIVE.margin.freq || "daily",
-      note: LIVE.margin.note || "Snapshot auto (LIVE.margin)."
+      note: (LIVE.margin.note||"Snapshot auto (LIVE.margin).")+(days.length===1?" · chuỗi chart nội suy từ 1 điểm as-of.":"")
     };
   }
   // Dùng lịch phiên giao dịch (khớp ROWS) — sinh mẫu nếu chưa có API
@@ -1194,14 +1242,32 @@ function loadBreadth(){
   if(br){
     if(br.date) L.date = br.date;
     if(br.gtgd!=null) L.gtgd = br.gtgd;
-    if(br.all) L.all = br.all;
-    if(br.vn100) L.vn100 = Object.assign({total:100}, br.vn100);
-    if(br.vn30) L.vn30 = Object.assign({total:30}, br.vn30);
+    // điền đủ field — agent hay thiếu ceil/floor/vn100
+    if(br.all){
+      L.all=Object.assign({a:0,d:0,u:0,ceil:0,floor:0,total:0}, br.all);
+      if(L.all.ceil==null) L.all.ceil=0;
+      if(L.all.floor==null) L.all.floor=0;
+      if(!L.all.total) L.all.total=(L.all.a||0)+(L.all.d||0)+(L.all.u||0);
+    }
+    if(br.vn100) L.vn100=Object.assign({a:0,d:0,u:0,total:100}, br.vn100);
+    if(br.vn30) L.vn30=Object.assign({a:0,d:0,u:0,total:30}, br.vn30);
+    // suy vn100 từ all nếu agent bỏ
+    if(!br.vn100 && br.all){
+      const tot=Math.min(100, L.all.total||100);
+      const a=Math.round((L.all.a||0)/(L.all.total||1)*tot);
+      const d=Math.round((L.all.d||0)/(L.all.total||1)*tot);
+      L.vn100={a, d, u:Math.max(0,tot-a-d), total:100};
+    }
   }
   if(!L.all) L.all={a:164,d:139,u:62,ceil:9,floor:4,total:365};
+  if(L.all.ceil==null) L.all.ceil=0;
+  if(L.all.floor==null) L.all.floor=0;
   if(!L.vn100) L.vn100={a:44,d:38,u:18,total:100};
   if(!L.vn30) L.vn30={a:18,d:10,u:2,total:30};
   if(!L.gtgd) L.gtgd=18100;
+  if(L.close==null || Number.isNaN(+L.close)) L.close=1768.06;
+  if(L.pct==null || Number.isNaN(+L.pct)) L.pct=0;
+  if(L.chg==null || Number.isNaN(+L.chg)) L.chg=0;
 
   // Hệ số ADR cho 4 chu kỳ: 25 / 15 / 10 / 6 phiên
   for(let i=0;i<N;i++){
@@ -1225,14 +1291,31 @@ function loadBreadth(){
    ============================================================ */
 const US=loadUSYields(), VN=loadVNYields(), ROWS=loadBreadth(), MARGIN=loadMargin();
 const LAST=ROWS[ROWS.length-1];
-const MG_LAST=MARGIN.days[MARGIN.days.length-1];
+const MG_LAST=(MARGIN.days&&MARGIN.days.length)?MARGIN.days[MARGIN.days.length-1]:{date:ASOF,debt:0,net:0};
 
-const nf=(v,d=2)=>v==null?"—":v.toLocaleString("vi-VN",{minimumFractionDigits:d,maximumFractionDigits:d});
-const sgn=(v,d=2)=>(v>0?"+":v<0?"−":"")+nf(Math.abs(v),d);
-const cls=v=>v>0?"up":v<0?"down":"flat";
-const dmy=iso=>iso.slice(5).replace("-","/");            // 08/07
-const dmyF=iso=>iso.replace(/-/g,"/");                    // 2026/08/07
+const nf=(v,d=2)=>{
+  if(v==null||v===""||(typeof v==="number"&&Number.isNaN(v))) return "—";
+  const n=Number(v);
+  if(Number.isNaN(n)) return "—";
+  return n.toLocaleString("vi-VN",{minimumFractionDigits:d,maximumFractionDigits:d});
+};
+const sgn=(v,d=2)=>{
+  if(v==null||(typeof v==="number"&&Number.isNaN(v))) return "—";
+  const n=Number(v);
+  if(Number.isNaN(n)) return "—";
+  return (n>0?"+":n<0?"−":"")+nf(Math.abs(n),d);
+};
+const cls=v=>{
+  if(v==null||(typeof v==="number"&&Number.isNaN(v))) return "flat";
+  return v>0?"up":v<0?"down":"flat";
+};
+const dmy=iso=>!iso?"—":String(iso).slice(5).replace("-","/");            // 08/07
+const dmyF=iso=>!iso?"—":String(iso).replace(/-/g,"/");                    // 2026/08/07
 const el=id=>document.getElementById(id);
+const yieldAt=(arr,x)=>{
+  const hit=(arr||[]).find(r=>+r.x===+x);
+  return hit&&hit.y!=null?+hit.y:null;
+};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const SVGNS="http://www.w3.org/2000/svg";
 
@@ -1389,11 +1472,19 @@ function drawCurve(){
    7. CHÊNH LỆCH VN − MỸ
    ============================================================ */
 function drawSpread(){
-  const host=el("spreadChart"), W=Math.max(280,host.clientWidth), H=330;
+  const host=el("spreadChart"); if(!host) return;
+  const W=Math.max(280,host.clientWidth), H=330;
   const m={t:16,r:14,b:34,l:44};
   const iw=W-m.l-m.r, ih=H-m.t-m.b;
-  const data=US.map((u,i)=>({t:u.t.replace(" năm","N"), v:(VN[i].y-u.y)*100}));
-  const mx=Math.max(...data.map(d=>Math.abs(d.v)))*1.18;
+  const data=US.map(u=>{
+    const vy=yieldAt(VN,u.x);
+    return {t:u.t.replace(" năm","N"), v:vy==null?null:(vy-u.y)*100};
+  }).filter(d=>d.v!=null);
+  if(!data.length){
+    host.innerHTML=`<p class="note" style="padding:12px">Chưa đủ dữ liệu spread (thiếu cặp US/VN theo kỳ hạn).</p>`;
+    return;
+  }
+  const mx=Math.max(...data.map(d=>Math.abs(d.v)),1)*1.18;
   const Y=v=>m.t+ih/2-(v/mx)*(ih/2);
   const bw=iw/data.length*0.52;
 
@@ -1415,29 +1506,38 @@ function drawSpread(){
   host.insertAdjacentHTML("afterbegin",
     `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Chênh lệch lợi suất Việt Nam trừ Mỹ theo kỳ hạn"><text x="${m.l-8}" y="${m.t-3}" text-anchor="end" fill="var(--dim)" font-size="9.5" font-family="IBM Plex Mono, ui-monospace, monospace">bps</text>${g}</svg>`);
 
-  const s10=(VN[3].y-US[3].y)*100, s30=(VN[4].y-US[4].y)*100;
-  el("spreadNote").innerHTML=`Ở kỳ hạn 10 năm, lợi suất VND thấp hơn USD <b>${nf(Math.abs(s10),0)} điểm cơ bản</b>; ở kỳ hạn 30 năm khoảng cách nới rộng lên <b>${nf(Math.abs(s30),0)} bps</b>. Chênh lệch âm kéo dài làm suy giảm sức hấp dẫn của chiến lược carry trade vào tài sản VND và tạo áp lực lên tỷ giá — biến số cần theo dõi song song với chỉ số DXY.`;
+  const yU10=yieldAt(US,10), yV10=yieldAt(VN,10), yU30=yieldAt(US,30), yV30=yieldAt(VN,30);
+  const s10=(yU10!=null&&yV10!=null)?(yV10-yU10)*100:null;
+  const s30=(yU30!=null&&yV30!=null)?(yV30-yU30)*100:null;
+  if(s10==null){
+    el("spreadNote").innerHTML=`Chưa đủ cặp kỳ hạn để tính spread đầy đủ (cần US+VN 10Y/30Y). Kiểm tra LIVE.vnYields / loadVNYields.`;
+  }else{
+    el("spreadNote").innerHTML=`Ở kỳ hạn 10 năm, chênh VND − USD ≈ <b>${sgn(s10,0)} điểm cơ bản</b>${
+      s30!=null?`; 30 năm ≈ <b>${sgn(s30,0)} bps</b>`:""
+    }. Chênh lệch âm kéo dài làm suy giảm sức hấp dẫn carry vào VND và tạo áp lực tỷ giá — theo dõi cùng DXY.`;
+  }
 }
 
 /* ============================================================
    8. BẢNG ĐIỆN PHIÊN GẦN NHẤT
    ============================================================ */
 (function board(){
-  const a=LAST.all;
+  const a=LAST.all||{a:0,d:0,u:0,ceil:0,floor:0,total:0};
+  const ceil=+a.ceil||0, floor=+a.floor||0, aa=+a.a||0, dd=+a.d||0, uu=+a.u||0;
   const segs=[
-    {n:"Trần", v:a.ceil, c:"var(--tran)"},
-    {n:"Tăng", v:a.a-a.ceil, c:"var(--tang)"},
-    {n:"TC", v:a.u, c:"var(--tc)"},
-    {n:"Giảm", v:a.d-a.floor, c:"var(--giam)"},
-    {n:"Sàn", v:a.floor, c:"var(--san)"}
+    {n:"Trần", v:ceil, c:"var(--tran)"},
+    {n:"Tăng", v:Math.max(0,aa-ceil), c:"var(--tang)"},
+    {n:"TC", v:uu, c:"var(--tc)"},
+    {n:"Giảm", v:Math.max(0,dd-floor), c:"var(--giam)"},
+    {n:"Sàn", v:floor, c:"var(--san)"}
   ];
   el("boardBar").innerHTML=segs.map(s=>
-    `<div style="flex:${s.v};background:${s.c}" title="${s.n}: ${s.v} mã">${s.v>=14?s.v:""}</div>`).join("");
+    `<div style="flex:${Math.max(0.001,s.v)};background:${s.c}" title="${s.n}: ${s.v} mã">${s.v>=14?s.v:""}</div>`).join("");
 
   el("boardStats").innerHTML=`
     <div class="stat"><div class="k">VN-Index</div><div class="v ${cls(LAST.pct)}">${nf(LAST.close)}</div><div class="m ${cls(LAST.pct)}">${sgn(LAST.chg)} (${sgn(LAST.pct)}%)</div></div>
-    <div class="stat"><div class="k">Mã tăng / giảm</div><div class="v"><span class="up">${a.a}</span><span style="color:var(--dim)">/</span><span class="down">${a.d}</span></div><div class="m">${a.u} mã tham chiếu</div></div>
-    <div class="stat"><div class="k">Mã trần / sàn</div><div class="v"><span class="ceil">${a.ceil}</span><span style="color:var(--dim)">/</span><span class="floorc">${a.floor}</span></div><div class="m">biên độ dao động HOSE ±7%</div></div>
+    <div class="stat"><div class="k">Mã tăng / giảm</div><div class="v"><span class="up">${aa}</span><span style="color:var(--dim)">/</span><span class="down">${dd}</span></div><div class="m">${uu} mã tham chiếu</div></div>
+    <div class="stat"><div class="k">Mã trần / sàn</div><div class="v"><span class="ceil">${ceil}</span><span style="color:var(--dim)">/</span><span class="floorc">${floor}</span></div><div class="m">biên độ dao động HOSE ±7%</div></div>
     <div class="stat"><div class="k">GTGD khớp lệnh</div><div class="v">${nf(LAST.gtgd,0)}</div><div class="m">tỷ đồng</div></div>
     <div class="stat"><div class="k">ADR 25 · rổ VN100</div><div class="v">${nf(LAST.vn100.ratio,1)}</div><div class="m">Rổ VN30: ${nf(LAST.vn30.ratio,1)}</div></div>`;
 
@@ -1528,7 +1628,8 @@ function fgVietnam(){
     c.push({k:"Sức mạnh giá", v:(ce+fl)===0?50:cl(ce/(ce+fl)*100),
             d:"Số mã trần so với số mã sàn, 20 phiên"});
     // 6. Nhu cầu trú ẩn: hiệu suất cổ phiếu 20 phiên trừ lợi suất TPCP kỳ hạn tương ứng
-    const r20=closes[i]/closes[i-20]-1, bond=(VN[3].y/100)/12;
+    const r20=closes[i]/closes[i-20]-1;
+    const y10=yieldAt(VN,10); const bond=((y10!=null?y10:4.5)/100)/12;
     c.push({k:"Nhu cầu trú ẩn", v:cl(50+(r20-bond)*700),
             d:"Cổ phiếu so với trái phiếu Chính phủ 10 năm"});
     // 7. Dòng vốn ngoại — bắt buộc với EM VN; chờ API (HSX/Fiin/…)
@@ -2358,6 +2459,8 @@ const CAL=[
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function countUp(node, target, dec, suffix, prefix){
+  if(!node) return;
+  if(target==null||Number.isNaN(+target)){ node.textContent="—"; return; }
   if(reduced){ node.textContent=(prefix||"")+nf(target,dec)+(suffix||""); return; }
   const dur=1100, t0=performance.now();
   const step=t=>{
@@ -2402,8 +2505,15 @@ function countUp(node, target, dec, suffix, prefix){
 /* ============================================================
    13. KHỞI ĐỘNG + RESPONSIVE
    ============================================================ */
-function renderAll(){ drawCurve(); drawSpread(); drawRatio(); drawWindows(); drawMargin(); }
-renderAll(); drawHist(); updateProj();
+function renderAll(){
+  try{ drawCurve(); }catch(e){ console.error("drawCurve",e); }
+  try{ drawSpread(); }catch(e){ console.error("drawSpread",e); }
+  try{ drawRatio(); }catch(e){ console.error("drawRatio",e); }
+  try{ drawWindows(); }catch(e){ console.error("drawWindows",e); }
+  try{ if(typeof drawMargin==="function") drawMargin(); }catch(e){ console.error("drawMargin",e); }
+}
+try{ renderAll(); drawHist(); updateProj(); }
+catch(e){ console.error("init fail",e); }
 
 let rt;
 window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(renderAll,140)});
