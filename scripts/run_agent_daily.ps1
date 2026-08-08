@@ -26,9 +26,22 @@ if (-not $grok) {
 
 if ($grok) {
   Write-Log "Running Grok agent..."
+  Write-Log "prompt-file: $promptFile"
+  # Dùng --prompt-file (đừng kèm -p: -p bắt buộc có giá trị PROMPT)
+  $grokExe = if ($grok -is [System.Management.Automation.CommandInfo]) { $grok.Source } else { "$grok" }
+  $outFile = Join-Path $LogDir "agent-last-run.txt"
   try {
-    & $grok -p --prompt-file $promptFile --yolo --cwd $Root --no-auto-update 2>&1 | Tee-Object -FilePath (Join-Path $LogDir "agent-last-run.txt")
-    Write-Log "Grok agent finished"
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    & $grokExe --prompt-file $promptFile --yolo --cwd $Root --no-auto-update *>&1 |
+      Tee-Object -FilePath $outFile
+    $code = $LASTEXITCODE
+    $ErrorActionPreference = $prevEap
+    if ($code -ne 0) {
+      Write-Log "Grok agent exit code: $code (see data/agent-last-run.txt)"
+    } else {
+      Write-Log "Grok agent finished OK"
+    }
   } catch {
     Write-Log "Grok agent error: $_"
   }

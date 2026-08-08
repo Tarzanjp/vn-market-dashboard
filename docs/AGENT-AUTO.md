@@ -65,7 +65,7 @@ Windows Task Scheduler (08:20 & 16:10 ICT)
 cd C:\Users\shimo\Downloads\vn-market-site
 
 # Agent research + ghi grok-fill.json (cần grok trên PATH)
-grok -p --prompt-file scripts/agent_daily_prompt.md --yolo --cwd "C:\Users\shimo\Downloads\vn-market-site"
+grok --prompt-file scripts/agent_daily_prompt.md --yolo --cwd "C:\Users\shimo\Downloads\vn-market-site"
 
 # Free API + merge (không gọi xAI API)
 py scripts/daily_update.py --no-grok
