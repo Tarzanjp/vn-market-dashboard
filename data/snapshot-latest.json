@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAtIct": "2026-08-08T18:09:39+07:00",
+  "asof": "2026-08-07",
+  "quality": {
+    "usYields": "live",
+    "fgUs": "live",
+    "vnIndex": "live",
+    "dxy": "live"
+  },
+  "usYields": [
+    {
+      "t": "1 năm",
+      "y": 4.01,
+      "d": -0.05,
+      "m": 0.0,
+      "yr": 0.0,
+      "x": 1,
+      "est": true
+    },
+    {
+      "t": "3 năm",
+      "y": 4.25,
+      "d": -0.06,
+      "m": 0.0,
+      "yr": 0.0,
+      "x": 3,
+      "est": false
+    },
+    {
+      "t": "5 năm",
+      "y": 4.35,
+      "d": -0.05,
+      "m": 0.0,
+      "yr": 0.0,
+      "x": 5,
+      "est": false
+    },
+    {
+      "t": "10 năm",
+      "y": 4.65,
+      "d": -0.04,
+      "m": 0.0,
+      "yr": 0.0,
+      "x": 10,
+      "est": false
+    },
+    {
+      "t": "30 năm",
+      "y": 5.19,
+      "d": -0.03,
+      "m": 0.0,
+      "yr": 0.0,
+      "x": 30,
+      "est": false
+    }
+  ],
+  "usYieldsAsof": "2026-08-07",
+  "fgUs": {
+    "score": 63.7,
+    "hist": {
+      "prev": 59.7,
+      "week": 45.2,
+      "month": 39.8,
+      "year": 54.7
+    },
+    "asofEt": "2026-08-08"
+  },
+  "fgUsFetchedAt": "2026-08-08T18:09:38.731049+07:00",
+  "vnIndex": {
+    "symbol": "^VNINDEX.VN",
+    "price": 1768.06,
+    "prev": 1764.78,
+    "chg": 3.28,
+    "pct": 0.19,
+    "date": "2026-08-07"
+  },
+  "vnIndexFetchedAt": "2026-08-08T18:09:38.864526+07:00",
+  "dxy": 99.6,
+  "dxyFetchedAt": "2026-08-08T18:09:39.002397+07:00",
+  "vnYields": null,
+  "margin": null,
+  "notes": [
+    "Nguồn free: US Treasury CSV, Yahoo Finance (VN-Index/DXY), CNN Fear & Greed.",
+    "Dư nợ margin / độ rộng HOSE / TPCP VN: chờ API — giữ snapshot trước hoặc mẫu trong HTML."
+  ]
+}

@@ -727,8 +727,8 @@ html, body{overflow-x:hidden;max-width:100%}
       <span class="dtag dtag-est">Nội suy (e)</span> kỳ hạn TPCP ·
       <span class="dtag dtag-sample">Mẫu</span> chuỗi phiên &amp; dư nợ margin ·
       <span class="dtag dtag-proxy">Proxy</span> F&amp;G Việt Nam, chỉ số rủi ro đòn bẩy.
-      Margin thiết kế <b>cập nhật hàng ngày</b>; nguồn công bố thực tế có thể là <b>tuần</b> — luôn đọc <i>as-of</i> trên panel.
-      Thay API tại <code>loadBreadth</code>, <code>loadMargin</code>, <code>loadUSYields</code>, <code>loadVNYields</code>.
+      <b>Auto hàng ngày</b> (GitHub Actions): UST, VN-Index, DXY, F&amp;G US → <code>data/live.js</code>.
+      Margin / độ rộng chi tiết HOSE / TPCP VN: mẫu hoặc snapshot khi có API — luôn đọc <i>as-of</i>.
     </div>
   </div>
 
@@ -1001,23 +1001,32 @@ html, body{overflow-x:hidden;max-width:100%}
   </div><!-- /layout -->
 
   <footer>
-    Thông tin thị trường v13 · Tham khảo / nghiên cứu, không phải khuyến nghị đầu tư.
-    Số liệu có thể chênh nhà cung cấp; panel gắn nhãn <b>Mẫu</b>, <b>Proxy</b>, <b>Nội suy</b> không dùng như số chốt lệnh.
+    Thông tin thị trường · Cập nhật tự động hàng ngày (GitHub Actions) · Tham khảo, không phải khuyến nghị đầu tư.
+    Panel gắn nhãn <b>Mẫu</b>/<b>Proxy</b>/<b>Nội suy</b> không dùng như số chốt lệnh.
+    <span id="liveMeta"></span>
   </footer>
 </main>
 
+<!-- Dữ liệu auto (GitHub Actions → scripts/daily_update.py → data/live.js) -->
+<script src="data/live.js"></script>
 <script>
 "use strict";
 /* ============================================================
-   1. DỮ LIỆU  —  thay các hàm dưới đây bằng API thật
-      loadUSYields / loadVNYields / loadBreadth / loadMargin (hàng ngày)
+   1. DỮ LIỆU
+      - LIVE = window.__MARKET_LIVE (cập nhật tự động hàng ngày)
+      - fallback mẫu nếu chưa có / fetch lỗi
+      loadUSYields / loadVNYields / loadBreadth / loadMargin
    ============================================================ */
 
-const ASOF = "2026-08-07";
+const LIVE = (typeof window !== "undefined" && window.__MARKET_LIVE) ? window.__MARKET_LIVE : null;
+let ASOF = (LIVE && LIVE.asof) ? LIVE.asof : "2026-08-07";
 const WINDOWS = [25,15,10,6];   // các chu kỳ tính hệ số ADR (phiên)
 
 /* --- Lợi suất Kho bạc Mỹ (%) --- */
 function loadUSYields(){
+  if(LIVE && Array.isArray(LIVE.usYields) && LIVE.usYields.length){
+    return LIVE.usYields.map(r=>({t:r.t,y:r.y,d:r.d??0,m:r.m??0,yr:r.yr??0,x:r.x,est:!!r.est}));
+  }
   return [
     {t:"1 năm",  y:4.11, d:-0.02, m:+0.05, yr:+0.34, x:1,  est:true },
     {t:"3 năm",  y:4.24, d:-0.02, m:+0.06, yr:+0.41, x:3,  est:false},
@@ -1029,6 +1038,9 @@ function loadUSYields(){
 
 /* --- Lợi suất TPCP Việt Nam (%) --- */
 function loadVNYields(){
+  if(LIVE && Array.isArray(LIVE.vnYields) && LIVE.vnYields.length){
+    return LIVE.vnYields.map(r=>({t:r.t,y:r.y,d:r.d??0,m:r.m??0,yr:r.yr??0,x:r.x,est:!!r.est}));
+  }
   return [
     {t:"1 năm",  y:3.08, d:+0.00, m:+0.02, yr:+0.86, x:1,  est:true },
     {t:"3 năm",  y:3.79, d:+0.01, m:+0.01, yr:+0.94, x:3,  est:true },
@@ -1047,6 +1059,15 @@ function loadVNYields(){
    brokers[].d : thay đổi 1 ngày (tỷ đồng)
    brokers[].room : % room còn lại */
 function loadMargin(){
+  if(LIVE && LIVE.margin && Array.isArray(LIVE.margin.days) && LIVE.margin.days.length){
+    return {
+      days: LIVE.margin.days,
+      brokers: LIVE.margin.brokers || [],
+      asof: LIVE.margin.asof || LIVE.asof,
+      freq: LIVE.margin.freq || "daily",
+      note: LIVE.margin.note || "Snapshot auto (LIVE.margin)."
+    };
+  }
   // Dùng lịch phiên giao dịch (khớp ROWS) — sinh mẫu nếu chưa có API
   // Gọi sau loadBreadth nên dùng lại seed ổn định theo ASOF
   let s=20260807>>>0;
@@ -1158,13 +1179,26 @@ function loadBreadth(){
       gtgd:Math.max(6800,gtgd)});
   }
 
-  // neo phiên cuối vào số liệu công bố 07/08/2026
+  // neo phiên cuối: LIVE.vnIndex (auto) hoặc mẫu demo
   const L=rows[N-1];
-  L.close=1768.06; L.pct=0.19; L.chg=1768.06*0.0019/1.0019;
-  L.all={a:164,d:139,u:62,ceil:9,floor:4,total:365};
-  L.vn100={a:44,d:38,u:18,total:100};
-  L.vn30={a:18,d:10,u:2,total:30};
-  L.gtgd=18100;
+  if(LIVE && LIVE.vnIndex && LIVE.vnIndex.price!=null){
+    const vi=LIVE.vnIndex;
+    L.date = vi.date || L.date;
+    L.close = vi.price;
+    L.pct = vi.pct!=null ? vi.pct : 0;
+    L.chg = vi.chg!=null ? vi.chg : (vi.prev ? vi.price-vi.prev : 0);
+    // giữ cấu trúc mẫu nếu chưa có breadth thật
+    if(!L.all) L.all={a:164,d:139,u:62,ceil:9,floor:4,total:365};
+    if(!L.vn100) L.vn100={a:44,d:38,u:18,total:100};
+    if(!L.vn30) L.vn30={a:18,d:10,u:2,total:30};
+    if(!L.gtgd) L.gtgd=18100;
+  }else{
+    L.close=1768.06; L.pct=0.19; L.chg=1768.06*0.0019/1.0019;
+    L.all={a:164,d:139,u:62,ceil:9,floor:4,total:365};
+    L.vn100={a:44,d:38,u:18,total:100};
+    L.vn30={a:18,d:10,u:2,total:30};
+    L.gtgd=18100;
+  }
 
   // Hệ số ADR cho 4 chu kỳ: 25 / 15 / 10 / 6 phiên
   for(let i=0;i<N;i++){
@@ -1228,6 +1262,13 @@ function tickClock(){
 tickClock(); setInterval(tickClock,1000);
 el("asof").textContent=dmyF(ASOF);
 el("boardDate").textContent="Phiên "+dmyF(LAST.date)+" · HOSE";
+(function showLiveMeta(){
+  const n=el("liveMeta"); if(!n) return;
+  if(!LIVE){ n.textContent=" · LIVE: chưa có data/live.js (chạy daily_update)."; return; }
+  const q=LIVE.quality||{};
+  const parts=Object.keys(q).map(k=>k+":"+q[k]).join(", ");
+  n.textContent=` · LIVE asof ${LIVE.asof||"—"} · gen ${LIVE.generatedAtIct||"—"} · ${parts}`;
+})();
 
 /* ============================================================
    4. TICKER TAPE  (gọi lại buildTape() sau khi có chỉ số rủi ro margin)
@@ -1243,7 +1284,7 @@ function buildTape(){
     {k:"RR ĐÒN BẨY", v:mbr==null?"—":String(Math.round(mbr)), c:(mbrZ||"")+" · proxy", cl:mbr==null?"flat":mbr>=70?"down":mbr<40?"up":"flat"},
     {k:"KHỐI NGOẠI", v:"—", c:"chờ API", cl:"flat"},
     {k:"USD/VND TT", v:"25.338", c:"trung tâm", cl:"down"},
-    {k:"DXY", v:"≈100,8", c:"", cl:"flat"},
+    {k:"DXY", v:(LIVE && LIVE.dxy!=null)?String(LIVE.dxy):"≈100,8", c:(LIVE && LIVE.quality && LIVE.quality.dxy==="live")?"auto":"", cl:"flat"},
     {k:"FED FUNDS", v:"3,50–3,75%", c:"giữ 9–3", cl:"flat"},
     {k:"NFP T7", v:"−23K", c:"dự báo +80K", cl:"down"},
     {k:"CPI VN 7T", v:"+4,39%", c:"T7 −0,12% m/m", cl:"flat"},
@@ -1549,19 +1590,27 @@ function fgCard(host, cfg){
     foot:"<b>Proxy nghiên cứu</b> — Việt Nam chưa có chỉ số tâm lý chính thức. Tự dựng theo khung CNN: bình quân các cấu phần có dữ liệu (0–100). Khác bản gốc: vol 20 phiên thay VIX; có cấu phần dòng vốn ngoại (quan trọng với EM VN) nhưng <b>chưa nối API</b> nên bị loại khỏi bình quân. Dùng để so hướng, không dùng một mình để chốt lệnh."
   });
 
-  /* Số liệu tham chiếu CNN Business, cập nhật 07/08/2026 19:59 giờ New York */
+  /* F&G US: ưu tiên LIVE (auto CNN) */
+  const fgLive = (LIVE && LIVE.fgUs) ? LIVE.fgUs : null;
+  const fgScore = fgLive && fgLive.score!=null ? fgLive.score : 64;
+  const fgHist = fgLive && fgLive.hist ? fgLive.hist : {prev:59,week:45,month:39,year:54};
+  const fgSub = fgLive
+    ? (`CNN auto · asof ${fgLive.asofEt || (LIVE && LIVE.asof) || ASOF}`)
+    : "CNN · mẫu (chờ daily_update)";
+  const fgTag = fgLive ? "Tham chiếu CNN · auto" : "Mẫu / stale";
   fgCard(el("fgUS"),{
-    title:'Sợ hãi & Tham lam — Hoa Kỳ <span class="dtag dtag-live">Tham chiếu CNN</span>',
-    sub:"CNN · 07/08/2026 19:59 ET",
-    score:64,
+    title:`Sợ hãi & Tham lam — Hoa Kỳ <span class="dtag dtag-live">${fgTag}</span>`,
+    sub:fgSub,
+    score:fgScore,
     comps:null,
     hist:[
-      {k:"Phiên trước",   v:59},
-      {k:"1 tuần trước",  v:45},
-      {k:"1 tháng trước", v:39},
-      {k:"1 năm trước",   v:54}
+      {k:"Phiên trước",   v:fgHist.prev},
+      {k:"1 tuần trước",  v:fgHist.week},
+      {k:"1 tháng trước", v:fgHist.month},
+      {k:"1 năm trước",   v:fgHist.year}
     ],
-    foot:`Chỉ số do CNN Business công bố, tổng hợp bảy cấu phần: đà thị trường của S&P 500, sức mạnh giá cổ phiếu, độ rộng thị trường, tỷ lệ quyền chọn bán trên quyền chọn mua, chỉ số biến động VIX, nhu cầu trú ẩn an toàn và nhu cầu trái phiếu lợi suất cao. Thị trường đã đi từ vùng sợ hãi cách đây một tháng lên vùng tham lam sau khi báo cáo việc làm tháng 7 làm giảm kỳ vọng Fed tăng lãi suất. <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" rel="noopener">Xem chi tiết tại CNN</a>.`
+    foot:`Chỉ số CNN Fear & Greed. Cập nhật tự động qua <code>scripts/daily_update.py</code> khi nguồn CNN phản hồi.
+      <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" rel="noopener">Xem CNN</a>.`
   });
 })();
 

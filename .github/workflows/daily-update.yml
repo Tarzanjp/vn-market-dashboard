@@ -1,0 +1,40 @@
+# Cập nhật dữ liệu thị trường tự động (free sources) → commit data/live.js → Pages redeploy
+name: Daily market data update
+
+on:
+  schedule:
+    # Sau phiên VN ~16:00 ICT = 09:00 UTC (T2–T6)
+    - cron: "0 9 * * 1-5"
+    # Morning pack ~08:15 ICT = 01:15 UTC (T2–T6)
+    - cron: "15 1 * * 1-5"
+  workflow_dispatch: # chạy tay từ tab Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-market-update
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch market data
+        run: python scripts/daily_update.py
+
+      - name: Commit & push snapshot
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "data: daily market snapshot (auto)"
+          file_pattern: "data/*"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"

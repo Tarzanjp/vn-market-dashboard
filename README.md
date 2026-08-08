@@ -1,3 +1,46 @@
+# Thông tin thị trường — deploy + cập nhật tự động
+
+**Live:** https://tarzanjp.github.io/vn-market-dashboard/
+
+## Cập nhật tự động hàng ngày (đã cấu hình)
+
+GitHub Actions workflow: `.github/workflows/daily-update.yml`
+
+| Lịch (UTC) | ≈ ICT | Việc |
+|------------|-------|------|
+| `15 1 * * 1-5` | **08:15** T2–T6 | Morning pack |
+| `0 9 * * 1-5` | **16:00** T2–T6 | Sau phiên VN |
+| `workflow_dispatch` | Tay | Actions → Daily market data update → Run |
+
+Script: `scripts/daily_update.py` → ghi `data/live.js` + `data/snapshot-latest.json` → commit → Pages deploy lại.
+
+**Nguồn free hiện tại (auto):**
+- US Treasury yields (CSV)
+- VN-Index (Yahoo `^VNINDEX.VN`)
+- DXY (Yahoo)
+- CNN Fear & Greed
+
+**Chưa auto (vẫn mẫu / chờ API):** độ rộng HOSE chi tiết, dư nợ margin, TPCP VN.
+
+### Chạy tay trên máy
+
+```powershell
+cd C:\Users\shimo\Downloads\vn-market-site
+py scripts/daily_update.py
+git add data
+git commit -m "data: refresh snapshot"
+git push
+```
+
+### Lần đầu sau khi push workflow
+
+1. Repo → **Actions** → cho phép workflows nếu GitHub hỏi  
+2. **Actions** → *Daily market data update* → **Run workflow** (thử 1 lần)  
+3. Xem job xanh → file `data/live.js` cập nhật trên repo  
+4. Refresh site, footer hiện `LIVE asof ... quality=...`
+
+---
+
 # Hướng dẫn đưa trang lên mạng (chi phí ~$0)
 
 Bộ file trong thư mục này:
