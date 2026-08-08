@@ -2,16 +2,28 @@
 
 **Live:** https://tarzanjp.github.io/vn-market-dashboard/
 
-## Full auto (API free + Grok API)
+## Full auto — chọn 1 trong 2
+
+### A) Agent Grok local (khuyến nghị nếu đã dùng Grok Build)
+
+Chi tiết: **[docs/AGENT-AUTO.md](docs/AGENT-AUTO.md)**
+
+```powershell
+# Thử 1 lần
+powershell -ExecutionPolicy Bypass -File scripts\run_agent_daily.ps1
+```
+
+Rồi gắn **Windows Task Scheduler** 08:20 & 16:10 ICT.  
+→ Agent research + `daily_update.py --no-grok` + git push. **Không cần** `XAI_API_KEY` trên GitHub.
+
+### B) GitHub Actions + xAI API key
 
 Chi tiết: **[docs/FULL-AUTO-SETUP.md](docs/FULL-AUTO-SETUP.md)**
 
-1. GitHub → Settings → Secrets → Actions → thêm `XAI_API_KEY`  
-2. Workflow permissions: Read and write  
-3. Actions → Daily market data update → Run workflow  
+1. Secret `XAI_API_KEY` trên GitHub  
+2. Actions tự fetch API + gọi Grok API cloud  
 
-Không có key: vẫn auto UST / VNI / DXY / F&G US.  
-Có key: Grok tự lấp margin / breadth / TPCP… (proxy).
+Không có key: vẫn auto UST / VNI / DXY / F&G US.
 
 ## Cập nhật tự động hàng ngày (đã cấu hình)
 
