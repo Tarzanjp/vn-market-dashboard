@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Bảng điều khiển thị trường · Độ rộng · Margin · Tâm lý · Lợi suất VN</title>
+<title>Thông tin thị trường · Độ rộng · Margin · Tâm lý · Lợi suất VN</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -101,11 +101,21 @@ header{
 @media(max-width:760px){.nav a span{display:none}.nav a{padding:6px 10px}}
 
 /* ---------- ticker ---------- */
-.tape{background:var(--surface);box-shadow:0 1px 0 var(--hairline);overflow:hidden}
-.tape-in{display:flex;animation:slide 60s linear infinite;width:max-content}
+.tape{
+  background:var(--surface);box-shadow:0 1px 0 var(--hairline);
+  overflow:hidden;max-width:100%;width:100%;
+  contain:layout paint; /* không đẩy scroll ngang trang */
+}
+.tape-in{
+  display:flex;animation:slide 60s linear infinite;width:max-content;
+  will-change:transform;
+}
 .tape:hover .tape-in{animation-play-state:paused}
+@media (prefers-reduced-motion: reduce){
+  .tape-in{animation:none;transform:none;flex-wrap:wrap;width:100%;justify-content:flex-start}
+}
 @keyframes slide{to{transform:translateX(-50%)}}
-.tk{display:flex;align-items:baseline;gap:7px;padding:8px 18px;white-space:nowrap}
+.tk{display:flex;align-items:baseline;gap:7px;padding:8px 18px;white-space:nowrap;flex:none}
 .tk b{font-weight:500;font-size:11px;color:var(--dim);letter-spacing:.01em}
 .tk .v{font-family:var(--mono);font-size:12.5px;font-weight:500}
 .tk .c{font-family:var(--mono);font-size:11px}
@@ -466,17 +476,21 @@ footer a{color:var(--muted)}
 }
 
 /* ========== RESPONSIVE: tablet + iPhone ========== */
+html, body{overflow-x:hidden;max-width:100%}
+.wrap, .layout, .col-main, main{max-width:100%;min-width:0}
 .scroll, .tbl-x{
   -webkit-overflow-scrolling:touch;
   overflow-x:auto;
   max-width:100%;
 }
 .hist, .scenarios{min-width:640px}
-/* bảng lợi suất / top CTCK — cuộn ngang trên mobile */
-.panel{overflow-x:clip}
+/* bảng lợi suất / top CTCK — cuộn ngang trên mobile, không tràn page */
+.panel{overflow-x:clip;max-width:100%}
 @media(max-width:900px){
   .panel{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .panel > table{min-width:480px}
+  /* touch target tablet */
+  .seg button,.nav a{min-height:36px}
 }
 
 /* ----- tablet (iPad portrait / landscape nhỏ) ----- */
@@ -651,7 +665,7 @@ footer a{color:var(--muted)}
     <div class="brand">
       <div class="mark">★</div>
       <div>
-        <h1>Bảng điều khiển thị trường</h1>
+        <h1>Thông tin thị trường</h1>
         <p>Độ rộng · Margin · Tâm lý · Lợi suất Mỹ–Việt · tin vĩ mô</p>
       </div>
     </div>
@@ -986,7 +1000,7 @@ footer a{color:var(--muted)}
   </div><!-- /layout -->
 
   <footer>
-    Bảng điều khiển thị trường v13 · Tham khảo / nghiên cứu, không phải khuyến nghị đầu tư.
+    Thông tin thị trường v13 · Tham khảo / nghiên cứu, không phải khuyến nghị đầu tư.
     Số liệu có thể chênh nhà cung cấp; panel gắn nhãn <b>Mẫu</b>, <b>Proxy</b>, <b>Nội suy</b> không dùng như số chốt lệnh.
   </footer>
 </main>
