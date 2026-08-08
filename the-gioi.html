@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Chỉ số Chứng khoán Thế giới · Bảng Giá Điện Tử</title>
 <meta name="description" content="Bảng theo dõi chỉ số chứng khoán, tiền tệ, hàng hoá và tiền số toàn cầu, cập nhật theo phiên đóng cửa từng khu vực." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -154,13 +154,65 @@ footer a{color:var(--muted)}
 .empty{padding:40px 0;text-align:center;color:var(--dim);font-size:13px}
 
 @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+
+/* tablet */
+@media(max-width:1024px){
+  .wrap{padding:0 18px}
+  .page-hd{padding:22px 0 4px}
+  .page-hd h2{font-size:clamp(24px,3.5vw,32px)}
+  .toolbar{gap:8px}
+  .tiles{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px}
+  .sub-hd p{max-width:100%}
+  .grp-hd p{max-width:100%}
+}
+/* tablet hẹp / phone lớn */
+@media(max-width:900px){
+  .hd{gap:10px;padding:10px 0;flex-wrap:wrap}
+  .hd-right{width:100%;margin-left:0}
+  .nav{margin-left:0}
+  .tool-right{margin-left:0;width:100%;justify-content:space-between}
+  .seg{flex-wrap:wrap}
+  .seg button{padding:6px 11px;min-height:34px}
+  .tiles{grid-template-columns:repeat(auto-fill,minmax(168px,1fr))}
+  .scroll{max-height:none;-webkit-overflow-scrolling:touch}
+  table{font-size:12.5px}
+}
+/* iPhone */
 @media(max-width:640px){
-  .wrap{padding:0 14px}
-  .brand h1{font-size:15px}
-  .nav a{padding:6px 10px;font-size:12px}
+  body{padding-bottom:calc(48px + env(safe-area-inset-bottom,0px));font-size:13.5px}
+  .wrap{padding:0 12px;padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
+  .brand h1{font-size:15px;white-space:normal;line-height:1.25}
+  .brand p{font-size:11px}
+  .nav a{padding:8px 11px}
   .nav a span{display:none}
-  .tiles{grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:9px}
-  .t-val{font-size:18px}
+  .page-hd{padding:16px 0 2px}
+  .page-hd h2{font-size:clamp(22px,6.5vw,28px)}
+  .page-hd p{font-size:13px}
+  .notice{font-size:12px;padding:11px 12px}
+  .toolbar{margin-top:12px;flex-direction:column;align-items:stretch}
+  .seg{width:100%}
+  .seg button{flex:1 1 auto;font-size:12px;padding:8px 8px;min-height:36px;touch-action:manipulation}
+  .tool-right{flex-wrap:wrap;gap:8px}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .tile{padding:11px 11px 10px}
+  .t-name{font-size:12px}
+  .t-cty{font-size:10px}
+  .t-val{font-size:17px}
+  .t-chg{font-size:11px;flex-wrap:wrap}
+  .t-spark{height:28px}
+  .tiles.tv-mode .t-spark,.tv-slot{height:64px}
+  .sub-hd{padding:14px 2px 2px}
+  .sub-hd h3{font-size:14px;flex-wrap:wrap}
+  .sub-hd p{font-size:12px}
+  .grp-hd{padding:18px 2px 4px}
+  .grp-hd h2{font-size:16px;flex-wrap:wrap}
+  .panel{border-radius:14px}
+  th,td{padding:8px 8px;font-size:12px}
+  footer{font-size:11px;margin-top:24px}
+}
+@media(max-width:380px){
+  .tiles{grid-template-columns:1fr}
+  .t-val{font-size:19px}
 }
 </style>
 </head>
