@@ -21,6 +21,7 @@ DATA = ROOT / "data"
 LIVE_JS = DATA / "live.js"
 LIVE_JSON = DATA / "snapshot-latest.json"
 META_JSON = DATA / "last-run.json"
+GROK_FILL = DATA / "grok-fill.json"
 
 ICT = timezone(timedelta(hours=7))
 UA = "vn-market-dashboard-bot/1.0 (non-profit research; +https://github.com/Tarzanjp/vn-market-dashboard)"
@@ -257,7 +258,84 @@ def fetch_dxy(prev: dict) -> tuple[float | None, str]:
     return prev.get("dxy"), prev.get("dxyFetchedAt") or ""
 
 
-def build_live(prev: dict) -> dict:
+def load_grok_fill() -> dict:
+    """JSON do Grok (hoặc người) ghi vào data/grok-fill.json."""
+    if not GROK_FILL.exists():
+        return {}
+    try:
+        raw = GROK_FILL.read_text(encoding="utf-8").strip()
+        if not raw or raw.startswith("//") or raw == "{}":
+            return {}
+        # cho phép bọc ```json ... ```
+        if raw.startswith("```"):
+            raw = re.sub(r"^```(?:json)?\s*", "", raw)
+            raw = re.sub(r"\s*```$", "", raw)
+        data = json.loads(raw)
+        if not isinstance(data, dict):
+            log("grok-fill.json: root must be object")
+            return {}
+        log(f"grok-fill loaded asof={data.get('asof')} keys={list(data.keys())}")
+        return data
+    except Exception as e:
+        log(f"grok-fill read fail: {e}")
+        return {}
+
+
+def _q(d: dict, key: str, default: str = "missing") -> str:
+    q = d.get("quality") if isinstance(d.get("quality"), dict) else {}
+    return str(q.get(key) or default)
+
+
+def merge_grok_fill(live: dict, grok: dict) -> dict:
+    """
+    Merge Grok research fill.
+    - API quality == live  → không bị Grok ghi đè
+    - Còn lại (stale/missing/proxy) → Grok được điền, quality = proxy (hoặc theo file)
+    - margin / vnYields / breadth / usdVnd / foreign: Grok điền nếu có
+    """
+    if not grok:
+        return live
+
+    gq = grok.get("quality") if isinstance(grok.get("quality"), dict) else {}
+    notes = list(live.get("notes") or [])
+    src = grok.get("sourceNotes") or grok.get("notes") or []
+    if isinstance(src, list):
+        notes.extend([f"Grok: {s}" for s in src if s])
+    notes.append(f"Merged data/grok-fill.json asof={grok.get('asof')}")
+
+    def api_live(field: str) -> bool:
+        return (live.get("quality") or {}).get(field) == "live"
+
+    # --- fields Grok luôn được điền nếu có (không có free API ổn định) ---
+    for field in ("margin", "vnYields", "breadth", "usdVnd", "foreign"):
+        if grok.get(field) not in (None, {}, []):
+            live[field] = grok[field]
+            live.setdefault("quality", {})[field] = gq.get(field) or "proxy"
+            log(f"grok fill → {field} ({live['quality'][field]})")
+
+    # --- fields API free: chỉ lấy Grok khi API không live ---
+    for field, key in (
+        ("usYields", "usYields"),
+        ("fgUs", "fgUs"),
+        ("vnIndex", "vnIndex"),
+        ("dxy", "dxy"),
+    ):
+        if api_live(field):
+            continue
+        if grok.get(key) not in (None, {}, []):
+            live[key] = grok[key]
+            live.setdefault("quality", {})[field] = gq.get(field) or "proxy"
+            log(f"grok fill (API stale) → {field}")
+
+    # asof: giữ API trade date; nếu chưa có thì lấy Grok
+    if grok.get("asof") and not live.get("asof"):
+        live["asof"] = grok["asof"]
+    live["grokFillAsof"] = grok.get("asof")
+    live["notes"] = notes
+    return live
+
+
+def build_live(prev: dict, grok: dict | None = None) -> dict:
     quality = {}
     us_yields, us_asof = fetch_us_treasury_yields(prev)
     quality["usYields"] = "live" if us_yields and us_asof else "stale"
@@ -287,15 +365,18 @@ def build_live(prev: dict) -> dict:
         "vnIndexFetchedAt": vn_at or prev.get("vnIndexFetchedAt"),
         "dxy": dxy if dxy is not None else prev.get("dxy"),
         "dxyFetchedAt": dxy_at or prev.get("dxyFetchedAt"),
-        # margin / VN yields / breadth: no free stable public API yet — keep previous if any
+        # margin / VN yields / breadth: free API yếu — prev hoặc Grok
         "vnYields": prev.get("vnYields"),
         "margin": prev.get("margin"),
+        "breadth": prev.get("breadth"),
+        "usdVnd": prev.get("usdVnd"),
+        "foreign": prev.get("foreign"),
         "notes": [
             "Nguồn free: US Treasury CSV, Yahoo Finance (VN-Index/DXY), CNN Fear & Greed.",
-            "Dư nợ margin / độ rộng HOSE / TPCP VN: chờ API — giữ snapshot trước hoặc mẫu trong HTML.",
+            "Grok fill: data/grok-fill.json (proxy) — không ghi đè field quality=live.",
         ],
     }
-    return live
+    return merge_grok_fill(live, grok or {})
 
 
 def write_outputs(live: dict) -> None:
@@ -318,20 +399,32 @@ def write_outputs(live: dict) -> None:
     log(f"wrote {LIVE_JS.relative_to(ROOT)} and {LIVE_JSON.relative_to(ROOT)}")
 
 
-def main() -> int:
-    log(f"start ICT={now_ict().isoformat(timespec='seconds')}")
+def main(skip_fetch: bool = False) -> int:
+    log(f"start ICT={now_ict().isoformat(timespec='seconds')} skip_fetch={skip_fetch}")
     prev = load_previous()
-    live = build_live(prev)
+    grok = load_grok_fill()
+    if skip_fetch:
+        # chỉ merge Grok lên snapshot trước (không gọi net)
+        live = dict(prev) if prev else {
+            "schemaVersion": "1.0",
+            "asof": now_ict().date().isoformat(),
+            "quality": {},
+            "notes": [],
+        }
+        live["generatedAtIct"] = now_ict().isoformat(timespec="seconds")
+        live = merge_grok_fill(live, grok)
+    else:
+        live = build_live(prev, grok)
     write_outputs(live)
     q = live.get("quality") or {}
     live_count = sum(1 for v in q.values() if v == "live")
-    log(f"done live_fields={live_count}/{len(q)} quality={q}")
-    # non-zero only if absolutely nothing updated and no previous
-    if live_count == 0 and not prev:
-        log("WARN: no live data and no previous snapshot")
-        return 0  # still succeed so CI can keep site online
+    proxy_count = sum(1 for v in q.values() if v == "proxy")
+    log(f"done live={live_count} proxy={proxy_count} quality={q}")
+    if live_count == 0 and proxy_count == 0 and not prev:
+        log("WARN: no live/proxy data and no previous snapshot")
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    skip = "--grok-only" in sys.argv or "--skip-fetch" in sys.argv
+    sys.exit(main(skip_fetch=skip))

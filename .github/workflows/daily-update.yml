@@ -35,6 +35,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "data: daily market snapshot (auto)"
-          file_pattern: "data/*"
+          file_pattern: "data/live.js data/snapshot-latest.json data/last-run.json data/grok-fill.json"
           commit_user_name: "github-actions[bot]"
           commit_user_email: "github-actions[bot]@users.noreply.github.com"

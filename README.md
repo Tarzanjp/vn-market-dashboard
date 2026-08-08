@@ -32,12 +32,34 @@ git commit -m "data: refresh snapshot"
 git push
 ```
 
+### Grok fill (chỗ chưa có API) — cả 2 bước
+
+1. **Prompt:** mở `docs/PROMPT-GROK-DAILY.md` → copy prompt → dán vào Grok  
+2. Grok trả JSON → lưu thành `data/grok-fill.json`  
+3. Merge:
+
+```powershell
+# API free + Grok
+py scripts/daily_update.py
+
+# hoặc chỉ Grok (không gọi net)
+py scripts/apply_grok_fill.py
+
+git add data
+git commit -m "data: Grok fill + auto"
+git push
+```
+
+- Ví dụ schema: `data/grok-fill.example.json`  
+- Quy tắc: Grok **không ghi đè** field đang `quality=live` từ API  
+
 ### Lần đầu sau khi push workflow
 
 1. Repo → **Actions** → cho phép workflows nếu GitHub hỏi  
-2. **Actions** → *Daily market data update* → **Run workflow** (thử 1 lần)  
-3. Xem job xanh → file `data/live.js` cập nhật trên repo  
-4. Refresh site, footer hiện `LIVE asof ... quality=...`
+2. **Settings → Actions → General → Workflow permissions → Read and write**  
+3. **Actions** → *Daily market data update* → **Run workflow** (thử 1 lần)  
+4. Xem job xanh → file `data/live.js` cập nhật trên repo  
+5. Refresh site, footer hiện `LIVE asof ... quality=...`
 
 ---
 

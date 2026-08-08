@@ -1179,26 +1179,29 @@ function loadBreadth(){
       gtgd:Math.max(6800,gtgd)});
   }
 
-  // neo phiên cuối: LIVE.vnIndex (auto) hoặc mẫu demo
+  // neo phiên cuối: LIVE.vnIndex + LIVE.breadth (Grok/API) hoặc mẫu demo
   const L=rows[N-1];
+  const br = (LIVE && LIVE.breadth) ? LIVE.breadth : null;
   if(LIVE && LIVE.vnIndex && LIVE.vnIndex.price!=null){
     const vi=LIVE.vnIndex;
-    L.date = vi.date || L.date;
+    L.date = vi.date || (br && br.date) || L.date;
     L.close = vi.price;
     L.pct = vi.pct!=null ? vi.pct : 0;
     L.chg = vi.chg!=null ? vi.chg : (vi.prev ? vi.price-vi.prev : 0);
-    // giữ cấu trúc mẫu nếu chưa có breadth thật
-    if(!L.all) L.all={a:164,d:139,u:62,ceil:9,floor:4,total:365};
-    if(!L.vn100) L.vn100={a:44,d:38,u:18,total:100};
-    if(!L.vn30) L.vn30={a:18,d:10,u:2,total:30};
-    if(!L.gtgd) L.gtgd=18100;
   }else{
     L.close=1768.06; L.pct=0.19; L.chg=1768.06*0.0019/1.0019;
-    L.all={a:164,d:139,u:62,ceil:9,floor:4,total:365};
-    L.vn100={a:44,d:38,u:18,total:100};
-    L.vn30={a:18,d:10,u:2,total:30};
-    L.gtgd=18100;
   }
+  if(br){
+    if(br.date) L.date = br.date;
+    if(br.gtgd!=null) L.gtgd = br.gtgd;
+    if(br.all) L.all = br.all;
+    if(br.vn100) L.vn100 = Object.assign({total:100}, br.vn100);
+    if(br.vn30) L.vn30 = Object.assign({total:30}, br.vn30);
+  }
+  if(!L.all) L.all={a:164,d:139,u:62,ceil:9,floor:4,total:365};
+  if(!L.vn100) L.vn100={a:44,d:38,u:18,total:100};
+  if(!L.vn30) L.vn30={a:18,d:10,u:2,total:30};
+  if(!L.gtgd) L.gtgd=18100;
 
   // Hệ số ADR cho 4 chu kỳ: 25 / 15 / 10 / 6 phiên
   for(let i=0;i<N;i++){
