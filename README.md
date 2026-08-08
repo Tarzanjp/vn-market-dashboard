@@ -2,6 +2,17 @@
 
 **Live:** https://tarzanjp.github.io/vn-market-dashboard/
 
+## Full auto (API free + Grok API)
+
+Chi tiết: **[docs/FULL-AUTO-SETUP.md](docs/FULL-AUTO-SETUP.md)**
+
+1. GitHub → Settings → Secrets → Actions → thêm `XAI_API_KEY`  
+2. Workflow permissions: Read and write  
+3. Actions → Daily market data update → Run workflow  
+
+Không có key: vẫn auto UST / VNI / DXY / F&G US.  
+Có key: Grok tự lấp margin / breadth / TPCP… (proxy).
+
 ## Cập nhật tự động hàng ngày (đã cấu hình)
 
 GitHub Actions workflow: `.github/workflows/daily-update.yml`

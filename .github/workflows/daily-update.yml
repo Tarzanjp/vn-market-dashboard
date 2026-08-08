@@ -1,4 +1,4 @@
-# Cập nhật dữ liệu thị trường tự động (free sources) → commit data/live.js → Pages redeploy
+# Full auto: free APIs + optional Grok (XAI_API_KEY) → data/live.js → Pages
 name: Daily market data update
 
 on:
@@ -7,7 +7,7 @@ on:
     - cron: "0 9 * * 1-5"
     # Morning pack ~08:15 ICT = 01:15 UTC (T2–T6)
     - cron: "15 1 * * 1-5"
-  workflow_dispatch: # chạy tay từ tab Actions
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -28,7 +28,12 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Fetch market data
+      - name: Fetch APIs + optional Grok auto-fill
+        env:
+          # Thêm secret XAI_API_KEY trong repo Settings → Secrets → Actions
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          # optional repo variable XAI_MODEL; default grok-3-latest in script
+          XAI_MODEL: ${{ vars.XAI_MODEL }}
         run: python scripts/daily_update.py
 
       - name: Commit & push snapshot

@@ -8,6 +8,7 @@ Chạy CI:     GitHub Actions schedule (sau phiên VN + sáng ICT)
 from __future__ import annotations
 
 import json
+import os
 import re
 import ssl
 import sys
@@ -26,6 +27,8 @@ GROK_FILL = DATA / "grok-fill.json"
 ICT = timezone(timedelta(hours=7))
 UA = "vn-market-dashboard-bot/1.0 (non-profit research; +https://github.com/Tarzanjp/vn-market-dashboard)"
 CTX = ssl.create_default_context()
+XAI_API = os.environ.get("XAI_API_BASE", "https://api.x.ai/v1").rstrip("/")
+XAI_MODEL = os.environ.get("XAI_MODEL", "grok-3-latest")
 
 
 def now_ict() -> datetime:
@@ -258,26 +261,173 @@ def fetch_dxy(prev: dict) -> tuple[float | None, str]:
     return prev.get("dxy"), prev.get("dxyFetchedAt") or ""
 
 
+def parse_json_object(raw: str) -> dict:
+    raw = (raw or "").strip()
+    if not raw:
+        return {}
+    if raw.startswith("```"):
+        raw = re.sub(r"^```(?:json)?\s*", "", raw)
+        raw = re.sub(r"\s*```$", "", raw)
+    # lấy object đầu tiên nếu model thêm text
+    try:
+        data = json.loads(raw)
+        return data if isinstance(data, dict) else {}
+    except json.JSONDecodeError:
+        m = re.search(r"\{[\s\S]*\}", raw)
+        if not m:
+            return {}
+        data = json.loads(m.group(0))
+        return data if isinstance(data, dict) else {}
+
+
 def load_grok_fill() -> dict:
-    """JSON do Grok (hoặc người) ghi vào data/grok-fill.json."""
+    """JSON do Grok API / người ghi vào data/grok-fill.json."""
     if not GROK_FILL.exists():
         return {}
     try:
         raw = GROK_FILL.read_text(encoding="utf-8").strip()
-        if not raw or raw.startswith("//") or raw == "{}":
+        if not raw or raw == "{}":
             return {}
-        # cho phép bọc ```json ... ```
-        if raw.startswith("```"):
-            raw = re.sub(r"^```(?:json)?\s*", "", raw)
-            raw = re.sub(r"\s*```$", "", raw)
-        data = json.loads(raw)
-        if not isinstance(data, dict):
-            log("grok-fill.json: root must be object")
+        data = parse_json_object(raw)
+        if not data:
+            log("grok-fill.json: empty/invalid")
             return {}
         log(f"grok-fill loaded asof={data.get('asof')} keys={list(data.keys())}")
         return data
     except Exception as e:
         log(f"grok-fill read fail: {e}")
+        return {}
+
+
+def save_grok_fill(data: dict) -> None:
+    DATA.mkdir(parents=True, exist_ok=True)
+    GROK_FILL.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    log(f"wrote {GROK_FILL.relative_to(ROOT)}")
+
+
+def missing_fields_for_grok(live: dict) -> list[str]:
+    """Các field dashboard cần nhưng API free chưa live."""
+    q = live.get("quality") or {}
+    want = []
+    # luôn xin Grok lấp nếu chưa live
+    checklist = [
+        ("margin", live.get("margin")),
+        ("vnYields", live.get("vnYields")),
+        ("breadth", live.get("breadth")),
+        ("usdVnd", live.get("usdVnd")),
+        ("foreign", live.get("foreign")),
+    ]
+    for name, val in checklist:
+        if q.get(name) == "live":
+            continue
+        if val in (None, {}, []):
+            want.append(name)
+        else:
+            # có data cũ nhưng muốn refresh proxy nếu stale > 3 ngày — đơn giản: vẫn xin refresh
+            want.append(name)
+    # nếu API free fail
+    for name in ("usYields", "vnIndex", "dxy", "fgUs"):
+        if q.get(name) != "live":
+            want.append(name)
+    # unique preserve order
+    seen = set()
+    out = []
+    for w in want:
+        if w not in seen:
+            seen.add(w)
+            out.append(w)
+    return out
+
+
+def fetch_grok_auto_fill(live: dict) -> dict:
+    """
+    Gọi xAI Grok API để điền field còn thiếu → dict merge được.
+    Cần env XAI_API_KEY. Không có key → {}.
+    """
+    api_key = os.environ.get("XAI_API_KEY") or os.environ.get("GROK_API_KEY")
+    if not api_key:
+        log("Grok auto: skip (no XAI_API_KEY secret)")
+        return {}
+
+    need = missing_fields_for_grok(live)
+    if not need:
+        log("Grok auto: nothing missing")
+        return {}
+
+    # context: số API đã live — Grok không được bịa đè
+    context = {
+        "asofApi": live.get("asof"),
+        "qualityApi": live.get("quality"),
+        "vnIndex": live.get("vnIndex"),
+        "usYields": live.get("usYields"),
+        "dxy": live.get("dxy"),
+        "fgUs": live.get("fgUs"),
+        "needFields": need,
+    }
+
+    system = (
+        "You are a data assistant for a non-profit Vietnam market dashboard. "
+        "Return ONLY one JSON object, no markdown. "
+        "Use quality values: proxy|live|stale|missing. "
+        "Do NOT invent numbers. If unsure, omit the field or set null. "
+        "Prefer public market figures for the latest HOSE session (ICT). "
+        "Units: debt/gtgd in billion VND (tỷ đồng); yields in percent."
+    )
+    user = (
+        "Fill ONLY these fields if you have reliable public knowledge: "
+        f"{need}.\n"
+        "Do not override fields already marked live in qualityApi.\n"
+        f"API context already fetched:\n{json.dumps(context, ensure_ascii=False)}\n\n"
+        "JSON schema keys allowed: schemaVersion, asof, sourceNotes, quality, "
+        "vnIndex, usYields, vnYields, margin, breadth, usdVnd, foreign, fgUs, dxy, notes.\n"
+        "margin.days[].debt is tỷ đồng. breadth.all has a,d,u,ceil,floor,total.\n"
+        "Return pure JSON."
+    )
+
+    body = {
+        "model": XAI_MODEL,
+        "temperature": 0.1,
+        "messages": [
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ],
+    }
+    req = urllib.request.Request(
+        f"{XAI_API}/chat/completions",
+        data=json.dumps(body).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}",
+            "User-Agent": UA,
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=90, context=CTX) as r:
+            resp = json.loads(r.read().decode("utf-8", "replace"))
+        content = (
+            resp.get("choices", [{}])[0]
+            .get("message", {})
+            .get("content", "")
+        )
+        data = parse_json_object(content)
+        if not data:
+            log("Grok auto: empty/invalid JSON response")
+            return {}
+        # force proxy for grok-sourced fields that aren't explicitly live
+        q = data.setdefault("quality", {})
+        for f in need:
+            if f in data and q.get(f) not in ("live", "proxy", "stale", "missing"):
+                q[f] = "proxy"
+            if f in data and not q.get(f):
+                q[f] = "proxy"
+        data.setdefault("sourceNotes", []).append(f"xAI {XAI_MODEL} auto-fill")
+        data.setdefault("asof", live.get("asof") or now_ict().date().isoformat())
+        save_grok_fill(data)
+        log(f"Grok auto OK fields={list(data.keys())}")
+        return data
+    except Exception as e:
+        log(f"Grok auto fail: {e}")
         return {}
 
 
@@ -399,12 +549,15 @@ def write_outputs(live: dict) -> None:
     log(f"wrote {LIVE_JS.relative_to(ROOT)} and {LIVE_JSON.relative_to(ROOT)}")
 
 
-def main(skip_fetch: bool = False) -> int:
-    log(f"start ICT={now_ict().isoformat(timespec='seconds')} skip_fetch={skip_fetch}")
+def main(skip_fetch: bool = False, auto_grok: bool = True) -> int:
+    log(
+        f"start ICT={now_ict().isoformat(timespec='seconds')} "
+        f"skip_fetch={skip_fetch} auto_grok={auto_grok}"
+    )
     prev = load_previous()
-    grok = load_grok_fill()
+    grok_file = load_grok_fill()
+
     if skip_fetch:
-        # chỉ merge Grok lên snapshot trước (không gọi net)
         live = dict(prev) if prev else {
             "schemaVersion": "1.0",
             "asof": now_ict().date().isoformat(),
@@ -412,9 +565,17 @@ def main(skip_fetch: bool = False) -> int:
             "notes": [],
         }
         live["generatedAtIct"] = now_ict().isoformat(timespec="seconds")
-        live = merge_grok_fill(live, grok)
+        live = merge_grok_fill(live, grok_file)
     else:
-        live = build_live(prev, grok)
+        # 1) free APIs  2) optional Grok API for gaps  3) merge file grok-fill
+        live = build_live(prev, grok=None)  # APIs only first
+        if auto_grok:
+            grok_api = fetch_grok_auto_fill(live)
+            if grok_api:
+                live = merge_grok_fill(live, grok_api)
+        if grok_file:
+            live = merge_grok_fill(live, grok_file)
+
     write_outputs(live)
     q = live.get("quality") or {}
     live_count = sum(1 for v in q.values() if v == "live")
@@ -427,4 +588,6 @@ def main(skip_fetch: bool = False) -> int:
 
 if __name__ == "__main__":
     skip = "--grok-only" in sys.argv or "--skip-fetch" in sys.argv
-    sys.exit(main(skip_fetch=skip))
+    # --no-grok: chỉ free API; mặc định bật Grok nếu có XAI_API_KEY
+    auto = "--no-grok" not in sys.argv
+    sys.exit(main(skip_fetch=skip, auto_grok=auto))
