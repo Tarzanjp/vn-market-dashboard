@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-08T18:09:39+07:00",
+  "generatedAtIct": "2026-08-08T18:28:14+07:00",
   "asof": "2026-08-07",
   "quality": {
     "usYields": "live",
@@ -66,7 +66,7 @@
     },
     "asofEt": "2026-08-08"
   },
-  "fgUsFetchedAt": "2026-08-08T18:09:38.731049+07:00",
+  "fgUsFetchedAt": "2026-08-08T18:28:14.282283+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
     "price": 1768.06,
@@ -75,13 +75,16 @@
     "pct": 0.19,
     "date": "2026-08-07"
   },
-  "vnIndexFetchedAt": "2026-08-08T18:09:38.864526+07:00",
+  "vnIndexFetchedAt": "2026-08-08T18:28:14.461047+07:00",
   "dxy": 99.6,
-  "dxyFetchedAt": "2026-08-08T18:09:39.002397+07:00",
+  "dxyFetchedAt": "2026-08-08T18:28:14.574539+07:00",
   "vnYields": null,
   "margin": null,
+  "breadth": null,
+  "usdVnd": null,
+  "foreign": null,
   "notes": [
     "Nguồn free: US Treasury CSV, Yahoo Finance (VN-Index/DXY), CNN Fear & Greed.",
-    "Dư nợ margin / độ rộng HOSE / TPCP VN: chờ API — giữ snapshot trước hoặc mẫu trong HTML."
+    "Grok fill: data/grok-fill.json (proxy) — không ghi đè field quality=live."
   ]
 }
