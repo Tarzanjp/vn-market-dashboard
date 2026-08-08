@@ -1,1 +1,56 @@
-{}
+{
+  "schemaVersion": "1.0",
+  "asof": "2026-08-07",
+  "sourceNotes": [
+    "Thời báo Tài chính Việt Nam — phiên 7/8/2026: VN-Index, breadth HOSE, GTGD, VN30, khối ngoại (https://thoibaotaichinhvietnam.vn/chung-khoan-ngay-7-8-vn-index-tro-lai-sac-xanh-thanh-khoan-cai-thien-201974.html)",
+    "Trading Economics / Investing.com — VN-Index close 1768.06 (+3.28, +0.19%) session Aug/07 (https://tradingeconomics.com/vietnam/stock-market ; https://www.investing.com/indices/vn)",
+    "CafeF — kết tuần 3–7/8: VN-Index 1.768,06; khối ngoại tuần mua ròng (https://cafef.vn/tien-lon-bat-ngo-tro-lai-khoi-ngoai-tung-2200-ty-dong-mua-rong-co-phieu-viet-nam-chi-trong-5-phien-188260808001301623.chn)",
+    "Thời báo Tài chính Việt Nam — tỷ giá trung tâm NHNN 7/8: 25.463 VND/USD (https://thoibaotaichinhvietnam.vn/ty-gia-usd-hom-nay-7-8-usd-ngan-hang-ban-ra-cach-xa-tran-300-dong-dxy-hoi-nhe-truoc-du-lieu-viec-lam-my-201921.html)",
+    "Trading Economics — Vietnam 10Y bond yield 4.54% on Aug/07 (https://tradingeconomics.com/vietnam/government-bond-yield)",
+    "VnEconomy / FiinTrade — dư nợ margin cuối tháng 6/2026 >446 nghìn tỷ (80/85 CTCK); không có số daily/weekly phiên 7/8 (https://vneconomy.vn/du-no-margin-ky-luc-hon-446-nghin-ty-dong-phan-lon-tap-trung-vao-hoat-dong-cho-vay-theo-deal-rieng.htm)"
+  ],
+  "quality": {
+    "vnIndex": "proxy",
+    "margin": "proxy",
+    "breadth": "proxy",
+    "usdVnd": "proxy",
+    "vnYields": "proxy",
+    "foreign": "proxy"
+  },
+  "vnIndex": {
+    "price": 1768.06,
+    "pct": 0.19,
+    "chg": 3.28,
+    "date": "2026-08-07"
+  },
+  "margin": {
+    "asof": "2026-06-30",
+    "freq": "monthly",
+    "note": "Cuối T6/2026: dư nợ margin ~446.000 tỷ VND (80/85 CTCK, FiinTrade/VnEconomy). Không tìm thấy báo cáo daily/weekly công khai cho phiên 7/8/2026.",
+    "days": [
+      { "date": "2026-06-30", "debt": 446000, "net": 0 }
+    ]
+  },
+  "breadth": {
+    "date": "2026-08-07",
+    "gtgd": 18141,
+    "all": { "a": 164, "d": 139, "u": 62, "total": 365 },
+    "vn30": { "a": 18, "d": 10, "u": 2, "total": 30 }
+  },
+  "usdVnd": {
+    "central": 25463,
+    "note": "NHNN tỷ giá trung tâm sáng 7/8/2026: 25.463 VND/USD (+30 so với phiên trước)"
+  },
+  "vnYields": [
+    { "t": "10 năm", "y": 4.54, "d": 0.01, "m": 0, "yr": 1.05, "x": 10, "est": false }
+  ],
+  "foreign": {
+    "net": -59,
+    "note": "Khối ngoại bán ròng ~59 tỷ VND trên HOSE phiên 7/8; toàn TT ~-76 tỷ (TBTCO). Tuần 3–7/8 mua ròng lũy kế ~2.166 tỷ toàn TT (CafeF)."
+  },
+  "notes": [
+    "Phiên HOSE gần nhất: 2026-08-07 (Thứ Sáu); 2026-08-08 là thứ Bảy, không giao dịch.",
+    "Không có số trần/sàn HOSE và breadth VN100 công khai đáng tin cho phiên này — đã bỏ.",
+    "Margin chỉ có mốc cuối tháng 6/2026 (monthly), không phải daily phiên."
+  ]
+}

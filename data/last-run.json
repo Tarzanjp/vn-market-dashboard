@@ -1,11 +1,16 @@
 {
   "ok": true,
-  "generatedAtIct": "2026-08-08T18:29:57+07:00",
+  "generatedAtIct": "2026-08-08T18:32:19+07:00",
   "asof": "2026-08-07",
   "quality": {
     "usYields": "live",
     "fgUs": "live",
     "vnIndex": "live",
-    "dxy": "live"
+    "dxy": "live",
+    "margin": "proxy",
+    "vnYields": "proxy",
+    "breadth": "proxy",
+    "usdVnd": "proxy",
+    "foreign": "proxy"
   }
 }

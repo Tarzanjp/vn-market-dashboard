@@ -60,21 +60,30 @@ try {
 }
 
 # 3) Commit + push (triggers Pages deploy)
+# Native git ghi warning CRLF ra stderr — không coi là fatal với $ErrorActionPreference Stop
 Write-Log "Git commit/push"
-try {
-  git add data/live.js data/snapshot-latest.json data/last-run.json data/grok-fill.json 2>$null
-  $st = git status --porcelain data
-  if ($st) {
-    git commit -m "data: agent daily market snapshot"
-    git push origin main
-    Write-Log "Pushed to origin/main"
-  } else {
-    Write-Log "No data changes to commit"
+$prevEap2 = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+git add -- data/live.js data/snapshot-latest.json data/last-run.json data/grok-fill.json
+$st = git status --porcelain -- data
+if ($st) {
+  git -c core.safecrlf=false commit -m "data: agent daily market snapshot"
+  if ($LASTEXITCODE -ne 0) {
+    Write-Log "Git commit failed exit=$LASTEXITCODE"
+    $ErrorActionPreference = $prevEap2
+    exit 1
   }
-} catch {
-  Write-Log "Git error: $_"
-  exit 1
+  git push origin main
+  if ($LASTEXITCODE -ne 0) {
+    Write-Log "Git push failed exit=$LASTEXITCODE"
+    $ErrorActionPreference = $prevEap2
+    exit 1
+  }
+  Write-Log "Pushed to origin/main"
+} else {
+  Write-Log "No data changes to commit"
 }
+$ErrorActionPreference = $prevEap2
 
 Write-Log "=== agent daily done ==="
 exit 0
