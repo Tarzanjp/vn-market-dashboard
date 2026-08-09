@@ -89,6 +89,17 @@ Write-Log "Git commit to branch $branch"
 $prevEap2 = $ErrorActionPreference
 $ErrorActionPreference = "Continue"
 
+# Stash any working-tree output from daily_update.py (or leftovers from a previous aborted
+# run) before switching branches — otherwise `git checkout` can refuse to switch when the
+# target branch has different content for the same files, which used to make this script
+# silently commit to whatever branch was already checked out (see git history for the bug
+# this fixed). Popped back onto the target branch below so the data still ends up committed.
+$stashed = $false
+if (git status --porcelain) {
+  git stash push -u -m "run_agent_daily temp" *>$null
+  if ($LASTEXITCODE -eq 0) { $stashed = $true }
+}
+
 git rev-parse --verify $branch *>$null
 if ($LASTEXITCODE -eq 0) {
   git checkout $branch *>$null
@@ -96,7 +107,8 @@ if ($LASTEXITCODE -eq 0) {
   git checkout -b $branch *>$null
 }
 if ($LASTEXITCODE -ne 0) {
-  Write-Log "Git checkout $branch FAILED (exit=$LASTEXITCODE) — likely uncommitted changes elsewhere in the tree conflict with it. Aborting so we don't accidentally commit to whatever branch is currently checked out."
+  Write-Log "Git checkout $branch FAILED (exit=$LASTEXITCODE) — aborting so we don't accidentally commit to whatever branch is currently checked out."
+  if ($stashed) { Write-Log "Working-tree changes are preserved in 'git stash list' — resolve manually." }
   git checkout - *>$null
   $ErrorActionPreference = $prevEap2
   exit 1
@@ -104,8 +116,19 @@ if ($LASTEXITCODE -ne 0) {
 $currentBranch = (git rev-parse --abbrev-ref HEAD).Trim()
 if ($currentBranch -ne $branch) {
   Write-Log "SAFETY ABORT: expected to be on '$branch' but HEAD is on '$currentBranch' — refusing to commit (would land on the wrong branch, possibly main)."
+  if ($stashed) { Write-Log "Working-tree changes are preserved in 'git stash list' — resolve manually." }
   $ErrorActionPreference = $prevEap2
   exit 1
+}
+
+if ($stashed) {
+  git stash pop *>$null
+  if ($LASTEXITCODE -ne 0) {
+    Write-Log "Git stash pop FAILED on branch $branch (conflict) — resolve manually, changes are in 'git stash list'."
+    git checkout - *>$null
+    $ErrorActionPreference = $prevEap2
+    exit 1
+  }
 }
 
 git add -- $dataFiles
