@@ -32,7 +32,7 @@ export default function MarketDashboardApp() {
         <div className="wrap hero-in">
           <div className="hero-left">
             <span className="jp-eyebrow">Thị trường Việt Nam · chuỗi <span id="epNo">—</span> phiên trong bộ nhớ</span>
-            <h2 className="hero-title">Độ rộng thị trường (ADR)</h2>
+            <h2 className="hero-title">Tỷ lệ tăng giảm</h2>
             <p className="hero-sub">Phiên <span id="heroDate" className="num" /> · HOSE · <span id="heroSess">đã đóng cửa</span></p>
           </div>
           <div className="hero-num">
