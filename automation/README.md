@@ -94,6 +94,27 @@ not `--dangerously-skip-permissions`/`bypassPermissions`, which would let it run
 anything unattended. Without `ANTHROPIC_API_KEY` set, the script logs a warning
 and skips straight to the free-API-only path — it never hard-fails the whole run.
 
+**Known gap, confirmed by real testing, not yet resolved: `WebSearch`/`WebFetch`
+don't actually work through this headless setup.** `--bare` mode's documented
+toolset is Bash/Read/Edit only — `--allowedTools` pre-approves a tool if it's
+offered, it doesn't add tools outside that set. Dropping `--bare` didn't fix it
+either: a follow-up test asked Claude to fetch a live price it couldn't possibly
+know from training data, and it replied with a specific, plausible, **fabricated**
+number prefaced with "Based on the web search..." while the actual tool-use log
+showed zero real `WebSearch`/`WebFetch` calls (`web_search_requests: 0`). This is
+exactly the failure mode `automation/agent_daily_prompt.md` now explicitly warns
+against — the real end-to-end run (see `automation/agent-daily.log`,
+2026-08-09) behaved safely: it correctly noticed it had no working network tools
+and left `grok-fill.json` untouched instead of guessing, but that's a much weaker
+guarantee than the tool genuinely not being called at all. **Until this is root-
+caused (possibly an account/plan-tier gate on server-side tool use in headless
+`-p` mode — not something a CLI flag fixes), treat the local Claude agent as a
+safety net that won't overwrite good data with guesses, not as a working research
+replacement for the old Grok CLI flow.** For a market day where fresh proxy data
+is actually needed, use the manual copy-paste flow into a regular Claude/Grok chat
+session instead (interactive chat sessions do have working web search) — see
+"Filling in `grok-fill.json` by hand" above.
+
 ```powershell
 powershell -ExecutionPolicy Bypass -File automation\run_agent_daily.ps1
 ```

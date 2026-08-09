@@ -10,6 +10,18 @@ Produce and write `public/data/grok-fill.json` with the latest public Vietnam ma
 than the xAI Grok API — produces it; `automation/daily_update.py`'s merge logic
 reads this one file regardless of which agent wrote it.)
 
+**Critical — verify tool access before reporting any number.** In prior manual
+testing, a differently-worded one-off prompt caused this exact agent to answer a
+market-data question with a specific, plausible-looking, entirely fabricated
+number while its own transcript literally said "Based on the web search..." even
+though the tool-use logs showed zero real `WebSearch`/`WebFetch` calls happened.
+So: before writing anything to `grok-fill.json`, confirm each `WebSearch`/`WebFetch`
+call in this run actually returned real tool output (not just that you *narrated*
+searching). If those tools are unavailable or return nothing usable in this
+environment, do **not** fall back to answering from memory/training data — leave
+the existing file untouched and say so plainly in your final reply (see `agent-daily.log`
+for a real example of this happening safely — that's the correct behavior).
+
 ## Steps
 
 1. Determine the latest HOSE trading session date (ICT). Use `WebSearch`/`WebFetch` if needed.

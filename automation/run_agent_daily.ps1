@@ -44,7 +44,10 @@ if (-not $claude) {
   try {
     $prevEap = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
-    # --bare: consistent behavior, skips hooks/skills/CLAUDE.md discovery (see automation/README.md)
+    # --bare: consistent behavior, explicit ANTHROPIC_API_KEY billing (see automation/README.md
+    # for why WebSearch/WebFetch are NOT actually reachable this way — a known, unresolved gap;
+    # the agent correctly declines rather than fabricates when it notices this, per the prompt's
+    # explicit anti-fabrication instructions, but don't expect real research to happen yet).
     # --permission-mode acceptEdits + explicit --allowedTools: scoped, no --dangerously-skip-permissions
     & claude --bare -p $promptText `
       --permission-mode acceptEdits `
@@ -52,6 +55,13 @@ if (-not $claude) {
       --model sonnet `
       --output-format json *>&1 |
       Tee-Object -FilePath $outFile | Out-Null
+    # Tee-Object above writes UTF-16 by PowerShell default; re-save as UTF-8 so the log is
+    # readable by normal tools (this exact bug already happened once with the old grok CLI
+    # invocation, and was re-introduced by accident when this block was rewritten for Claude).
+    if (Test-Path $outFile) {
+      $outContent = Get-Content -Path $outFile -Raw
+      Set-Content -Path $outFile -Value $outContent -Encoding utf8
+    }
     $code = $LASTEXITCODE
     $ErrorActionPreference = $prevEap
     if ($code -ne 0) {
