@@ -1,0 +1,40 @@
+# Manual-only: (re)populate public/data/history/<year>.jsonl from free historical
+# sources (US Treasury yield CSVs, Yahoo Finance for DXY). Safe to re-run — it
+# upserts by date, same as the daily pipeline's append_history() step. Never runs
+# on a schedule; trigger it by hand when extending the backfill range or if the
+# history files ever need rebuilding. See automation/README.md.
+name: Backfill historical data
+
+on:
+  workflow_dispatch:
+    inputs:
+      years:
+        description: "How many years back to backfill"
+        required: false
+        default: "2"
+
+permissions:
+  contents: write
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run backfill
+        run: python automation/backfill_history.py --years "${{ github.event.inputs.years }}"
+
+      - name: Commit & push history
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "data: backfill historical data (manual)"
+          file_pattern: "public/data/history/*.jsonl public/data/history/index.json"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"

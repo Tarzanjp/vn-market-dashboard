@@ -1,6 +1,7 @@
 node_modules/
 dist/
 *.log
-data/agent-last-run.txt
-data/qa-*.png
+automation/agent-last-run.txt
+automation/__pycache__/
+__pycache__/
 .DS_Store

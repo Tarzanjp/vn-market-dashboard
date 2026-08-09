@@ -3,8 +3,9 @@
 **Live:** https://tarzanjp.github.io/vn-market-dashboard/
 
 A free, non-profit dashboard tracking the Vietnam stock market (breadth,
-margin debt, sentiment, VN↔US bond yields) and a companion world-markets
-page (indices, FX, commodities, crypto via embedded TradingView widgets).
+margin debt, sentiment, VN↔US bond yields), a companion world-markets page
+(indices, FX, commodities, crypto via embedded TradingView widgets), and a
+historical data + event-correlation page.
 
 ## Project layout
 
@@ -12,20 +13,22 @@ page (indices, FX, commodities, crypto via embedded TradingView widgets).
 src/
   dashboard/    Market dashboard page (components + ported chart engine)
   world/        World indices page (components + ported chart engine)
+  history/      History & Correlation page (overlay chart + Pearson correlation table)
   components/   Shared layout (header, nav, ticker tape, footer)
-  hooks/        useLiveMarketData — fetches public/data/live.json
+  hooks/        useLiveMarketData / useHistory — fetch public/data/*.json
   styles/       Shared design tokens + base layout CSS
   data/         Static instrument list for the world-indices page
-public/data/    Data pipeline input/output (live.json, grok-fill.json, …)
+public/data/    Data pipeline input/output (live.json, history/, events.json, grok-fill.json, …)
 automation/     Data pipeline scripts + ops guide (see automation/README.md)
 .github/workflows/
-  data-update.yml   Daily data fetch → public/data/live.json → commit to main
-  deploy.yml        npm run build → publish dist/ to the gh-pages branch
+  data-update.yml       Daily data fetch → public/data/live.json + history → commit to main
+  deploy.yml            npm run build → publish dist/ to the gh-pages branch
+  backfill-history.yml  Manual-only: (re)populate public/data/history/ from free historical sources
 ```
 
-Two pages, `index.html` and `the-gioi.html`, are each a separate Vite build
-entry mounting its own React root — this keeps both page URLs stable while
-sharing components, styles, and the data-fetching hook.
+Three pages — `index.html`, `the-gioi.html`, `lich-su.html` — are each a
+separate Vite build entry mounting its own React root, keeping every page URL
+stable while sharing components, styles, and data-fetching hooks.
 
 ## Local development
 
@@ -54,6 +57,22 @@ paid xAI Grok fill for fields with no free API (margin debt, VN bond yields,
 breadth, USD/VND, foreign flows). A local Windows agent
 (`automation/run_agent_daily.ps1`) is available as a manual backup — it opens
 a pull request rather than pushing to `main` directly.
+
+## History & Correlation
+
+The third page (`lich-su.html`) charts real accumulated history — VN-Index,
+US/VN bond yields, DXY, margin, USD/VND, rebased to an index-100 overlay so
+wildly different units are visually comparable — with sourced macro events
+(Fed decisions, CPI/NFP releases, VN-specific news) marked on the timeline,
+plus a Pearson correlation table between whichever series are toggled on.
+This replaced the old dashboard behavior where "history" charts were actually
+a seeded PRNG faking a plausible past around the latest real snapshot.
+
+Not everything is backfillable for free — see
+**[automation/README.md](automation/README.md#historical-data--event-correlation-lịch-sử--tương-quan-page)**
+for exactly which fields have real multi-year history today (US Treasury
+yields, DXY) versus which only start accumulating going forward (VN-Index and
+everything Vietnam-specific — there's no free historical API for them).
 
 ## Deploying
 

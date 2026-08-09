@@ -22,6 +22,12 @@ DATA = ROOT / "public" / "data"
 LIVE_JSON = DATA / "live.json"
 META_JSON = DATA / "last-run.json"
 GROK_FILL = DATA / "grok-fill.json"
+HISTORY_DIR = DATA / "history"
+HISTORY_INDEX = HISTORY_DIR / "index.json"
+HISTORY_QUALITY_FIELDS = (
+    "vnIndex", "usYields", "vnYields", "dxy", "fgUs",
+    "margin", "breadth", "usdVnd", "foreign",
+)
 
 ICT = timezone(timedelta(hours=7))
 UA = "vn-market-dashboard-bot/1.0 (non-profit research; +https://github.com/Tarzanjp/vn-market-dashboard)"
@@ -542,6 +548,99 @@ def write_outputs(live: dict) -> None:
     log(f"wrote {LIVE_JSON.relative_to(ROOT)}")
 
 
+def history_row_from_live(live: dict) -> dict:
+    """Project the full `live` payload down to a compact daily history row.
+    See automation/README.md for the schema. fgVn is left null here: computing
+    it needs a real multi-month breadth history, which only exists once this
+    function has been accumulating rows for a while (see dashboardEngine.js's
+    fgVietnam(), which needs 130 prior sessions)."""
+    q = live.get("quality") or {}
+    vn = live.get("vnIndex") or {}
+    us_yields = {str(int(r["x"])): r["y"] for r in (live.get("usYields") or []) if r.get("y") is not None}
+    vn_yields = {str(int(r["x"])): r["y"] for r in (live.get("vnYields") or []) if r.get("y") is not None}
+    margin_days = (live.get("margin") or {}).get("days") or []
+    margin_last = margin_days[-1] if margin_days else {}
+    breadth = live.get("breadth") or {}
+    breadth_all = breadth.get("all") or {}
+    fg_us = live.get("fgUs") or {}
+
+    return {
+        "date": live.get("asof"),
+        "vnIndex": vn.get("price"),
+        "vnIndexPct": vn.get("pct"),
+        "dxy": live.get("dxy"),
+        "usYields": us_yields or None,
+        "vnYields": vn_yields or None,
+        "fgUs": fg_us.get("score"),
+        "fgVn": None,
+        "margin": margin_last.get("debt"),
+        "marginNet": margin_last.get("net"),
+        "breadth": (
+            {"a": breadth_all.get("a"), "d": breadth_all.get("d"), "u": breadth_all.get("u"),
+             "gtgd": breadth.get("gtgd")}
+            if breadth_all else None
+        ),
+        "usdVndCentral": (live.get("usdVnd") or {}).get("central"),
+        "foreignNet": (live.get("foreign") or {}).get("net"),
+        "quality": {k: q.get(k, "missing") for k in HISTORY_QUALITY_FIELDS},
+    }
+
+
+def load_history_year(year: int) -> dict:
+    path = HISTORY_DIR / f"{year}.jsonl"
+    rows: dict = {}
+    if path.exists():
+        for line in path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+                if row.get("date"):
+                    rows[row["date"]] = row
+            except json.JSONDecodeError:
+                continue
+    return rows
+
+
+def write_history_year(year: int, rows: dict) -> None:
+    HISTORY_DIR.mkdir(parents=True, exist_ok=True)
+    path = HISTORY_DIR / f"{year}.jsonl"
+    with path.open("w", encoding="utf-8") as f:
+        for d in sorted(rows):
+            f.write(json.dumps(rows[d], ensure_ascii=False) + "\n")
+    log(f"wrote {path.relative_to(ROOT)} n={len(rows)}")
+
+
+def update_history_index(years: set) -> None:
+    existing = set()
+    if HISTORY_INDEX.exists():
+        try:
+            existing = set(json.loads(HISTORY_INDEX.read_text(encoding="utf-8")).get("years") or [])
+        except Exception:
+            pass
+    all_years = sorted(existing | years)
+    HISTORY_INDEX.write_text(
+        json.dumps({"years": all_years}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+
+
+def append_history(live: dict) -> None:
+    """Upsert today's row into public/data/history/<year>.jsonl. Idempotent —
+    running this twice for the same date (morning + after-close, or a manual
+    rerun) updates the row in place instead of duplicating it."""
+    date = live.get("asof")
+    if not date:
+        log("append_history: skip (no asof date)")
+        return
+    year = int(date[:4])
+    rows = load_history_year(year)
+    rows[date] = history_row_from_live(live)
+    write_history_year(year, rows)
+    update_history_index({year})
+    log(f"append_history: upserted {date} (n={len(rows)} rows in {year}.jsonl)")
+
+
 def main(skip_fetch: bool = False, auto_grok: bool = True) -> int:
     log(
         f"start ICT={now_ict().isoformat(timespec='seconds')} "
@@ -570,6 +669,7 @@ def main(skip_fetch: bool = False, auto_grok: bool = True) -> int:
             live = merge_grok_fill(live, grok_file)
 
     write_outputs(live)
+    append_history(live)
     q = live.get("quality") or {}
     live_count = sum(1 for v in q.values() if v == "live")
     proxy_count = sum(1 for v in q.values() if v == "proxy")

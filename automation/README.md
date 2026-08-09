@@ -42,7 +42,7 @@ overwrite the Actions pipeline.
 Run it locally:
 
 ```powershell
-cd C:\Users\shimo\Downloads\vn-market-site
+cd "C:\Users\shimo\OneDrive\ドキュメント\Private\Stock\vn-market-site"
 py automation/daily_update.py            # free APIs + Grok API if XAI_API_KEY is set
 py automation/daily_update.py --no-grok  # free APIs only, skip the xAI API call
 py automation/apply_grok_fill.py         # merge public/data/grok-fill.json only, no network fetch
@@ -88,8 +88,8 @@ Then create two Task Scheduler triggers (08:20 and 16:10 ICT):
 | Field | Value |
 |-------|-------|
 | Program | `powershell.exe` |
-| Arguments | `-ExecutionPolicy Bypass -File "C:\Users\shimo\Downloads\vn-market-site\automation\run_agent_daily.ps1"` |
-| Start in | `C:\Users\shimo\Downloads\vn-market-site` |
+| Arguments | `-ExecutionPolicy Bypass -File "C:\Users\shimo\OneDrive\ドキュメント\Private\Stock\vn-market-site\automation\run_agent_daily.ps1"` |
+| Start in | `C:\Users\shimo\OneDrive\ドキュメント\Private\Stock\vn-market-site` |
 
 The script logs to `automation/agent-daily.log` (gitignored) and the last Grok
 CLI run's output to `automation/agent-last-run.txt` (also gitignored, and now
@@ -108,6 +108,66 @@ encoding, which made the log unreadable as plain text).
 Without a key, the Actions pipeline still auto-updates US yields, VN-Index,
 DXY, and US Fear & Greed — everything else stays at its last known value
 (sample/proxy) until filled via the local agent or a manual `grok-fill.json`.
+
+## Historical data & event correlation ("Lịch sử & Tương quan" page)
+
+Every `daily_update.py` run also appends (upserts, by date — safe to run twice a
+day) a compact row to `public/data/history/<year>.jsonl` via `append_history()`.
+This is the real time series the History page charts — it replaces the old
+approach where every "history" chart on the dashboard was actually a seeded
+PRNG fabricating a plausible-looking past around the latest real data point.
+
+**Row schema** (one JSON object per line):
+
+```json
+{"date":"2026-08-07","vnIndex":1768.06,"vnIndexPct":0.19,"dxy":99.6,
+ "usYields":{"1":4.11,"3":4.24,"5":4.33,"10":4.65,"30":5.17},
+ "vnYields":{"10":4.54},"fgUs":63.7,"fgVn":null,
+ "margin":446000,"marginNet":null,
+ "breadth":{"a":164,"d":139,"u":62,"gtgd":18141},
+ "usdVndCentral":25338,"foreignNet":null,
+ "quality":{"vnIndex":"live","usYields":"live","dxy":"live","margin":"proxy", "...": "..."}}
+```
+
+`public/data/history/index.json` lists which year files exist (`{"years":[2025,2026]}`)
+so the frontend doesn't need a hardcoded year list that goes stale every January.
+
+**Backfill.** `automation/backfill_history.py` populates past years from free
+historical sources — but only two fields actually have one:
+
+| Field | Backfillable for free? | Source |
+|--|--|--|
+| `usYields` | **Yes** — full daily series | US Treasury yield-curve CSV (per year) |
+| `dxy` | **Yes** — full daily series | Yahoo Finance (`DX-Y.NYB`, `range=Ny`) |
+| `vnIndex` | **No** — Yahoo's `^VNINDEX.VN` only supports `1d`/`5d` ranges server-side (confirmed via its `validRanges` field; there's no free, scriptable, ToS-respecting source for VN-Index daily history) | — |
+| `vnYields`, `margin`, `breadth`, `usdVndCentral`, `foreignNet`, `fgVn` | No free historical source at any granularity | — |
+
+Everything in the "No" rows starts accumulating for real the day this shipped,
+one row per `daily_update.py` run, same as every other proxy/sample field on
+this site — there's no way around that without a paid data provider.
+
+```powershell
+py automation/backfill_history.py --years 2   # re-run anytime; upserts, never duplicates
+```
+
+Also available as a manual (never scheduled) `workflow_dispatch` job:
+**Actions → Backfill historical data → Run workflow**.
+
+**Events log.** `public/data/events.json` is a flat, append-only array of
+sourced events (Fed decisions, US/VN macro releases, geopolitical shocks) that
+the History page overlays as markers on the chart. It is **not** pre-seeded
+with a guessed future FOMC/CPI/NFP calendar — `automation/events_prompt.md` is
+a research prompt (same pattern as `agent_daily_prompt.md`) for the local Grok
+agent to run periodically (weekly is plenty) to research and append real,
+sourced entries:
+
+```powershell
+grok --prompt-file automation/events_prompt.md --yolo --cwd "C:\Users\shimo\OneDrive\ドキュメント\Private\Stock\vn-market-site"
+```
+
+This is deliberately **not** wired into the twice-daily `run_agent_daily.ps1`
+run — it's a separate, lower-frequency task so it doesn't double the Grok CLI
+usage on every scheduled run.
 
 ## Deploy pipeline
 

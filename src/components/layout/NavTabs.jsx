@@ -17,6 +17,12 @@ export default function NavTabs({ active }) {
         </svg>
         <span>Thế giới</span>
       </a>
+      <a href="lich-su.html" aria-current={active === "history" ? "page" : undefined}>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M8 1.7a6.3 6.3 0 1 1-6.3 6.3M8 1.7v4.6l3.6 2.1M1.7 3.4v3.4h3.4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span>Lịch sử</span>
+      </a>
     </nav>
   );
 }

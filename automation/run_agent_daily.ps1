@@ -76,7 +76,9 @@ $branch = "agent/data-$today"
 $dataFiles = @(
   "public/data/live.json",
   "public/data/last-run.json",
-  "public/data/grok-fill.json"
+  "public/data/grok-fill.json",
+  "public/data/history",
+  "public/data/events.json"
 )
 
 Write-Log "Git commit to branch $branch"
