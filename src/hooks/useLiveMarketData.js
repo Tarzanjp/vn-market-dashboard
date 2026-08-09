@@ -12,7 +12,10 @@ export function useLiveMarketData() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/data/live.json", { cache: "no-store" })
+    // Relative path (no leading slash): both pages live in the same directory,
+    // and GitHub Pages serves this app from a subpath (/vn-market-dashboard/),
+    // not the domain root, so an absolute "/data/live.json" would 404 there.
+    fetch("data/live.json", { cache: "no-store" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (cancelled) return;
