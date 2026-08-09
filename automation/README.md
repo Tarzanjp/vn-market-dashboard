@@ -12,7 +12,7 @@ under `docs/` (`AGENT-AUTO.md`, `FULL-AUTO-SETUP.md`, `PROMPT-GROK-DAILY.md`,
 | Role | **Primary — system of record** | Manual / backup only |
 | Runs where | GitHub cloud, on a schedule | Your PC, via Windows Task Scheduler |
 | Writes to `main` | **Directly** (auto-commit) | **Never** — pushes a branch and opens a PR |
-| Grok source | xAI API (`XAI_API_KEY` secret, paid) | Local `grok` CLI (Grok Build subscription) |
+| Agent | xAI Grok API (`XAI_API_KEY` secret, paid) | Local Claude Code CLI (`ANTHROPIC_API_KEY`, paid per-token — see below) |
 | When to use | Always on, no setup after secrets are added | Run manually when Actions data looks stale, or as an extra source for margin/breadth/yields fields the free APIs can't supply |
 
 This split exists because both scripts used to push straight to `main` and
@@ -76,14 +76,36 @@ Grok/LLM chat session and save the JSON it returns to `public/data/grok-fill.jso
 
 ## Local agent setup (Windows Task Scheduler)
 
-Prerequisites: `grok` CLI installed and logged in, `git` credentials configured,
-Python on PATH, optionally `gh` (GitHub CLI) authenticated for auto-PR creation.
+**Local agent = Claude Code CLI**, run headlessly (`claude -p --bare`). This bills
+per-token against a **Console API key**, not a Pro/Max/Team subscription —
+subscription login is interactive-only and headless/`--bare` mode explicitly
+doesn't use it. Get a key at https://console.anthropic.com/ and set it as the
+`ANTHROPIC_API_KEY` environment variable (System Properties → Environment
+Variables, so Task Scheduler picks it up — a variable set only in one PowerShell
+session won't be visible to the scheduled task).
+
+Prerequisites: `claude` CLI installed (`winget install Anthropic.ClaudeCode`),
+`ANTHROPIC_API_KEY` set, `git` credentials configured, Python on PATH, optionally
+`gh` (GitHub CLI) authenticated for auto-PR creation.
+
+The agent runs scoped, not with full bypass: `--permission-mode acceptEdits`
+plus an explicit `--allowedTools "WebSearch,WebFetch,Read,Write"` — deliberately
+not `--dangerously-skip-permissions`/`bypassPermissions`, which would let it run
+anything unattended. Without `ANTHROPIC_API_KEY` set, the script logs a warning
+and skips straight to the free-API-only path — it never hard-fails the whole run.
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File automation\run_agent_daily.ps1
 ```
 
-Then create two Task Scheduler triggers (08:20 and 16:10 ICT):
+Then create two Task Scheduler triggers for 08:20 and 16:10 **ICT** — but set the
+trigger times in **your machine's local clock**, not ICT, if they differ. This dev
+machine's clock is set to Tokyo time (JST, UTC+9), two hours ahead of ICT (UTC+7),
+so the actual Task Scheduler trigger times here are **10:20** and **18:10** local.
+Check your own machine with `Get-TimeZone` before creating triggers — a task
+created with the ICT numbers typed in literally on a non-ICT machine will silently
+fire at the wrong time (this happened once already: the original task's morning
+trigger was off by 5h20m and nobody noticed until the data just looked stale).
 
 | Field | Value |
 |-------|-------|
@@ -91,10 +113,25 @@ Then create two Task Scheduler triggers (08:20 and 16:10 ICT):
 | Arguments | `-ExecutionPolicy Bypass -File "C:\Users\shimo\OneDrive\ドキュメント\Private\Stock\vn-market-site\automation\run_agent_daily.ps1"` |
 | Start in | `C:\Users\shimo\OneDrive\ドキュメント\Private\Stock\vn-market-site` |
 
-The script logs to `automation/agent-daily.log` (gitignored) and the last Grok
-CLI run's output to `automation/agent-last-run.txt` (also gitignored, and now
-written as UTF-8 — earlier versions wrote UTF-16 via `Tee-Object`'s default
-encoding, which made the log unreadable as plain text).
+The live task on this machine is named **`VN Market Agent Daily`**. Sanity-check it
+after any path change (moving the repo, renaming `scripts/`→`automation/`, etc. has
+broken it before) with:
+
+```powershell
+Get-ScheduledTask -TaskName "VN Market Agent Daily" | Get-ScheduledTaskInfo
+(Get-ScheduledTask -TaskName "VN Market Agent Daily").Actions | Format-List Execute, Arguments, WorkingDirectory
+```
+
+If the `Arguments`/`WorkingDirectory` don't point at the current repo path, or
+`LastTaskResult` isn't `0`, fix it with `Set-ScheduledTask` (needs to be run from an
+elevated/interactive PowerShell session that owns the task — an automated session
+without that context will get `Access is denied` even just trying to disable or
+delete it, not only edit it).
+
+The script logs to `automation/agent-daily.log` (gitignored) and the last agent
+run's output to `automation/agent-last-run.txt` (also gitignored, and written as
+UTF-8 — earlier versions wrote UTF-16 via `Tee-Object`'s default encoding, which
+made the log unreadable as plain text).
 
 ## Enabling the GitHub Actions xAI fill (optional)
 
@@ -157,17 +194,18 @@ Also available as a manual (never scheduled) `workflow_dispatch` job:
 sourced events (Fed decisions, US/VN macro releases, geopolitical shocks) that
 the History page overlays as markers on the chart. It is **not** pre-seeded
 with a guessed future FOMC/CPI/NFP calendar — `automation/events_prompt.md` is
-a research prompt (same pattern as `agent_daily_prompt.md`) for the local Grok
+a research prompt (same pattern as `agent_daily_prompt.md`) for the local Claude
 agent to run periodically (weekly is plenty) to research and append real,
 sourced entries:
 
 ```powershell
-grok --prompt-file automation/events_prompt.md --yolo --cwd "C:\Users\shimo\OneDrive\ドキュメント\Private\Stock\vn-market-site"
+$prompt = Get-Content automation/events_prompt.md -Raw
+claude --bare -p $prompt --permission-mode acceptEdits --allowedTools "WebSearch,WebFetch,Read,Write" --model sonnet
 ```
 
 This is deliberately **not** wired into the twice-daily `run_agent_daily.ps1`
-run — it's a separate, lower-frequency task so it doesn't double the Grok CLI
-usage on every scheduled run.
+run — it's a separate, lower-frequency task so it doesn't double the Claude CLI
+usage (and API cost) on every scheduled run.
 
 ## Deploy pipeline
 

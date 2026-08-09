@@ -1,6 +1,11 @@
-# Backup/manual data pipeline using a local Grok CLI agent (not the GitHub Actions XAI_API_KEY path).
+# Backup/manual data pipeline using a local Claude Code CLI agent (not the GitHub Actions
+# XAI_API_KEY path, which still calls the real xAI Grok API separately and is unaffected by
+# this script).
 # Schedule via Windows Task Scheduler: 08:20 and 16:10 ICT.
-# Requires: grok CLI logged in, git credentials, python, and (optionally) GitHub CLI `gh` for auto-PR.
+# Requires: claude CLI installed (winget install Anthropic.ClaudeCode) with ANTHROPIC_API_KEY
+# set — headless `claude -p --bare` mode bills per-token via the Console API key, it does NOT
+# use a Claude Pro/Max/Team subscription login (that's interactive-only). Also needs git
+# credentials, python, and (optionally) GitHub CLI `gh` for auto-PR.
 #
 # Role split: GitHub Actions (.github/workflows/data-update.yml) is the primary, scheduled
 # pipeline and pushes straight to main. This script is a manual/backup tool — it NEVER pushes
@@ -21,43 +26,42 @@ function Write-Log($msg) {
 
 Write-Log "=== agent daily start ==="
 
-# 1) Grok agent research → public/data/grok-fill.json
+# 1) Claude agent research → public/data/grok-fill.json
+# (output file keeps its historical name — daily_update.py's merge logic reads this one file
+# regardless of whether the xAI Grok API, this local Claude agent, or a human wrote it)
 $promptFile = Join-Path $Root "automation\agent_daily_prompt.md"
-$grok = Get-Command grok -ErrorAction SilentlyContinue
-if (-not $grok) {
-  $grokPath = Join-Path $env:USERPROFILE ".grok\bin\grok.exe"
-  if (Test-Path $grokPath) { $grok = $grokPath }
-}
+$claude = Get-Command claude -ErrorAction SilentlyContinue
 
-if ($grok) {
-  Write-Log "Running Grok agent..."
+if (-not $claude) {
+  Write-Log "WARN: claude CLI not found — skip agent fill (only free APIs). Install: winget install Anthropic.ClaudeCode"
+} elseif (-not $env:ANTHROPIC_API_KEY) {
+  Write-Log "WARN: ANTHROPIC_API_KEY not set — headless 'claude -p --bare' needs a Console API key (not a Pro/Max subscription login); skip agent fill (only free APIs)"
+} else {
+  Write-Log "Running Claude agent..."
   Write-Log "prompt-file: $promptFile"
-  # Dùng --prompt-file (đừng kèm -p: -p bắt buộc có giá trị PROMPT)
-  $grokExe = if ($grok -is [System.Management.Automation.CommandInfo]) { $grok.Source } else { "$grok" }
+  $promptText = Get-Content -Path $promptFile -Raw
   $outFile = Join-Path $LogDir "agent-last-run.txt"
   try {
     $prevEap = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
-    & $grokExe --prompt-file $promptFile --yolo --cwd $Root --no-auto-update *>&1 |
+    # --bare: consistent behavior, skips hooks/skills/CLAUDE.md discovery (see automation/README.md)
+    # --permission-mode acceptEdits + explicit --allowedTools: scoped, no --dangerously-skip-permissions
+    & claude --bare -p $promptText `
+      --permission-mode acceptEdits `
+      --allowedTools "WebSearch,WebFetch,Read,Write" `
+      --model sonnet `
+      --output-format json *>&1 |
       Tee-Object -FilePath $outFile | Out-Null
-    # Tee-Object above already wrote UTF-16 by PowerShell default; re-save as UTF-8 so the
-    # log is readable by normal tools (this was a real bug in earlier versions of this script).
-    if (Test-Path $outFile) {
-      $content = Get-Content -Path $outFile -Raw
-      Set-Content -Path $outFile -Value $content -Encoding utf8
-    }
     $code = $LASTEXITCODE
     $ErrorActionPreference = $prevEap
     if ($code -ne 0) {
-      Write-Log "Grok agent exit code: $code (see automation/agent-last-run.txt)"
+      Write-Log "Claude agent exit code: $code (see automation/agent-last-run.txt)"
     } else {
-      Write-Log "Grok agent finished OK"
+      Write-Log "Claude agent finished OK"
     }
   } catch {
-    Write-Log "Grok agent error: $_"
+    Write-Log "Claude agent error: $_"
   }
-} else {
-  Write-Log "WARN: grok CLI not found — skip agent fill (only free APIs)"
 }
 
 # 2) Free APIs + merge grok-fill (do NOT call XAI_API_KEY)
@@ -91,6 +95,18 @@ if ($LASTEXITCODE -eq 0) {
 } else {
   git checkout -b $branch *>$null
 }
+if ($LASTEXITCODE -ne 0) {
+  Write-Log "Git checkout $branch FAILED (exit=$LASTEXITCODE) — likely uncommitted changes elsewhere in the tree conflict with it. Aborting so we don't accidentally commit to whatever branch is currently checked out."
+  git checkout - *>$null
+  $ErrorActionPreference = $prevEap2
+  exit 1
+}
+$currentBranch = (git rev-parse --abbrev-ref HEAD).Trim()
+if ($currentBranch -ne $branch) {
+  Write-Log "SAFETY ABORT: expected to be on '$branch' but HEAD is on '$currentBranch' — refusing to commit (would land on the wrong branch, possibly main)."
+  $ErrorActionPreference = $prevEap2
+  exit 1
+}
 
 git add -- $dataFiles
 $st = git status --porcelain -- $dataFiles
@@ -114,7 +130,7 @@ if ($st) {
   $ghCmd = Get-Command gh -ErrorAction SilentlyContinue
   if ($ghCmd) {
     gh pr create --title "data: agent daily market snapshot ($today)" `
-      --body "Automated data snapshot from the local Grok CLI agent. Review before merging into main." `
+      --body "Automated data snapshot from the local Claude CLI agent. Review before merging into main." `
       --base main --head $branch 2>&1 | ForEach-Object { Write-Log $_ }
   } else {
     Write-Log "gh CLI not found — open a PR manually: https://github.com/<owner>/<repo>/compare/main...$branch"
