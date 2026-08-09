@@ -1,4 +1,6 @@
-# Full auto: free APIs + optional Grok (XAI_API_KEY) → data/live.js → Pages
+# Primary data pipeline: free APIs + optional Grok (XAI_API_KEY) → public/data/live.json
+# This is the system of record for daily data. The local agent (automation/run_agent_daily.ps1)
+# is a manual/backup tool only — it never pushes to main directly, it opens a PR instead.
 name: Daily market data update
 
 on:
@@ -34,12 +36,12 @@ jobs:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
           # optional repo variable XAI_MODEL; default grok-3-latest in script
           XAI_MODEL: ${{ vars.XAI_MODEL }}
-        run: python scripts/daily_update.py
+        run: python automation/daily_update.py
 
       - name: Commit & push snapshot
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "data: daily market snapshot (auto)"
-          file_pattern: "data/live.js data/snapshot-latest.json data/last-run.json data/grok-fill.json"
+          file_pattern: "public/data/live.json public/data/last-run.json public/data/grok-fill.json"
           commit_user_name: "github-actions[bot]"
           commit_user_email: "github-actions[bot]@users.noreply.github.com"

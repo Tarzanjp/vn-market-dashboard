@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Chỉ merge data/grok-fill.json vào snapshot (không gọi API mạng)."""
+"""Chỉ merge public/data/grok-fill.json vào snapshot (không gọi API mạng)."""
 import sys
 from pathlib import Path
 
