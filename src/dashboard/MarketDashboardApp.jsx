@@ -216,11 +216,11 @@ export default function MarketDashboardApp() {
               </div>
               <div className="grid g-1-1" style={{ margin: 0, padding: "0 20px 18px", gap: 18 }}>
                 <div>
-                  <h3 style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "var(--muted)" }}>Top CTCK theo dư nợ</h3>
+                  <h3 style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "var(--muted)" }}>Top CTCK theo dư nợ <span className="dtag dtag-proxy" style={{ marginLeft: 4 }}>Quý</span></h3>
                   <div className="scroll" style={{ maxHeight: 340 }}>
                     <table>
                       <thead><tr>
-                        <th>#</th><th>Công ty chứng khoán</th><th>Dư nợ</th><th>1 ngày</th><th>Tỷ trọng</th><th>Room còn</th>
+                        <th>#</th><th>Công ty chứng khoán</th><th>Dư nợ</th><th>So quý trước</th><th>Tỷ trọng</th><th>Room còn</th>
                       </tr></thead>
                       <tbody id="mgBrokerBody" />
                     </table>

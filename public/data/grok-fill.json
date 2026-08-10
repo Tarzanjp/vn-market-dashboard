@@ -7,7 +7,9 @@
     "Doanh nghiệp Tiếp thị — đóng cửa 7/8: VN-Index 1.768,06 (+3,28; +0,19%), 164 tăng / 139 giảm / 62 đứng; GTGD HOSE ~18.200 tỷ (https://doanhnghieptiepthi.vn/ma-va-ipo-tu-3-8-7-8-vn-index-buoc-vao-nhip-tich-luy-161260808083508081.htm)",
     "SBV — tỷ giá trung tâm NHNN: 25.463 VND/USD, TB 327/TB-NHNN ban hành 07/08/2026 áp dụng 08/08/2026 (https://sbv.gov.vn/vi/tỷ-giá)",
     "Trading Economics — Vietnam 10Y bond yield 07/08/2026: 4.538% (daily ~+0.009; yearly +1.05) (https://tradingeconomics.com/vietnam/government-bond-yield)",
-    "VnEconomy / FiinTrade — dư nợ margin cuối T6/2026: >446 nghìn tỷ tại 80/85 CTCK (https://vneconomy.vn/du-no-margin-ky-luc-hon-446-nghin-ty-dong-phan-lon-tap-trung-vao-hoat-dong-cho-vay-theo-deal-rieng.htm)"
+    "VnEconomy / FiinTrade — dư nợ margin cuối T6/2026: >446 nghìn tỷ tại 80/85 CTCK (https://vneconomy.vn/du-no-margin-ky-luc-hon-446-nghin-ty-dong-phan-lon-tap-trung-vao-hoat-dong-cho-vay-theo-deal-rieng.htm)",
+    "Tin nhanh chứng khoán — Margin toàn thị trường tăng mạnh, TCBS dẫn đầu, SHS lần đầu lọt Top 10 (Q2/2026): https://www.tinnhanhchungkhoan.vn/margin-toan-thi-truong-tang-manh-tcbs-dan-dau-shs-lan-dau-lot-top-10-hds-tang-gap-doi-du-no-post394381.html",
+    "CafeF — Dư nợ margin toàn thị trường lập kỷ lục gần 450.000 tỷ, loạt CTCK cho vay tỷ USD (21/7/2026): https://cafef.vn/du-no-margin-toan-thi-truong-lap-ky-luc-gan-450000-ty-loat-ctck-cho-vay-ty-usd-188260721001349581.chn"
   ],
   "quality": {
     "vnIndex": "proxy",
@@ -26,23 +28,127 @@
   "margin": {
     "asof": "2026-06-30",
     "freq": "monthly",
-    "note": "Cuối T6/2026: dư nợ margin >446.000 tỷ VND tại 80/85 CTCK (VnEconomy/FiinTrade). Không có báo cáo daily/weekly công khai cho phiên 7/8/2026.",
+    "note": "Cuối T6/2026: dư nợ margin toàn TT >446.000 tỷ VND tại 80/85 CTCK (VnEconomy/FiinTrade); riêng cấu phần margin thuần (không tính cho vay theo deal riêng) ~435.000 tỷ theo Investing.com/CafeF. Top 10 CTCK theo dư nợ margin Q2/2026 (Tin nhanh chứng khoán, CafeF) — tỷ trọng tính trên tổng 435.000 tỷ. Không có nguồn công khai cho room còn lại (cần vốn chủ sở hữu từng CTCK) nên để trống. Tần suất thật: theo quý (BCTC), không phải hàng ngày.",
     "days": [
-      { "date": "2026-06-30", "debt": 446000, "net": 0 }
+      {
+        "date": "2026-06-30",
+        "debt": 446000,
+        "net": 0
+      }
+    ],
+    "brokers": [
+      {
+        "code": "TCBS",
+        "name": "Techcom Securities",
+        "debt": 51522,
+        "d": 6772,
+        "share": 11.8,
+        "room": null
+      },
+      {
+        "code": "SSI",
+        "name": "SSI",
+        "debt": 40500,
+        "d": null,
+        "share": 9.3,
+        "room": null
+      },
+      {
+        "code": "VPBankS",
+        "name": "VPBank Securities",
+        "debt": 40000,
+        "d": null,
+        "share": 9.2,
+        "room": null
+      },
+      {
+        "code": "VPS",
+        "name": "VPS",
+        "debt": 37000,
+        "d": null,
+        "share": 8.5,
+        "room": null
+      },
+      {
+        "code": "HSC",
+        "name": "HSC",
+        "debt": 36000,
+        "d": null,
+        "share": 8.3,
+        "room": null
+      },
+      {
+        "code": "VND",
+        "name": "VNDirect",
+        "debt": 29000,
+        "d": null,
+        "share": 6.7,
+        "room": null
+      },
+      {
+        "code": "MBS",
+        "name": "MB Securities",
+        "debt": 28000,
+        "d": null,
+        "share": 6.4,
+        "room": null
+      },
+      {
+        "code": "VDSC",
+        "name": "Rồng Việt Securities",
+        "debt": 21000,
+        "d": null,
+        "share": 4.8,
+        "room": null
+      },
+      {
+        "code": "BSI",
+        "name": "BIDV Securities",
+        "debt": 15000,
+        "d": null,
+        "share": 3.4,
+        "room": null
+      },
+      {
+        "code": "SHS",
+        "name": "Saigon-Hanoi Securities",
+        "debt": 11722,
+        "d": null,
+        "share": 2.7,
+        "room": null
+      }
     ]
   },
   "breadth": {
     "date": "2026-08-07",
     "gtgd": 18141,
-    "all": { "a": 164, "d": 139, "u": 62, "total": 365 },
-    "vn30": { "a": 18, "d": 10, "u": 2, "total": 30 }
+    "all": {
+      "a": 164,
+      "d": 139,
+      "u": 62,
+      "total": 365
+    },
+    "vn30": {
+      "a": 18,
+      "d": 10,
+      "u": 2,
+      "total": 30
+    }
   },
   "usdVnd": {
     "central": 25463,
     "note": "NHNN tỷ giá trung tâm: 25.463 VND/USD (ban hành 7/8/2026, áp dụng 8/8/2026; TB 327/TB-NHNN)"
   },
   "vnYields": [
-    { "t": "10 năm", "y": 4.538, "d": 0.009, "m": 0, "yr": 1.05, "x": 10, "est": false }
+    {
+      "t": "10 năm",
+      "y": 4.538,
+      "d": 0.009,
+      "m": 0,
+      "yr": 1.05,
+      "x": 10,
+      "est": false
+    }
   ],
   "foreign": {
     "net": -59,

@@ -69,7 +69,7 @@ export function initMarketDashboard(LIVE, HISTORY) {
         const debt = +b.debt || 0;
         return {
           code: b.code || "?", name: b.name || b.code || "?",
-          debt, d: +(b.d || 0), room: b.room != null ? +b.room : null,
+          debt, d: b.d != null ? +b.d : null, room: b.room != null ? +b.room : null,
           share: b.share != null ? +b.share : null
         };
       });
@@ -768,13 +768,20 @@ export function initMarketDashboard(LIVE, HISTORY) {
     const rLiq = cl01(0.65 * rRatio + 0.35 * rLiqT);
 
     const tot = brokers.reduce((s, b) => s + b.debt, 0) || 1;
-    const roomW = brokers.reduce((s, b) => s + b.room * (b.debt / tot), 0);
-    const rRoom = cl01(100 - roomW * 2.2);
+    // Room còn lại theo từng CTCK cần vốn chủ sở hữu, chưa có nguồn công khai
+    // miễn phí — khi không CTCK nào có room, không coi là room=0% (nguy hiểm
+    // tối đa giả) mà loại hẳn khỏi phép tính, chỉ dùng độ tập trung (rConc).
+    const withRoom = brokers.filter(b => b.room != null);
+    const roomTot = withRoom.reduce((s, b) => s + b.debt, 0);
+    const roomW = roomTot ? withRoom.reduce((s, b) => s + b.room * (b.debt / roomTot), 0) : null;
+    const rRoom = roomW == null ? null : cl01(100 - roomW * 2.2);
     const top3 = brokers.slice(0, 3).reduce((s, b) => s + b.debt, 0) / tot * 100;
     const rConc = cl01((top3 - 30) * 2.2);
-    const tightN = brokers.filter(b => b.room < 20).length;
-    const rTight = brokers.length ? cl01(tightN / brokers.length * 100 + tightN * 6) : 0;
-    const rRoomAll = cl01(0.45 * rRoom + 0.30 * rConc + 0.25 * rTight);
+    const tightN = withRoom.filter(b => b.room < 20).length;
+    const rTight = withRoom.length ? cl01(tightN / withRoom.length * 100 + tightN * 6) : null;
+    const rRoomAll = (rRoom == null && rTight == null)
+      ? rConc
+      : cl01(0.45 * (rRoom ?? rConc) + 0.30 * rConc + 0.25 * (rTight ?? rConc));
 
     const score = cl01(0.40 * rDiv + 0.30 * rLiq + 0.30 * rRoomAll);
     const zone = mbrZone(score);
@@ -799,8 +806,11 @@ export function initMarketDashboard(LIVE, HISTORY) {
         {
           id: "room", k: "Room & tập trung CTCK", w: "30%",
           risk: rRoomAll, z: pillarZone(rRoomAll),
-          detail: `Room bình quân có trọng số <b>${nf(roomW, 0)}%</b> · Top 3 CTCK <b>${nf(top3, 1)}%</b> dư nợ · ` +
-            `<b>${tightN}</b>/${brokers.length} CTCK room &lt;20%.`
+          detail: rRoom == null
+            ? `Room còn lại từng CTCK: <b>chưa có nguồn công khai</b> (cần vốn chủ sở hữu từng công ty) · ` +
+              `Top 3 CTCK <b>${nf(top3, 1)}%</b> dư nợ — điểm mục này tạm tính riêng theo độ tập trung.`
+            : `Room bình quân có trọng số <b>${nf(roomW, 0)}%</b> · Top 3 CTCK <b>${nf(top3, 1)}%</b> dư nợ · ` +
+              `<b>${tightN}</b>/${withRoom.length} CTCK room &lt;20%.`
         }
       ],
       raw: { pMg5, pPx5, gap5, pMg20, pPx20, gap20, ratio, pctile, liqTrend, roomW, top3, tightN }
@@ -898,9 +908,9 @@ export function initMarketDashboard(LIVE, HISTORY) {
         <td style="text-align:left"><b style="font-weight:600">${esc(b.code)}</b>
           <span style="color:var(--dim);font-size:11.5px;margin-left:6px">${esc(b.name)}</span></td>
         <td class="num" style="font-weight:600">${nf(b.debt, 0)}</td>
-        <td class="num ${cls(b.d)}">${sgn(b.d, 0)}</td>
-        <td class="num">${nf(b.share, 1)}%</td>
-        <td class="num" style="color:${b.room < 20 ? "var(--giam)" : b.room < 30 ? "var(--tc)" : "var(--tang)"}">${nf(b.room, 0)}%</td>
+        <td class="num ${cls(b.d)}">${b.d == null ? "—" : sgn(b.d, 0)}</td>
+        <td class="num">${b.share == null ? "—" : nf(b.share, 1) + "%"}</td>
+        <td class="num" style="color:${b.room == null ? "var(--dim)" : b.room < 20 ? "var(--giam)" : b.room < 30 ? "var(--tc)" : "var(--tang)"}">${b.room == null ? "—" : nf(b.room, 0) + "%"}</td>
       </tr>`).join("");
 
     el("mgNote").innerHTML = `
