@@ -1171,16 +1171,46 @@ export function initMarketDashboard(LIVE, HISTORY) {
     if (v < 100) return "";
     return "rt-h" + Math.min(5, Math.floor((v - 100) / 10));
   };
+  /* Chèn thêm dòng cuối tuần (T7/CN) rỗng giữa hai phiên liền kề — chỉ để hiển
+     thị liên tục theo lịch, KHÔNG đưa vào ROWS gốc vì các panel khác (biểu đồ
+     ADR, dự phóng, gauge...) đều giả định ROWS chỉ gồm phiên giao dịch. Khoảng
+     nghỉ lễ (không phải T7/CN) vẫn bị bỏ qua như trước, không chèn dòng. */
+  function withWeekendGaps(tradingRowsDesc) {
+    const out = [];
+    for (let i = 0; i < tradingRowsDesc.length; i++) {
+      out.push(tradingRowsDesc[i]);
+      if (i === tradingRowsDesc.length - 1) continue;
+      const stop = tradingRowsDesc[i + 1].date;
+      const cur = new Date(tradingRowsDesc[i].date + "T00:00:00Z");
+      let guard = 0;
+      while (guard++ < 10) {
+        cur.setUTCDate(cur.getUTCDate() - 1);
+        const k = cur.toISOString().slice(0, 10);
+        if (k === stop) break;
+        const w = cur.getUTCDay();
+        if (w === 0 || w === 6) out.push({ date: k, weekend: true });
+      }
+    }
+    return out;
+  }
+
   function drawHist() {
-    const data = ROWS.slice(-90).reverse();
-    const realCount = data.filter(d => d.real).length;
+    const tradingData = ROWS.slice(-90).reverse();
+    const data = withWeekendGaps(tradingData);
+    const realCount = tradingData.filter(d => d.real).length;
     const tag = el("histTag");
     if (tag) {
-      if (realCount >= data.length) { tag.textContent = "Dữ liệu thật"; tag.className = "dtag dtag-live"; }
-      else if (realCount > 0) { tag.textContent = realCount + "/" + data.length + " phiên thật"; tag.className = "dtag dtag-proxy"; }
+      if (realCount >= tradingData.length) { tag.textContent = "Dữ liệu thật"; tag.className = "dtag dtag-live"; }
+      else if (realCount > 0) { tag.textContent = realCount + "/" + tradingData.length + " phiên thật"; tag.className = "dtag dtag-proxy"; }
       else { tag.textContent = "Mẫu"; tag.className = "dtag dtag-sample"; }
     }
     el("histBody").innerHTML = data.map(d => {
+      if (d.weekend) {
+        return `<tr class="wknd">
+        <td class="num" style="color:var(--dim)">${dmyF(d.date)}</td>
+        <td colspan="12" style="color:var(--dim);font-style:italic">Cuối tuần — không giao dịch</td>
+      </tr>`;
+      }
       const s = d[scope], tot = s.a + s.d + s.u || 1;
       const cells = WINDOWS.map((w, i) =>
         `<td class="num rt ${hl(s.r[w])}${i === 0 ? ' grp-l' : ''}">${nf(s.r[w], 1)}</td>`).join("");
