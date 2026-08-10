@@ -1,17 +1,17 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-10T16:11:12+07:00",
+  "generatedAtIct": "2026-08-10T17:14:45+07:00",
   "asof": "2026-08-10",
   "quality": {
     "usYields": "live",
     "fgUs": "live",
     "vnIndex": "live",
     "dxy": "live",
-    "margin": "proxy",
-    "vnYields": "proxy",
-    "breadth": "proxy",
-    "usdVnd": "proxy",
-    "foreign": "proxy"
+    "vnYields": "stale",
+    "margin": "stale",
+    "breadth": "stale",
+    "usdVnd": "stale",
+    "foreign": "stale"
   },
   "usYields": [
     {
@@ -71,7 +71,7 @@
     },
     "asofEt": "2026-08-10"
   },
-  "fgUsFetchedAt": "2026-08-10T16:11:11.916638+07:00",
+  "fgUsFetchedAt": "2026-08-10T17:14:45.819541+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
     "price": 1776.77,
@@ -80,9 +80,9 @@
     "pct": 0.49,
     "date": "2026-08-10"
   },
-  "vnIndexFetchedAt": "2026-08-10T16:11:12.058350+07:00",
-  "dxy": 99.67,
-  "dxyFetchedAt": "2026-08-10T16:11:12.178446+07:00",
+  "vnIndexFetchedAt": "2026-08-10T17:14:45.863336+07:00",
+  "dxy": 99.71,
+  "dxyFetchedAt": "2026-08-10T17:14:45.917340+07:00",
   "vnYields": [
     {
       "t": "10 năm",
@@ -132,14 +132,6 @@
   },
   "notes": [
     "Nguồn free: US Treasury CSV, Yahoo Finance (VN-Index/DXY), CNN Fear & Greed.",
-    "Grok fill: public/data/grok-fill.json (proxy) — không ghi đè field quality=live.",
-    "Grok: Investing.com VNI — close 07/08/2026: 1,768.06 +3.28 (+0.19%), prev 1,764.78; VN30 1,911.09 +8.30 (https://vn.investing.com/indices/vn)",
-    "Grok: Thời báo Tài chính Việt Nam — phiên 7/8/2026: HOSE breadth 164↑/139↓/62=, GTGD 18.141 tỷ, VN30 18/10/2, khối ngoại HOSE bán ròng 59 tỷ / toàn TT ~76 tỷ (https://thoibaotaichinhvietnam.vn/chung-khoan-ngay-7-8-vn-index-tro-lai-sac-xanh-thanh-khoan-cai-thien-201974.html)",
-    "Grok: Doanh nghiệp Tiếp thị — đóng cửa 7/8: VN-Index 1.768,06 (+3,28; +0,19%), 164 tăng / 139 giảm / 62 đứng; GTGD HOSE ~18.200 tỷ (https://doanhnghieptiepthi.vn/ma-va-ipo-tu-3-8-7-8-vn-index-buoc-vao-nhip-tich-luy-161260808083508081.htm)",
-    "Grok: SBV — tỷ giá trung tâm NHNN: 25.463 VND/USD, TB 327/TB-NHNN ban hành 07/08/2026 áp dụng 08/08/2026 (https://sbv.gov.vn/vi/tỷ-giá)",
-    "Grok: Trading Economics — Vietnam 10Y bond yield 07/08/2026: 4.538% (daily ~+0.009; yearly +1.05) (https://tradingeconomics.com/vietnam/government-bond-yield)",
-    "Grok: VnEconomy / FiinTrade — dư nợ margin cuối T6/2026: >446 nghìn tỷ tại 80/85 CTCK (https://vneconomy.vn/du-no-margin-ky-luc-hon-446-nghin-ty-dong-phan-lon-tap-trung-vao-hoat-dong-cho-vay-theo-deal-rieng.htm)",
-    "Merged public/data/grok-fill.json asof=2026-08-07"
-  ],
-  "grokFillAsof": "2026-08-07"
+    "Grok fill: public/data/grok-fill.json (proxy) — không ghi đè field quality=live."
+  ]
 }
