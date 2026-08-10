@@ -72,7 +72,9 @@ export function initWorldIndices() {
   function tileHTML(m) {
     const st = status(m), na = m.v == null;
     const k = na ? "t-na" : (m.p > 0 ? "t-up" : m.p < 0 ? "t-down" : "");
-    const chart = chartSrc === "tv" && m.tv
+    // Luôn dùng biểu đồ TradingView trực tiếp (realtime); sparkSVG chỉ còn là fallback
+    // phòng khi một mã nào đó chưa có mã TradingView tương ứng trong TV (worldInstruments.js).
+    const chart = m.tv
       ? `<div class="tv-slot" data-sym="${m.tv}"></div>`
       : (na ? "" : sparkSVG(m));
     const inner = `
@@ -177,12 +179,12 @@ export function initWorldIndices() {
   /* ============================================================
      7. ĐIỀU KHIỂN
      ============================================================ */
-  let grp = "all", view = "grid", chartSrc = "local";
+  let grp = "all", view = "grid";
   function render() {
     const list = MARKETS.filter(m => grp === "all" || m.grp === grp);
-    el("tiles").className = "tiles" + (chartSrc === "tv" ? " tv-mode" : "");
+    el("tiles").className = "tiles tv-mode";
     el("tiles").innerHTML = list.length ? tilesHTML(list) : `<div class="empty">Không có dữ liệu cho nhóm này.</div>`;
-    if (chartSrc === "tv") watchTV();
+    watchTV();
     const sorted = [...list].sort((a, b) => {
       if (sortKey === "grp") return 0;
       const A = a[sortKey], B = b[sortKey];
@@ -198,13 +200,6 @@ export function initWorldIndices() {
     const b = e.target.closest("button"); if (!b) return;
     grp = b.dataset.g;
     [...e.currentTarget.children].forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-    render();
-  });
-  el("srcSeg").addEventListener("click", e => {
-    const b = e.target.closest("button"); if (!b) return;
-    chartSrc = b.dataset.s;
-    [...e.currentTarget.children].forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-    el("tvNote").hidden = chartSrc !== "tv";
     render();
   });
   el("viewSeg").addEventListener("click", e => {
@@ -231,7 +226,9 @@ export function initWorldIndices() {
       .map(x => String(x).padStart(2, "0")).join(":");
   }
   tick(); setInterval(tick, 1000);
-  setInterval(() => { if (chartSrc !== "tv") render(); }, 60000);
+  // Không tự render() lại định kỳ nữa — mỗi lần render sẽ tạo lại toàn bộ DOM tile,
+  // buộc mọi widget TradingView đang chạy phải tải lại từ đầu (xấu trải nghiệm vì
+  // widget đã tự cập nhật realtime bên trong iframe của nó rồi).
 
   render();
 }

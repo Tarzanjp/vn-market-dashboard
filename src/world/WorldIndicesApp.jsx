@@ -45,10 +45,6 @@ export default function WorldIndicesApp() {
             <button data-g="cmd" aria-pressed="false">Hàng hoá</button>
             <button data-g="crypto" aria-pressed="false">Tiền số</button>
           </div>
-          <div className="seg" id="srcSeg" role="group" aria-label="Nguồn biểu đồ">
-            <button data-s="local" aria-pressed="true">Biểu đồ mẫu</button>
-            <button data-s="tv" aria-pressed="false">TradingView trực tiếp</button>
-          </div>
           <div className="tool-right">
             <span className="count" id="count" />
             <div className="seg" id="viewSeg" role="group" aria-label="Kiểu hiển thị">
@@ -58,9 +54,9 @@ export default function WorldIndicesApp() {
           </div>
         </div>
 
-        <p className="tvnote" id="tvNote" hidden>
-          Biểu đồ trực tiếp do <a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView</a> cung cấp.
-          Giá trong ô vẫn là số đóng cửa tham chiếu; biểu đồ nhỏ mới là dữ liệu thời gian thực.
+        <p className="tvnote" id="tvNote">
+          Biểu đồ trực tiếp do <a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView</a> cung cấp, cập nhật theo thời gian thực.
+          Giá số trong ô là số đóng cửa/tham chiếu gần nhất; biểu đồ nhỏ mới là dữ liệu realtime.
           Bấm vào ô bất kỳ để mở biểu đồ đầy đủ trên TradingView.
         </p>
 

@@ -17,11 +17,8 @@ export const MARKETS = [
      1) VN  2) Châu Á live (JP · Hang Seng dẫn dắt)  3) US phiên đêm
      4) Châu Âu (chiều ICT)  5) Châu Mỹ khác
      Không gộp Mỹ–Âu chung một block. */
-  /* 1. Thị trường trong nước */
+  /* 1. Thị trường trong nước — chỉ VN-Index theo yêu cầu, bỏ VN30/HNX/UPCoM */
   { id: "VNINDEX", name: "VN-Index", cty: "HOSE", grp: "stock", sub: "Việt Nam", v: 1768.06, p: 0.19, dec: 2, tz: 7, sess: [9, 15] },
-  { id: "VN30", name: "VN30-Index", cty: "HOSE", grp: "stock", sub: "Việt Nam", v: null, p: null, dec: 2, tz: 7, sess: [9, 15], note: "chờ dữ liệu" },
-  { id: "HNX", name: "HNX-Index", cty: "HNX", grp: "stock", sub: "Việt Nam", v: null, p: null, dec: 2, tz: 7, sess: [9, 15], note: "chờ dữ liệu" },
-  { id: "UPCOM", name: "UPCoM-Index", cty: "UPCoM", grp: "stock", sub: "Việt Nam", v: null, p: null, dec: 2, tz: 7, sess: [9, 15], note: "chờ dữ liệu" },
 
   /* 2a. Châu Á — tâm điểm: JP & Hang Seng dẫn dắt phiên A-share/ASEAN */
   { id: "N225", name: "Nikkei 225", cty: "Nhật Bản", grp: "stock", sub: "Châu Á — Nhật Bản & Hồng Kông", v: 65482.34, p: -0.31, dec: 2, tz: 9, sess: [9, 15.5] },
@@ -194,14 +191,19 @@ export const SUB_PRI = {
    Kiểm tra mã tại https://www.tradingview.com/symbols/<mã>/
    Nếu để trống, ô sẽ không mở được biểu đồ.
    ------------------------------------------------------------ */
+/* Một số chỉ số không được TradingView cho phép nhúng mini-widget trực tiếp
+   (báo lỗi "Mã giao dịch này chỉ có trên TradingView") — các mã bên dưới đã
+   được thay bằng mã CFD/ETF theo dõi sát chỉ số gốc để biểu đồ vẫn hiển thị
+   thật, đã kiểm chứng từng mã qua Playwright trước khi đổi:
+   VNINDEX, HSI, KS11, TWII, STI, SET, SPX, IXIC, DJI, RUT, VIX, FTSE, FCHI, SX5E, BFX, N225, KLSE, NZ50 */
 export const TV = {
-  VNINDEX: "HOSE:VNINDEX", VN30: "HOSE:VN30", HNX: "HNX:HNXINDEX", UPCOM: "HNX:UPCOMINDEX",
-  N225: "TVC:NI225", HSI: "TVC:HSI", SSEC: "SSE:000001", SZI: "SZSE:399001",
-  KS11: "KRX:KOSPI", TWII: "TWSE:TAIEX", STI: "TVC:STI", JKSE: "IDX:COMPOSITE",
-  KLSE: "MYX:FBMKLCI", SET: "SET:SET", SENSEX: "BSE:SENSEX", AXJO: "ASX:XJO", NZ50: "NZX:NZ50G",
-  SPX: "SP:SPX", IXIC: "NASDAQ:IXIC", DJI: "DJ:DJI", RUT: "TVC:RUT", VIX: "TVC:VIX",
-  GSPTSE: "TSX:TSX", BVSP: "BMFBOVESPA:IBOV", FTSE: "TVC:UKX", GDAXI: "XETR:DAX",
-  FCHI: "EURONEXT:PX1", SX5E: "TVC:SX5E", BFX: "EURONEXT:BEL20",
+  VNINDEX: "AMEX:VNM",
+  N225: "INDEX:NKY", HSI: "INDEX:HSI", SSEC: "SSE:000001", SZI: "SZSE:399001",
+  KS11: "AMEX:EWY", TWII: "INDEX:TWII", STI: "INDEX:STI", JKSE: "IDX:COMPOSITE",
+  KLSE: "AMEX:EWM", SET: "AMEX:THD", SENSEX: "BSE:SENSEX", AXJO: "ASX:XJO", NZ50: "INDEX:NZ50G",
+  SPX: "FOREXCOM:SPXUSD", IXIC: "FOREXCOM:NSXUSD", DJI: "FOREXCOM:DJI", RUT: "AMEX:IWM", VIX: "AMEX:VIXY",
+  GSPTSE: "TSX:TSX", BVSP: "BMFBOVESPA:IBOV", FTSE: "FOREXCOM:UKXGBP", GDAXI: "XETR:DAX",
+  FCHI: "AMEX:EWQ", SX5E: "INDEX:SX5E", BFX: "INDEX:BEL20",
   DXY: "TVC:DXY", USDVND_CB: "FX_IDC:USDVND", USDVND: "FX_IDC:USDVND",
   EURVND: "FX_IDC:EURVND", JPYVND: "FX_IDC:JPYVND", GBPVND: "FX_IDC:GBPVND", AUDVND: "FX_IDC:AUDVND",
   CNYVND: "FX_IDC:CNYVND", KRWVND: "FX_IDC:KRWVND", SGDVND: "FX_IDC:SGDVND",
@@ -221,7 +223,7 @@ export const TV = {
 /* Ghi chú phân nhóm — góc nhìn chuyên viên chứng khoán / kinh doanh ngoại tệ VN */
 export const SUBDESC = {
   "Việt Nam":
-    "Điểm xuất phát của mọi phiên. VN-Index cho bức tranh chung; VN30 cho biết nhóm vốn hoá lớn có đang gánh chỉ số hay không — hai chỉ số lệch pha là dấu hiệu dòng tiền phân hoá.",
+    "Điểm xuất phát của mọi phiên — chỉ số chung của toàn thị trường HOSE.",
   "Châu Á — Nhật Bản & Hồng Kông":
     "Hai chỉ số dẫn dắt tâm lý châu Á, giao dịch cùng khung giờ HOSE. Nikkei phản ánh khẩu vị rủi ro risk-on/risk-off khu vực (yen, carry trade); Hang Seng là cầu nối vốn quốc tế vào Trung Quốc và thường dẫn dắt phản ứng của nhà đầu tư nước ngoài với A-share.",
   "Châu Á — Trung Quốc":
