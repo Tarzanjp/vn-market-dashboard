@@ -17,6 +17,15 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+# Windows console mặc định dùng codepage cp932/1252 (không phải UTF-8), nên các
+# dòng log tiếng Việt có dấu sẽ crash UnicodeEncodeError khi chạy trực tiếp
+# (python automation/daily_update.py) trên máy Windows — ép stdout/stderr sang
+# UTF-8 để an toàn ở mọi môi trường (GitHub Actions ubuntu vốn đã UTF-8 nên
+# không đổi hành vi ở đó).
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "public" / "data"
 LIVE_JSON = DATA / "live.json"
@@ -447,8 +456,18 @@ def merge_grok_fill(live: dict, grok: dict) -> dict:
     - API quality == live  → không bị Grok ghi đè
     - Còn lại (stale/missing/proxy) → Grok được điền, quality = proxy (hoặc theo file)
     - margin / vnYields / breadth / usdVnd / foreign: Grok điền nếu có
+    - Chỉ áp dụng khi grok-fill.json thực sự là của phiên hôm nay (asof khớp
+      live["asof"]) — nếu không, file đã cũ (ví dụ agent WebSearch không chạy
+      được, để lại grok-fill.json từ nhiều ngày trước) thì bỏ qua hoàn toàn,
+      tránh lặp lại vô hạn cùng một số liệu cũ dưới nhãn "proxy" mỗi ngày.
     """
     if not grok:
+        return live
+
+    grok_asof = grok.get("asof")
+    grok_is_current = bool(grok_asof) and grok_asof == live.get("asof")
+    if not grok_is_current:
+        log(f"grok-fill.json asof={grok_asof} khác phiên hôm nay ({live.get('asof')}) — bỏ qua, không tái sử dụng.")
         return live
 
     gq = grok.get("quality") if isinstance(grok.get("quality"), dict) else {}
@@ -456,7 +475,7 @@ def merge_grok_fill(live: dict, grok: dict) -> dict:
     src = grok.get("sourceNotes") or grok.get("notes") or []
     if isinstance(src, list):
         notes.extend([f"Grok: {s}" for s in src if s])
-    notes.append(f"Merged public/data/grok-fill.json asof={grok.get('asof')}")
+    notes.append(f"Merged public/data/grok-fill.json asof={grok_asof}")
 
     def api_live(field: str) -> bool:
         return (live.get("quality") or {}).get(field) == "live"
@@ -482,10 +501,7 @@ def merge_grok_fill(live: dict, grok: dict) -> dict:
             live.setdefault("quality", {})[field] = gq.get(field) or "proxy"
             log(f"grok fill (API stale) → {field}")
 
-    # asof: giữ API trade date; nếu chưa có thì lấy Grok
-    if grok.get("asof") and not live.get("asof"):
-        live["asof"] = grok["asof"]
-    live["grokFillAsof"] = grok.get("asof")
+    live["grokFillAsof"] = grok_asof
     live["notes"] = notes
     return live
 
@@ -506,6 +522,14 @@ def build_live(prev: dict, grok: dict | None = None) -> dict:
 
     # trade date: prefer VN index session date else ICT today
     trade_date = (vn_idx or {}).get("date") or now_ict().date().isoformat()
+
+    # margin / vnYields / breadth / usdVnd / foreign: chưa có free API — luôn là
+    # bản sao của phiên trước cho tới khi Grok/agent điền được số thật của hôm
+    # nay (xem merge_grok_fill). Đánh dấu rõ "stale" thay vì im lặng mang
+    # nguyên trạng thái quality cũ theo, để history_row_from_live() không ghi
+    # nhầm các phiên này là "proxy" mới khi thực ra chỉ là số liệu cũ lặp lại.
+    for field in ("vnYields", "margin", "breadth", "usdVnd", "foreign"):
+        quality[field] = "stale" if prev.get(field) else "missing"
 
     live = {
         "schemaVersion": "1.0",

@@ -8,7 +8,7 @@
    calls initMarketDashboard(LIVE) once after the shell is mounted
    and live data has been fetched.
    ============================================================ */
-export function initMarketDashboard(LIVE) {
+export function initMarketDashboard(LIVE, HISTORY) {
   let ASOF = (LIVE && LIVE.asof) ? LIVE.asof : "2026-08-07";
   const WINDOWS = [25, 15, 10, 6]; // các chu kỳ tính hệ số ADR (phiên)
 
@@ -198,23 +198,65 @@ export function initMarketDashboard(LIVE) {
         all: { a: adv, d: dec, u: unch, ceil, floor, total },
         vn100: { a: a100, d: d100, u: u100, total: 100 },
         vn30: { a: a30, d: d30, u: u30, total: 30 },
-        gtgd: Math.max(6800, gtgd)
+        gtgd: Math.max(6800, gtgd),
+        real: false
       });
     }
 
+    /* Ghép dữ liệu thật đã tích luỹ từ public/data/history/*.jsonl (xem useHistory()).
+       Chỉ những phiên có sẵn số liệu thật mới được ghép đè lên chuỗi mẫu — các phiên
+       trước khi hệ thống bắt đầu ghi nhận (trước 2026-08-07) vẫn giữ nguyên mẫu để
+       biểu đồ không bị trống, và luôn được đánh dấu real:false để không hiển thị
+       nhầm là số liệu thật. */
+    const byDate = new Map(rows.map(r => [r.date, r]));
+    (HISTORY || []).forEach(h => {
+      if (h.vnIndex == null) return;
+      const row = byDate.get(h.date);
+      if (!row) return;
+      const pct = h.vnIndexPct != null ? h.vnIndexPct : 0;
+      row.close = h.vnIndex;
+      row.pct = pct;
+      row.chg = row.close * (pct / 100) / (1 + pct / 100);
+      row.real = true;
+      const breadthReal = h.breadth && h.quality &&
+        (h.quality.breadth === "live" || h.quality.breadth === "proxy");
+      row.breadthReal = !!breadthReal;
+      if (breadthReal) {
+        const a = h.breadth.a || 0, d = h.breadth.d || 0, u = h.breadth.u || 0;
+        const total = a + d + u || row.all.total;
+        row.all = { a, d, u, ceil: row.all.ceil, floor: row.all.floor, total };
+        if (h.breadth.gtgd != null) row.gtgd = h.breadth.gtgd;
+        // Chưa có nguồn thật cho riêng rổ VN100/VN30 — suy tỷ lệ từ tổng thị trường thật.
+        const a100 = Math.round(a / total * 100), d100 = Math.round(d / total * 100);
+        row.vn100 = { a: a100, d: d100, u: Math.max(0, 100 - a100 - d100), total: 100 };
+        const a30 = Math.round(a / total * 30), d30 = Math.round(d / total * 30);
+        row.vn30 = { a: a30, d: d30, u: Math.max(0, 30 - a30 - d30), total: 30 };
+      }
+    });
+
     const L = rows[N - 1];
-    const br = (LIVE && LIVE.breadth) ? LIVE.breadth : null;
+    const liveBreadthQ = (LIVE && LIVE.quality) ? LIVE.quality.breadth : null;
+    // Chỉ tin LIVE.breadth khi pipeline đánh dấu live/proxy (số mới) — "stale"
+    // nghĩa là daily_update.py chỉ đang mang theo số của phiên trước vì chưa
+    // có nguồn mới, không phải số liệu thật của hôm nay (xem merge_grok_fill).
+    const br = (LIVE && LIVE.breadth && (liveBreadthQ === "live" || liveBreadthQ === "proxy")) ? LIVE.breadth : null;
     if (LIVE && LIVE.vnIndex && LIVE.vnIndex.price != null) {
       const vi = LIVE.vnIndex;
       L.date = vi.date || (br && br.date) || L.date;
       L.close = vi.price;
       L.pct = vi.pct != null ? vi.pct : 0;
       L.chg = vi.chg != null ? vi.chg : (vi.prev ? vi.price - vi.prev : 0);
-    } else {
+      L.real = true;
+    } else if (!L.real) {
       L.close = 1768.06; L.pct = 0.19; L.chg = 1768.06 * 0.0019 / 1.0019;
     }
+    L.breadthReal = !!br;
     if (br) {
-      if (br.date) L.date = br.date;
+      // Không dùng br.date đè lên L.date nữa: breadth có thể là dữ liệu cũ
+      // được mang theo nhiều ngày (xem daily_update.py merge_grok_fill) nên
+      // ngày trong đó không đáng tin bằng ngày phiên thật lấy từ vi.date/ASOF
+      // ở trên — nếu không, phiên hôm nay sẽ bị hiển thị trùng ngày với phiên
+      // cũ mà breadth được lấy từ đó.
       if (br.gtgd != null) L.gtgd = br.gtgd;
       if (br.all) {
         L.all = Object.assign({ a: 0, d: 0, u: 0, ceil: 0, floor: 0, total: 0 }, br.all);
@@ -1131,12 +1173,22 @@ export function initMarketDashboard(LIVE) {
   };
   function drawHist() {
     const data = ROWS.slice(-90).reverse();
+    const realCount = data.filter(d => d.real).length;
+    const tag = el("histTag");
+    if (tag) {
+      if (realCount >= data.length) { tag.textContent = "Dữ liệu thật"; tag.className = "dtag dtag-live"; }
+      else if (realCount > 0) { tag.textContent = realCount + "/" + data.length + " phiên thật"; tag.className = "dtag dtag-proxy"; }
+      else { tag.textContent = "Mẫu"; tag.className = "dtag dtag-sample"; }
+    }
     el("histBody").innerHTML = data.map(d => {
       const s = d[scope], tot = s.a + s.d + s.u || 1;
       const cells = WINDOWS.map((w, i) =>
         `<td class="num rt ${hl(s.r[w])}${i === 0 ? ' grp-l' : ''}">${nf(s.r[w], 1)}</td>`).join("");
-      return `<tr>
-        <td class="num" style="color:var(--muted)">${dmyF(d.date)}</td>
+      const dotTitle = !d.real ? "" : d.breadthReal
+        ? "Giá đóng cửa và cơ cấu tăng/giảm đều là dữ liệu thật"
+        : "Giá đóng cửa là dữ liệu thật · cơ cấu tăng/giảm vẫn là ước tính mẫu (chưa có nguồn HOSE breadth miễn phí)";
+      return `<tr${d.real ? "" : ' class="smp"'}>
+        <td class="num" style="color:var(--muted)">${d.real ? `<i class="dot live" title="${esc(dotTitle)}" style="margin-right:5px"></i>` : ''}${dmyF(d.date)}</td>
         <td class="num" style="font-weight:600">${nf(d.close)}</td>
         <td class="num ${cls(d.pct)}">${sgn(d.chg)}</td>
         <td class="num ${cls(d.pct)}">${sgn(d.pct)}%</td>

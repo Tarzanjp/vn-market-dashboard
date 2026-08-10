@@ -3,6 +3,7 @@ import SiteHeader from "../components/layout/SiteHeader.jsx";
 import TickerTape from "../components/layout/TickerTape.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import { useLiveMarketData } from "../hooks/useLiveMarketData.js";
+import { useHistory } from "../hooks/useHistory.js";
 import { initMarketDashboard } from "./dashboardEngine.js";
 import "../styles/tokens.css";
 import "../styles/layout.css";
@@ -10,13 +11,14 @@ import "./dashboard.css";
 
 export default function MarketDashboardApp() {
   const { live, status } = useLiveMarketData();
+  const { rows: history, status: historyStatus } = useHistory();
   const initedRef = useRef(false);
 
   useEffect(() => {
-    if (status !== "ready" || initedRef.current) return;
+    if (status !== "ready" || historyStatus !== "ready" || initedRef.current) return;
     initedRef.current = true;
-    initMarketDashboard(live);
-  }, [status, live]);
+    initMarketDashboard(live, history);
+  }, [status, live, historyStatus, history]);
 
   return (
     <>
@@ -126,7 +128,7 @@ export default function MarketDashboardApp() {
             <section className="panel" style={{ marginTop: 16 }}>
               <div className="p-hd">
                 <h2>90 phiên giao dịch gần nhất</h2>
-                <span className="dtag dtag-sample">Mẫu</span>
+                <span className="dtag dtag-sample" id="histTag">Mẫu</span>
                 <span className="sub">chốt sau ATC · từ 15:00 ICT</span>
                 <span className="key">
                   <i className="k-lo">&lt;70</i><span className="k-lo-t">quá bán sâu</span>

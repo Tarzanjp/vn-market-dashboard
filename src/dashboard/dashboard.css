@@ -352,6 +352,8 @@ html, body{overflow-x:hidden;max-width:100%}
   max-width:100%;
 }
 .hist, .scenarios{min-width:640px}
+.hist tr.smp{opacity:.55}
+.hist tr.smp td{font-style:italic}
 .panel{overflow-x:clip;max-width:100%}
 @media(max-width:900px){
   .panel{overflow-x:auto;-webkit-overflow-scrolling:touch}
