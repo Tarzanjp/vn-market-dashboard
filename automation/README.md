@@ -228,6 +228,44 @@ This is deliberately **not** wired into the twice-daily `run_agent_daily.ps1`
 run — it's a separate, lower-frequency task so it doesn't double the Claude CLI
 usage (and API cost) on every scheduled run.
 
+## News feed ("Tin kinh tế" sidebar)
+
+The dashboard's news rail used to be a hardcoded array in `dashboardEngine.js`
+— real-looking cards that never updated because there was no pipeline behind
+them at all. Fixed with a two-stage pipeline that deliberately avoids the
+WebSearch/WebFetch gap documented above:
+
+1. **`daily_update.py` → `public/data/news-raw.json`** (every run, both
+   GitHub Actions and local — no LLM, just RSS). Fetches free, official feeds:
+   - VnEconomy (`vn-macro`): `chung-khoan.rss`, `tieu-diem.rss`
+   - Federal Reserve (`fed`/`us-macro`): `press_monetary.xml`, `press_all.xml`
+
+   Each feed has its own age/item cap (`NEWS_FEEDS` in `daily_update.py`) —
+   VnEconomy publishes dozens of articles a day, the Fed publishes a handful a
+   month, so a single global cutoff would let VN volume crowd out every Fed
+   item. Output is deduped by title and capped, written as
+   `{generatedAtIct, count, items: [{title, link, description, publishedAt,
+   category, source}]}`.
+
+2. **Local agent → `public/data/news.json`** (only when the local agent runs
+   — see `agent_daily_prompt.md`'s "Task 2"). Reads `news-raw.json`, picks the
+   3–6 most market-relevant items, and writes the full card format: `{date,
+   time, category, impact, title, stats, bullets, vnImpact, tags, source,
+   sourceUrl}`. This step needs Read/Write only — it never calls
+   WebSearch/WebFetch, since the raw facts are already on disk from step 1.
+   That's the whole point of splitting fetch from synthesis: it routes around
+   the confirmed-broken WebSearch/WebFetch gap instead of depending on it.
+
+`run_agent_daily.ps1` runs `daily_update.py --no-grok` **twice** — once
+*before* the agent (so `news-raw.json` is fresh for it to read) and once
+*after* (to merge whatever `grok-fill.json` the agent just wrote). `news.json`
+is only ever produced by the local agent, so it's committed via the PR flow,
+not the GitHub Actions auto-commit — the frontend (`useNews()` hook) shows an
+honest "chưa có tin" placeholder rather than stale/fake content if it's
+missing, and a small "Agent tổng hợp lúc ..." timestamp (from
+`generatedAtIct`) so it's clear how fresh the curated cards are, independent
+of how fresh the raw feed underneath them is.
+
 ## Deploy pipeline
 
 `.github/workflows/deploy.yml` builds the Vite app (`npm ci && npm run build`)

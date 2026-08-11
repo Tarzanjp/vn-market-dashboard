@@ -26,9 +26,21 @@ function Write-Log($msg) {
 
 Write-Log "=== agent daily start ==="
 
-# 1) Claude agent research → public/data/grok-fill.json
-# (output file keeps its historical name — daily_update.py's merge logic reads this one file
-# regardless of whether the xAI Grok API, this local Claude agent, or a human wrote it)
+# 1) Free APIs + RSS news fetch FIRST — this is what produces public/data/news-raw.json,
+#    which the agent (step 2) reads to curate public/data/news.json. Order matters: the
+#    agent must run AFTER this so news-raw.json exists and is fresh, not yesterday's.
+Write-Log "Running daily_update.py --no-grok (pre-agent: free APIs + news-raw.json)"
+try {
+  py (Join-Path $Root "automation\daily_update.py") --no-grok
+  Write-Log "daily_update (pre-agent) OK"
+} catch {
+  Write-Log "daily_update (pre-agent) FAIL: $_"
+  exit 1
+}
+
+# 2) Claude agent research → public/data/grok-fill.json + public/data/news.json
+# (grok-fill.json keeps its historical name — daily_update.py's merge logic reads this one
+# file regardless of whether the xAI Grok API, this local Claude agent, or a human wrote it)
 $promptFile = Join-Path $Root "automation\agent_daily_prompt.md"
 $claude = Get-Command claude -ErrorAction SilentlyContinue
 
@@ -74,23 +86,28 @@ if (-not $claude) {
   }
 }
 
-# 2) Free APIs + merge grok-fill (do NOT call XAI_API_KEY)
-Write-Log "Running daily_update.py --no-grok"
+# 3) Re-run to merge the grok-fill.json the agent just wrote (step 2) into live.json/history.
+#    This is a second, cheap pass over the same free APIs — not wasteful in practice (a few
+#    HTTP GETs) and the only way to get the agent's fresh output merged same-run, since it
+#    didn't exist yet during step 1's pass. (do NOT call XAI_API_KEY)
+Write-Log "Running daily_update.py --no-grok (post-agent: merge grok-fill.json)"
 try {
   py (Join-Path $Root "automation\daily_update.py") --no-grok
-  Write-Log "daily_update OK"
+  Write-Log "daily_update (post-agent) OK"
 } catch {
-  Write-Log "daily_update FAIL: $_"
+  Write-Log "daily_update (post-agent) FAIL: $_"
   exit 1
 }
 
-# 3) Commit to a dated branch and open a PR — never push straight to main from a local run.
+# 4) Commit to a dated branch and open a PR — never push straight to main from a local run.
 $today = Get-Date -Format "yyyy-MM-dd"
 $branch = "agent/data-$today"
 $dataFiles = @(
   "public/data/live.json",
   "public/data/last-run.json",
   "public/data/grok-fill.json",
+  "public/data/news-raw.json",
+  "public/data/news.json",
   "public/data/history",
   "public/data/events.json"
 )

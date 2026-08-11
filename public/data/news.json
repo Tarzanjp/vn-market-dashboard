@@ -1,0 +1,114 @@
+{
+  "generatedAtIct": "2026-08-11T16:00:24+07:00",
+  "items": [
+    {
+      "date": "2026-08-11",
+      "time": "11:59",
+      "category": "vn-macro",
+      "impact": 2,
+      "title": "Thiếu sức mạnh từ trụ, VN-Index giằng co dưới mốc 1.800 điểm",
+      "stats": [],
+      "bullets": [
+        "Trong 10 cổ phiếu vốn hóa lớn nhất VN-Index, chỉ 2 mã tăng nhẹ, 4 mã giảm, còn lại tham chiếu.",
+        "Thiếu sức mạnh dẫn dắt từ nhóm blue-chip khiến chỉ số dao động hẹp trong phiên sáng; nhóm vừa và nhỏ cũng chững đà tăng."
+      ],
+      "vnImpact": "Khi nhóm vốn hóa lớn không dẫn dắt, chỉ số dễ đi ngang dù dòng tiền vẫn có ở nhóm vừa/nhỏ — đáng theo dõi xem thanh khoản có lan tỏa trở lại nhóm trụ hay tiếp tục phân hóa.",
+      "tags": [
+        "VN-Index",
+        "Blue-chip"
+      ],
+      "source": "VnEconomy",
+      "sourceUrl": "https://vneconomy.vn/thieu-suc-manh-tu-tru-vn-index-giang-co-duoi-moc-1800-diem.htm"
+    },
+    {
+      "date": "2026-08-11",
+      "time": "11:16",
+      "category": "vn-macro",
+      "impact": 2,
+      "title": "Khối margin 446 nghìn tỷ: vốn vay không còn chỉ phục vụ giao dịch ngắn hạn",
+      "stats": [
+        [
+          "Dư nợ margin",
+          "446.000 tỷ",
+          "dim"
+        ]
+      ],
+      "bullets": [
+        "Thị trường chứng khoán là nơi dễ vay và huy động vốn, nhưng cũng dễ xảy ra bán hạ đòn bẩy khi sức ép thanh khoản tăng và vòng xoáy siết nợ lan rộng."
+      ],
+      "vnImpact": "Dư nợ margin ở vùng kỷ lục làm thị trường nhạy hơn với các cú sốc thanh khoản — một đợt giảm mạnh bất ngờ có thể kích hoạt bán giải chấp dây chuyền, đúng như rủi ro mà chỉ số rủi ro đòn bẩy trên trang này đang theo dõi.",
+      "tags": [
+        "Margin",
+        "Thanh khoản"
+      ],
+      "source": "VnEconomy",
+      "sourceUrl": "https://vneconomy.vn/khoi-margin-446-nghin-ty-von-vay-khong-con-la-cong-cu-don-bay-cho-giao-dich-ngan-han-thong-thuong.htm"
+    },
+    {
+      "date": "2026-08-11",
+      "time": "11:10",
+      "category": "vn-macro",
+      "impact": 2,
+      "title": "Các quỹ ETF đổi xu hướng, rút ròng trở lại trong tuần qua",
+      "stats": [
+        [
+          "Rút ròng tuần",
+          "94,2 tỷ",
+          "down"
+        ],
+        [
+          "Vào ròng tuần trước",
+          "93,2 tỷ",
+          "dim"
+        ]
+      ],
+      "bullets": [
+        "Trong tuần 3–7/8/2026, nhóm quỹ ETF bị rút ròng khoảng 94,2 tỷ đồng, đảo chiều từ mức vào ròng nhẹ gần 93,2 tỷ đồng tuần trước đó."
+      ],
+      "vnImpact": "Dòng vốn ETF là một kênh vốn ngoại thụ động quan trọng cho nhóm vốn hóa lớn — khi đảo chiều rút ròng, đây là một lực cản thêm cho thanh khoản khối ngoại, cùng chiều với việc chỉ số thiếu sức mạnh từ nhóm trụ phiên này.",
+      "tags": [
+        "Khối ngoại",
+        "ETF"
+      ],
+      "source": "VnEconomy",
+      "sourceUrl": "https://vneconomy.vn/cac-etf-lai-doi-xu-huong-rut-rong-trong-tuan-qua.htm"
+    },
+    {
+      "date": "2026-08-11",
+      "time": "11:18",
+      "category": "geopolitical",
+      "impact": 1,
+      "title": "Trung Quốc tăng tốc mua vàng dự trữ, dự báo còn tiếp tục",
+      "stats": [],
+      "bullets": [
+        "Mục tiêu chiến lược đằng sau việc tích lũy vàng của Trung Quốc được cho là liên quan đến tham vọng quốc tế hóa đồng nhân dân tệ để cạnh tranh với USD."
+      ],
+      "vnImpact": "Xu hướng các ngân hàng trung ương (đặc biệt Trung Quốc) tăng dự trữ vàng nằm trong dòng chảy đa dạng hóa khỏi USD dài hạn — một yếu tố có thể góp phần hạ nhiệt DXY theo thời gian, qua đó gián tiếp giảm áp lực lên tỷ giá USD/VND, dù đây là kênh truyền dẫn chậm và gián tiếp hơn nhiều so với quyết định lãi suất Fed.",
+      "tags": [
+        "Vàng",
+        "DXY",
+        "Trung Quốc"
+      ],
+      "source": "VnEconomy",
+      "sourceUrl": "https://vneconomy.vn/trung-quoc-tang-toc-do-mua-vang-du-tru-duoc-du-bao-tiep-tuc-mua.htm"
+    },
+    {
+      "date": "2026-07-30",
+      "time": "01:00",
+      "category": "fed",
+      "impact": 3,
+      "title": "Federal Reserve công bố tuyên bố FOMC",
+      "stats": [],
+      "bullets": [
+        "Fed phát hành tuyên bố FOMC chính thức ngày 29/7/2026 (giờ Mỹ). Bản tin RSS gốc chỉ có tiêu đề, không kèm tóm tắt nội dung — xem nguồn gốc để biết chi tiết đầy đủ."
+      ],
+      "vnImpact": "Quyết định lãi suất Fed là kênh truyền dẫn quan trọng nhất tới thị trường Việt Nam: qua lợi suất Kho bạc Mỹ, chỉ số DXY, rồi tới tỷ giá USD/VND và dư địa điều hành lãi suất của NHNN.",
+      "tags": [
+        "FOMC",
+        "Lãi suất"
+      ],
+      "source": "Federal Reserve",
+      "sourceUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm"
+    }
+  ]
+}

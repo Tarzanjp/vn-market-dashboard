@@ -4,6 +4,7 @@ import TickerTape from "../components/layout/TickerTape.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import { useLiveMarketData } from "../hooks/useLiveMarketData.js";
 import { useHistory } from "../hooks/useHistory.js";
+import { useNews } from "../hooks/useNews.js";
 import { initMarketDashboard } from "./dashboardEngine.js";
 import "../styles/tokens.css";
 import "../styles/layout.css";
@@ -12,13 +13,14 @@ import "./dashboard.css";
 export default function MarketDashboardApp() {
   const { live, status } = useLiveMarketData();
   const { rows: history, status: historyStatus } = useHistory();
+  const { items: newsItems, generatedAtIct: newsGeneratedAtIct, status: newsStatus } = useNews();
   const initedRef = useRef(false);
 
   useEffect(() => {
-    if (status !== "ready" || historyStatus !== "ready" || initedRef.current) return;
+    if (status !== "ready" || historyStatus !== "ready" || newsStatus !== "ready" || initedRef.current) return;
     initedRef.current = true;
-    initMarketDashboard(live, history);
-  }, [status, live, historyStatus, history]);
+    initMarketDashboard(live, history, { items: newsItems, generatedAtIct: newsGeneratedAtIct });
+  }, [status, live, historyStatus, history, newsStatus, newsItems, newsGeneratedAtIct]);
 
   return (
     <>
@@ -178,10 +180,12 @@ export default function MarketDashboardApp() {
                     </div>
                   </div>
                   <div className="stats" id="projStats" style={{ margin: "16px -20px 0" }} />
-                  <table className="scenarios" style={{ marginTop: 0 }}>
-                    <thead><tr><th>Kịch bản phiên kế tiếp</th><th>Tăng/Giảm</th><th>25</th><th>15</th><th>10</th><th>6</th></tr></thead>
-                    <tbody id="scenBody" />
-                  </table>
+                  <div className="tbl-x">
+                    <table className="scenarios" style={{ marginTop: 0 }}>
+                      <thead><tr><th>Kịch bản phiên kế tiếp</th><th>Tăng/Giảm</th><th>25</th><th>15</th><th>10</th><th>6</th></tr></thead>
+                      <tbody id="scenBody" />
+                    </table>
+                  </div>
                 </div>
               </section>
 
@@ -321,6 +325,7 @@ export default function MarketDashboardApp() {
               <span className="jp-eyebrow">Tin kinh tế</span>
               <h2>Tin vĩ mô tác động</h2>
               <p className="sub">Lãi suất Mỹ · việc làm · lạm phát → kênh truyền dẫn sang Việt Nam</p>
+              <p className="sub" id="newsUpdated" style={{ marginTop: 2 }} />
             </div>
             <div id="newsFeed" />
           </aside>

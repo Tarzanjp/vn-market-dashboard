@@ -14,7 +14,9 @@ import ssl
 import sys
 import urllib.error
 import urllib.request
+import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 # Windows console mặc định dùng codepage cp932/1252 (không phải UTF-8), nên các
@@ -36,6 +38,19 @@ HISTORY_INDEX = HISTORY_DIR / "index.json"
 HISTORY_QUALITY_FIELDS = (
     "vnIndex", "usYields", "vnYields", "dxy", "fgUs",
     "margin", "breadth", "usdVnd", "foreign",
+)
+NEWS_RAW_JSON = DATA / "news-raw.json"
+NEWS_JSON = DATA / "news.json"
+# Nguồn RSS miễn phí, chính chủ — không cần API key. Mỗi feed gắn category để
+# agent tổng hợp tin (xem automation/agent_daily_prompt.md) biết cách gắn nhãn.
+# maxAgeDays/maxItems áp riêng từng feed — Fed chỉ ra tin vài lần/tháng nên cần
+# cửa sổ dài hơn nhiều so với báo VN (ra hàng chục tin/ngày), nếu dùng chung
+# một ngưỡng thì tin Fed luôn bị tin VN lấn át hoàn toàn khỏi top theo ngày.
+NEWS_FEEDS = (
+    ("vn-macro", "VnEconomy — Chứng khoán", "https://vneconomy.vn/chung-khoan.rss", 4, 8),
+    ("vn-macro", "VnEconomy — Tiêu điểm", "https://vneconomy.vn/tieu-diem.rss", 4, 6),
+    ("fed", "Federal Reserve — Monetary Policy", "https://www.federalreserve.gov/feeds/press_monetary.xml", 30, 4),
+    ("us-macro", "Federal Reserve — All Press Releases", "https://www.federalreserve.gov/feeds/press_all.xml", 30, 4),
 )
 
 ICT = timezone(timedelta(hours=7))
@@ -273,6 +288,83 @@ def fetch_dxy(prev: dict) -> tuple[float | None, str]:
         log(f"DXY OK = {q['price']}")
         return q["price"], now_ict().isoformat()
     return prev.get("dxy"), prev.get("dxyFetchedAt") or ""
+
+
+def _strip_html(s: str) -> str:
+    return re.sub(r"<[^>]+>", " ", s or "").strip()
+
+
+def _parse_rss_items(xml_bytes: bytes, category: str, source_name: str) -> list[dict]:
+    items = []
+    try:
+        root = ET.fromstring(xml_bytes)
+    except ET.ParseError as e:
+        log(f"news RSS parse fail ({source_name}): {e}")
+        return items
+    for item in root.iter("item"):
+        title = (item.findtext("title") or "").strip()
+        link = (item.findtext("link") or "").strip()
+        pub_raw = item.findtext("pubDate") or ""
+        desc = _strip_html(item.findtext("description") or "")
+        if not title:
+            continue
+        try:
+            dt = parsedate_to_datetime(pub_raw)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+        except Exception:
+            continue
+        items.append({
+            "title": re.sub(r"\s+", " ", title),
+            "link": link,
+            "description": re.sub(r"\s+", " ", desc)[:500],
+            "publishedAt": dt.astimezone(timezone.utc).isoformat(),
+            "category": category,
+            "source": source_name,
+        })
+    return items
+
+
+def fetch_news_raw() -> list[dict]:
+    """Kéo tiêu đề tin thô (không tổng hợp/phân tích) từ các feed RSS miễn phí,
+    chính chủ — chỉ dữ liệu xác định (title/date/link/description gốc), không
+    có bước LLM nào ở đây. Việc tổng hợp thành thẻ tin đầy đủ (bảng số liệu,
+    nhận định tác động VN, tag) do agent local đảm nhiệm, đọc từ file này —
+    xem automation/agent_daily_prompt.md. Tách hai bước để phần fetch chạy an
+    toàn trong GitHub Actions (không cần LLM), còn phần tổng hợp chỉ chạy khi
+    agent local (có Bash/Read/Edit thật) thực thi."""
+    all_items = []
+    for category, source_name, url, max_age_days, max_items in NEWS_FEEDS:
+        try:
+            raw = http_get(url, timeout=20)
+        except Exception as e:
+            log(f"news fetch fail ({source_name}): {e}")
+            continue
+        items = _parse_rss_items(raw, category, source_name)
+        cutoff = (now_ict() - timedelta(days=max_age_days)).astimezone(timezone.utc).isoformat()
+        fresh = sorted((it for it in items if it["publishedAt"] >= cutoff),
+                       key=lambda x: x["publishedAt"], reverse=True)[:max_items]
+        all_items.extend(fresh)
+        log(f"news OK ({source_name}): {len(items)} fetched, {len(fresh)} kept")
+
+    seen: dict[str, dict] = {}
+    for it in all_items:
+        key = it["title"].strip().lower()
+        if key not in seen or it["publishedAt"] > seen[key]["publishedAt"]:
+            seen[key] = it
+    result = sorted(seen.values(), key=lambda x: x["publishedAt"], reverse=True)
+    return result
+
+
+def write_news_raw() -> None:
+    items = fetch_news_raw()
+    payload = {
+        "generatedAtIct": now_ict().isoformat(timespec="seconds"),
+        "count": len(items),
+        "items": items,
+    }
+    NEWS_RAW_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    log(f"wrote {NEWS_RAW_JSON.relative_to(ROOT)} ({len(items)} items)")
 
 
 def parse_json_object(raw: str) -> dict:
@@ -694,6 +786,11 @@ def main(skip_fetch: bool = False, auto_grok: bool = True) -> int:
 
     write_outputs(live)
     append_history(live)
+    if not skip_fetch:
+        try:
+            write_news_raw()
+        except Exception as e:
+            log(f"news raw fetch fail (non-fatal): {e}")
     q = live.get("quality") or {}
     live_count = sum(1 for v in q.values() if v == "live")
     proxy_count = sum(1 for v in q.values() if v == "proxy")

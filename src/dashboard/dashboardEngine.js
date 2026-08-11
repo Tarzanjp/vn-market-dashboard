@@ -8,7 +8,7 @@
    calls initMarketDashboard(LIVE) once after the shell is mounted
    and live data has been fetched.
    ============================================================ */
-export function initMarketDashboard(LIVE, HISTORY) {
+export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA) {
   let ASOF = (LIVE && LIVE.asof) ? LIVE.asof : "2026-08-07";
   const WINDOWS = [25, 15, 10, 6]; // các chu kỳ tính hệ số ADR (phiên)
 
@@ -1326,86 +1326,70 @@ export function initMarketDashboard(LIVE, HISTORY) {
   /* ============================================================
      12. TIN VĨ MÔ — Mỹ ⇄ Việt Nam
      ============================================================ */
-  const NEWS = [
-    {
-      cls: "hot", date: "2026-08-07", time: "19:30 ICT", badge: "Việc làm Mỹ", badgeCls: "b-red", hot: true, impact: 3,
-      src2: "BLS",
-      title: "Mỹ bất ngờ mất 23.000 việc làm trong tháng 7",
-      data: [["Thực tế", "−23K", "down"], ["Dự báo", "+80K", "dim"], ["Trước đó", "+20K", "dim"]],
-      bullets: [
-        "Thất nghiệp <b>4,1%</b> (dự báo 4,2%) nhưng giảm chủ yếu do <b>264.000 người rời lực lượng lao động</b>, tỷ lệ tham gia rơi về 61,4% — thấp nhất hơn 5 năm.",
-        "Khu vực công mất <b>53.000</b> việc làm, tư nhân vẫn tăng 30.000.",
-        "Số liệu tháng 5 và 6 bị điều chỉnh giảm tổng cộng <b>103.000</b>; trung bình 3 tháng chỉ còn +20K.",
-        "Thu nhập giờ trung bình <b>+3,2% n/n</b> — thấp nhất kể từ tháng 5/2021, dưới dự báo 3,5%."
-      ],
-      chips: [["Lợi suất TPCP Mỹ giảm", "up"], ["Kỳ vọng Fed tăng lãi suất giảm", "up"], ["Chỉ số DXY giảm", "up"]],
-      vn: "Với thị trường Việt Nam, đây là thông tin <b>tích cực gián tiếp</b>: lương nguội và việc làm yếu làm giảm xác suất Fed tăng lãi suất tháng 9, kéo lợi suất trái phiếu Kho bạc Mỹ và chỉ số DXY xuống, qua đó hạ nhiệt áp lực lên tỷ giá USD/VND đang ở vùng đỉnh lịch sử. Mặt trái là cầu tiêu dùng Mỹ suy yếu — rủi ro cho đơn hàng dệt may, da giày, đồ gỗ và điện tử nửa cuối năm.",
-      src: "BLS Employment Situation · CNBC · Trading Economics"
-    },
-    {
-      cls: "fed", date: "2026-07-29", time: "02:00 ICT", badge: "FOMC", badgeCls: "b-blue", hot: true, impact: 3,
-      src2: "Federal Reserve",
-      title: "Fed giữ 3,50–3,75%, ba phiếu chống đòi TĂNG lãi suất",
-      data: [["Lãi suất", "3,50–3,75%", "flat"], ["Biểu quyết", "9–3", "dim"], ["Lần giữ thứ", "5", "dim"]],
-      bullets: [
-        "Ba chủ tịch khu vực Hammack, Kashkari và Logan bỏ phiếu chống vì muốn <b>tăng 25 bps</b> — lần đầu có 3 phiếu chống cùng một hướng kể từ 2016.",
-        "Chủ tịch mới <b>Kevin Warsh</b> nhấn mạnh sẽ đưa lạm phát về 2% và <b>không dùng forward guidance</b>, khiến thị trường khó đoán hơn.",
-        "Trước báo cáo việc làm, hợp đồng tương lai lãi suất phản ánh xác suất <b>57%</b> Fed tăng lãi suất điều hành trong tháng 9; thị trường nghiêng về 1–2 lần tăng trong năm 2026.",
-        "Dot plot tháng 6: lãi suất cuối 2026 trong khoảng 3,6–4,1%."
-      ],
-      chips: [["Chu kỳ nghiêng về thắt chặt", "down"], ["USD mạnh", "down"], ["Vốn ngoại rút khỏi thị trường mới nổi", "down"]],
-      vn: "Kịch bản Fed <b>tăng</b> thay vì giảm là rủi ro lớn nhất với thị trường Việt Nam nửa cuối 2026: chênh lệch lợi suất VND − USD đang âm sâu ở mọi kỳ hạn, làm chiến lược carry trade kém hấp dẫn và thu hẹp dư địa điều hành nới lỏng của Ngân hàng Nhà nước.",
-      src: "FOMC statement 29/07/2026 · CNBC · U.S. Bank"
-    },
-    {
-      cls: "oil", date: "2026-07-15", time: "", badge: "Lạm phát & giá dầu", badgeCls: "b-violet", hot: false, impact: 2,
-      src2: "Tổng hợp",
-      title: "Lạm phát vẫn trên mục tiêu, giá dầu là biến số chính",
-      data: [["CPI n/n", "≈4,2%", "down"], ["Core PCE", "3,4%", "down"], ["WTI", "≈84 USD", "flat"]],
-      bullets: [
-        "Core PCE tăng từ 3,0% (12/2025) lên <b>3,4%</b> (5/2026), vượt xa mục tiêu 2% suốt hơn 5 năm.",
-        "Dầu WTI đi từ ~57 USD đầu năm lên đỉnh <b>113 USD</b> tháng 4 do xung đột Trung Đông, hiện quanh 84 USD.",
-        "CPI Mỹ tháng 6 giảm <b>0,4% m/m</b> — mức giảm theo tháng mạnh nhất kể từ 4/2020, giúp DXY lùi về vùng 100,8.",
-        "SEP tháng 6: PCE 3,6% và GDP 2,2% cho năm 2026."
-      ],
-      chips: [["Giá dầu tăng kéo CPI hai nước tăng", "down"], ["Giá dầu hạ nhiệt hỗ trợ Fed", "up"]],
-      vn: "Giá dầu là kênh truyền dẫn nhanh nhất tới Việt Nam: nhóm giao thông chiếm tỷ trọng lớn trong rổ CPI và chính đà giảm giá xăng dầu đã kéo CPI tháng 6 và tháng 7 đi xuống. Dầu bật lại trên 100 USD sẽ đồng thời ép lạm phát Việt Nam và đẩy Fed về phía diều hâu.",
-      src: "U.S. Bank · Advisor Perspectives · TBTC Việt Nam"
-    },
-    {
-      cls: "vnm", date: "2026-08-03", time: "09:00 ICT", badge: "Việt Nam", badgeCls: "b-gold", hot: true, impact: 3,
-      src2: "Cục Thống kê",
-      title: "CPI Việt Nam hạ nhiệt nhưng tỷ giá lập đỉnh lịch sử",
-      data: [["CPI 7T", "+4,39%", "down"], ["CPI T7 m/m", "−0,12%", "up"], ["Tỷ giá TT", "25.338", "down"]],
-      bullets: [
-        "CPI tháng 7 <b>giảm 0,12%</b> so với tháng trước, tăng <b>4,45%</b> so với cùng kỳ; bình quân 7 tháng +4,39%, lạm phát cơ bản +4,19%.",
-        "Nhóm giao thông giảm 2,02% là lực kéo chính; nhà ở – điện nước – vật liệu xây dựng vẫn tăng 6,72% n/n.",
-        "Tỷ giá trung tâm lập đỉnh <b>25.338 đồng/USD</b>; thị trường tự do quanh 26.400–26.700.",
-        "Tín dụng 6 tháng tăng <b>7,41%</b>, cả năm dự báo quanh 15%. NHNN bơm ròng hơn 12.300 tỷ đồng tuần cuối tháng 7."
-      ],
-      chips: [["Lạm phát sát trần mục tiêu", "down"], ["Thanh khoản hệ thống dồi dào", "up"], ["Dư địa nới lỏng thu hẹp", "down"]],
-      vn: "Xuất nhập khẩu 7 tháng đạt <b>659,58 tỷ USD (+28,1%)</b> nhưng <b>nhập siêu 20,52 tỷ USD</b>. Nhập siêu kéo dài cộng với USD mạnh là hai lực chính đẩy tỷ giá; nếu Fed thực sự tăng lãi suất, NHNN gần như không còn dư địa hạ lãi suất điều hành để hỗ trợ tăng trưởng.",
-      src: "Cục Thống kê · NHNN · Thời báo Tài chính Việt Nam"
-    }
-  ];
+  /* Tin tức được agent local tổng hợp mỗi ngày từ RSS thật (VnEconomy, Fed) —
+     xem automation/daily_update.py (fetch thô) + automation/agent_daily_prompt.md
+     (tổng hợp thẻ tin). NEWS_DATA truyền vào từ useNews() (MarketDashboardApp.jsx);
+     không còn mảng tin hardcode — tránh lặp lại đúng bug đã sửa: nội dung tĩnh
+     không bao giờ tự cập nhật. category/impact quyết định badge màu gì, không
+     bắt agent phải biết tên class CSS nội bộ. */
+  const CATEGORY_META = {
+    fed: { badge: "Fed / FOMC", badgeCls: "b-blue" },
+    "us-macro": { badge: "Kinh tế Mỹ", badgeCls: "b-red" },
+    "vn-macro": { badge: "Việt Nam", badgeCls: "b-gold" },
+    geopolitical: { badge: "Địa chính trị", badgeCls: "b-violet" },
+    other: { badge: "Vĩ mô", badgeCls: "b-violet" }
+  };
+  const NEWS = (NEWS_DATA && Array.isArray(NEWS_DATA.items) ? NEWS_DATA.items : []).map(it => {
+    const meta = CATEGORY_META[it.category] || CATEGORY_META.other;
+    return {
+      cls: it.category || "other",
+      date: it.date,
+      time: it.time ? it.time + " ICT" : "",
+      badge: meta.badge,
+      badgeCls: meta.badgeCls,
+      hot: (it.impact || 0) >= 3,
+      impact: it.impact || 1,
+      title: it.title,
+      data: Array.isArray(it.stats) ? it.stats : [],
+      bullets: Array.isArray(it.bullets) ? it.bullets : [],
+      chips: (Array.isArray(it.tags) ? it.tags : []).map(t => [t, "flat"]),
+      vn: it.vnImpact || "",
+      src: it.source || "",
+      srcUrl: it.sourceUrl || null
+    };
+  });
 
+  /* Ngày/giờ theo lịch công bố chính thức BLS/Fed (giờ ET quy đổi sang ICT,
+     UTC-4 mùa DST) — đã đối chiếu với bls.gov & federalreserve.gov trước khi
+     đưa vào, không phải suy đoán. time=null khi cơ quan công bố (GSO) chưa
+     có giờ cố định công khai. */
   const CAL = [
-    ["2026/08/12", "CPI Mỹ tháng 7", "Dữ liệu quyết định cho cuộc họp tháng 9 · dự kiến"],
-    ["2026/08/28", "PCE lõi tháng 7", "Thước đo lạm phát Fed ưu tiên · dự kiến"],
-    ["2026/09/04", "Bảng lương phi nông nghiệp tháng 8", "Xác nhận xu hướng việc làm suy yếu · dự kiến"],
-    ["2026/09/15", "Cuộc họp FOMC", "Thị trường định giá khả năng tăng 25 bps · dự kiến"],
-    ["2026/09/30", "GDP & CPI quý III Việt Nam", "Cơ sở cho điều hành tỷ giá quý IV"]
+    ["2026-08-12", "19:30", "CPI Mỹ tháng 7", "Dữ liệu quyết định cho cuộc họp tháng 9 · 8:30 ET"],
+    ["2026-08-28", "19:30", "PCE lõi tháng 7", "Thước đo lạm phát Fed ưu tiên · 8:30 ET"],
+    ["2026-09-04", "19:30", "Bảng lương phi nông nghiệp tháng 8", "Xác nhận xu hướng việc làm suy yếu · 8:30 ET"],
+    ["2026-09-17", "01:00", "Kết quả họp FOMC (15–16/9)", "Thị trường định giá khả năng tăng 25 bps · 14:00 ET ngày 16/9"],
+    ["2026-09-30", null, "GDP & CPI quý III Việt Nam", "Cơ sở cho điều hành tỷ giá quý IV · GSO chưa công bố giờ cụ thể"]
   ];
 
   (function news() {
+    const updEl = el("newsUpdated");
+    if (updEl) {
+      const gen = NEWS_DATA && NEWS_DATA.generatedAtIct;
+      updEl.textContent = gen
+        ? "Agent tổng hợp lúc " + dmyF(gen.slice(0, 10)) + " " + gen.slice(11, 16) + " ICT"
+        : "Chưa có lần tổng hợp nào";
+    }
     const impactBars = n => `<span class="impact" title="Mức tác động ${n}/3">${[1, 2, 3].map(i => `<i class="${i <= n ? 'on' : ''}"></i>`).join("")}</span>`;
     const DAY = 864e5, base = new Date(ASOF + "T00:00:00Z").getTime();
     const isNew = d => d && (base - new Date(d + "T00:00:00Z").getTime()) / DAY <= 3;
     const NEWICON = `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" aria-hidden="true">
       <path d="M6 .8l1.5 3.1 3.4.5-2.5 2.4.6 3.4L6 8.6 2.9 10.2l.6-3.4L1 4.4l3.4-.5L6 .8z" fill="currentColor"/></svg>`;
 
-    let h = NEWS.map(n => {
+    let h = NEWS.length ? NEWS.map(n => {
       const fresh = isNew(n.date);
+      const srcHtml = n.srcUrl
+        ? `<a href="${esc(n.srcUrl)}" target="_blank" rel="noopener">Nguồn: ${n.src}</a>`
+        : `Nguồn: ${n.src}`;
       return `
       <article class="ncard ${n.cls}${n.hot ? ' hot' : ''}">
         <div class="nc-in">
@@ -1416,15 +1400,22 @@ export function initMarketDashboard(LIVE, HISTORY) {
             ${impactBars(n.impact)}
           </div>
           <h3 class="ntitle">${n.title}</h3>
-          <div class="ndata">${n.data.map(([k, v, c]) =>
-            `<div><div class="lb">${k}</div><div class="vl ${c === 'dim' ? '' : c}" ${c === 'dim' ? 'style="color:var(--muted)"' : ''}>${v}</div></div>`).join("")}</div>
+          ${n.data.length ? `<div class="ndata">${n.data.map(([k, v, c]) =>
+            `<div><div class="lb">${k}</div><div class="vl ${c === 'dim' ? '' : c}" ${c === 'dim' ? 'style="color:var(--muted)"' : ''}>${v}</div></div>`).join("")}</div>` : ""}
           <ul class="nlist">${n.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
-          <div class="nchips">${n.chips.map(([t, c]) => `<span class="chipx ${c}">${t}</span>`).join("")}</div>
-          <div class="nvn">${n.vn}</div>
-          <div class="nsrc">Nguồn: ${n.src}</div>
+          ${n.chips.length ? `<div class="nchips">${n.chips.map(([t, c]) => `<span class="chipx ${c}">${t}</span>`).join("")}</div>` : ""}
+          ${n.vn ? `<div class="nvn">${n.vn}</div>` : ""}
+          <div class="nsrc">${srcHtml}</div>
         </div>
       </article>`;
-    }).join("");
+    }).join("") : `
+      <article class="ncard">
+        <div class="nc-in">
+          <div class="nmeta"><span class="badge b-gold">Chưa có tin</span></div>
+          <h3 class="ntitle" style="margin-bottom:6px">Bản tin đang chờ agent tổng hợp phiên tiếp theo</h3>
+          <p class="nvn" style="margin:0">Tin được agent local tổng hợp từ RSS thật (VnEconomy, Federal Reserve) hai lần/ngày. Nếu mục này trống, agent chưa chạy lần nào kể từ khi tính năng này lên site, hoặc lần chạy gần nhất không có tin đủ quan trọng để đưa vào — không hiển thị tin cũ/mẫu để tránh gây hiểu nhầm là dữ liệu mới.</p>
+        </div>
+      </article>`;
 
     h += `
       <article class="ncard">
@@ -1453,9 +1444,15 @@ export function initMarketDashboard(LIVE, HISTORY) {
           <div class="nmeta"><span class="badge b-gold">Lịch vĩ mô</span><span class="ntime">Sự kiện cần theo dõi</span></div>
           <h3 class="ntitle" style="margin-bottom:4px">Những mốc định hình quý III</h3>
           <table class="cal"><tbody>
-            ${CAL.map(([d, e, f]) => `<tr><td class="dt">${d}</td><td class="ev">${e}<span class="ef">${f}</span></td></tr>`).join("")}
+            ${CAL.map(([d, t, e, f]) => {
+              const days = Math.round((new Date(d + "T00:00:00Z").getTime() - base) / DAY);
+              const when = days < 0 ? `${Math.abs(days)} ngày trước`
+                : days === 0 ? "Hôm nay" : days === 1 ? "Ngày mai" : `Còn ${days} ngày`;
+              const whenCls = days >= 0 && days <= 7 ? "soon" : "";
+              return `<tr><td class="dt">${dmyF(d)}${t ? `<br>${t} ICT` : ""}<span class="ef ${whenCls}">${when}</span></td><td class="ev">${e}<span class="ef">${f}</span></td></tr>`;
+            }).join("")}
           </tbody></table>
-          <div class="nsrc">Ngày ghi “dự kiến” là lịch thông lệ, cần đối chiếu lịch chính thức của BLS và Fed.</div>
+          <div class="nsrc">Ngày/giờ đối chiếu lịch công bố chính thức BLS &amp; Fed (bls.gov, federalreserve.gov) — GDP/CPI Việt Nam theo lịch GSO, có thể xê dịch.</div>
         </div>
       </article>`;
 
