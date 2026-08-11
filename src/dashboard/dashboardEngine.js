@@ -360,13 +360,6 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA) {
   tickClock(); setInterval(tickClock, 1000);
   el("asof").textContent = dmyF(ASOF);
   el("boardDate").textContent = "Phiên " + dmyF(LAST.date) + " · HOSE";
-  (function showLiveMeta() {
-    const n = el("liveMeta"); if (!n) return;
-    if (!LIVE) { n.textContent = " · LIVE: chưa có data/live.json (chạy daily_update)."; return; }
-    const q = LIVE.quality || {};
-    const parts = Object.keys(q).map(k => k + ":" + q[k]).join(", ");
-    n.textContent = ` · LIVE asof ${LIVE.asof || "—"} · gen ${LIVE.generatedAtIct || "—"} · ${parts}`;
-  })();
 
   /* ============================================================
      4. TICKER TAPE
@@ -1385,7 +1378,7 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA) {
     const NEWICON = `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" aria-hidden="true">
       <path d="M6 .8l1.5 3.1 3.4.5-2.5 2.4.6 3.4L6 8.6 2.9 10.2l.6-3.4L1 4.4l3.4-.5L6 .8z" fill="currentColor"/></svg>`;
 
-    let h = NEWS.length ? NEWS.map(n => {
+    const cardHtml = n => {
       const fresh = isNew(n.date);
       const srcHtml = n.srcUrl
         ? `<a href="${esc(n.srcUrl)}" target="_blank" rel="noopener">Nguồn: ${n.src}</a>`
@@ -1408,16 +1401,38 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA) {
           <div class="nsrc">${srcHtml}</div>
         </div>
       </article>`;
-    }).join("") : `
+    };
+    const emptyCard = msg => `
       <article class="ncard">
         <div class="nc-in">
           <div class="nmeta"><span class="badge b-gold">Chưa có tin</span></div>
-          <h3 class="ntitle" style="margin-bottom:6px">Bản tin đang chờ agent tổng hợp phiên tiếp theo</h3>
-          <p class="nvn" style="margin:0">Tin được agent local tổng hợp từ RSS thật (VnEconomy, Federal Reserve) hai lần/ngày. Nếu mục này trống, agent chưa chạy lần nào kể từ khi tính năng này lên site, hoặc lần chạy gần nhất không có tin đủ quan trọng để đưa vào — không hiển thị tin cũ/mẫu để tránh gây hiểu nhầm là dữ liệu mới.</p>
+          <p class="nvn" style="margin:0">${msg}</p>
         </div>
       </article>`;
 
-    h += `
+    /* 1. Lịch sự kiện kinh tế Mỹ — CAL tĩnh, đã đối chiếu bls.gov/federalreserve.gov */
+    el("newsSchedule").innerHTML = `
+      <article class="ncard">
+        <div class="nc-in">
+          <table class="cal"><tbody>
+            ${CAL.map(([d, t, e, f]) => {
+              const days = Math.round((new Date(d + "T00:00:00Z").getTime() - base) / DAY);
+              const when = days < 0 ? `${Math.abs(days)} ngày trước`
+                : days === 0 ? "Hôm nay" : days === 1 ? "Ngày mai" : `Còn ${days} ngày`;
+              const whenCls = days >= 0 && days <= 7 ? "soon" : "";
+              return `<tr><td class="dt">${dmyF(d)}${t ? `<br>${t} ICT` : ""}<span class="ef ${whenCls}">${when}</span></td><td class="ev">${e}<span class="ef">${f}</span></td></tr>`;
+            }).join("")}
+          </tbody></table>
+          <div class="nsrc">Ngày/giờ đối chiếu lịch công bố chính thức BLS &amp; Fed (bls.gov, federalreserve.gov) — GDP/CPI Việt Nam theo lịch GSO, có thể xê dịch.</div>
+        </div>
+      </article>`;
+
+    /* 2. Kết quả chỉ số kinh tế Mỹ (NonFarm, thất nghiệp, CPI, FOMC...) — tin agent
+       gắn category fed/us-macro/geopolitical, cộng thẻ giải thích kênh truyền dẫn. */
+    const usResults = NEWS.filter(n => n.cls === "fed" || n.cls === "us-macro" || n.cls === "geopolitical" || n.cls === "other");
+    el("newsResults").innerHTML =
+      (usResults.length ? usResults.map(cardHtml).join("")
+        : emptyCard("Chưa có kết quả chỉ số kinh tế Mỹ nào được agent tổng hợp gần đây.")) + `
       <article class="ncard">
         <div class="nc-in">
           <div class="nmeta"><span class="badge b-violet">Kênh truyền dẫn</span><span class="ntime">Mỹ → Việt Nam</span></div>
@@ -1437,26 +1452,12 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA) {
               </div>`).join("")}
           </div>
         </div>
-      </article>
-
-      <article class="ncard">
-        <div class="nc-in">
-          <div class="nmeta"><span class="badge b-gold">Lịch vĩ mô</span><span class="ntime">Sự kiện cần theo dõi</span></div>
-          <h3 class="ntitle" style="margin-bottom:4px">Những mốc định hình quý III</h3>
-          <table class="cal"><tbody>
-            ${CAL.map(([d, t, e, f]) => {
-              const days = Math.round((new Date(d + "T00:00:00Z").getTime() - base) / DAY);
-              const when = days < 0 ? `${Math.abs(days)} ngày trước`
-                : days === 0 ? "Hôm nay" : days === 1 ? "Ngày mai" : `Còn ${days} ngày`;
-              const whenCls = days >= 0 && days <= 7 ? "soon" : "";
-              return `<tr><td class="dt">${dmyF(d)}${t ? `<br>${t} ICT` : ""}<span class="ef ${whenCls}">${when}</span></td><td class="ev">${e}<span class="ef">${f}</span></td></tr>`;
-            }).join("")}
-          </tbody></table>
-          <div class="nsrc">Ngày/giờ đối chiếu lịch công bố chính thức BLS &amp; Fed (bls.gov, federalreserve.gov) — GDP/CPI Việt Nam theo lịch GSO, có thể xê dịch.</div>
-        </div>
       </article>`;
 
-    el("newsFeed").innerHTML = h;
+    /* 3. Tin kinh tế chứng khoán Việt Nam — category vn-macro */
+    const vnNews = NEWS.filter(n => n.cls === "vn-macro");
+    el("newsVN").innerHTML = vnNews.length ? vnNews.map(cardHtml).join("")
+      : emptyCard("Chưa có tin chứng khoán Việt Nam nào được agent tổng hợp gần đây.");
   })();
 
   /* ============================================================

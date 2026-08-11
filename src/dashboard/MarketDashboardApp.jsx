@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import SiteHeader from "../components/layout/SiteHeader.jsx";
 import TickerTape from "../components/layout/TickerTape.jsx";
-import Footer from "../components/layout/Footer.jsx";
 import { useLiveMarketData } from "../hooks/useLiveMarketData.js";
 import { useHistory } from "../hooks/useHistory.js";
 import { useNews } from "../hooks/useNews.js";
@@ -315,15 +314,24 @@ export default function MarketDashboardApp() {
               <p className="sub">Lãi suất Mỹ · việc làm · lạm phát → kênh truyền dẫn sang Việt Nam</p>
               <p className="sub" id="newsUpdated" style={{ marginTop: 2 }} />
             </div>
-            <div id="newsFeed" />
+
+            <div className="news-section">
+              <h3 className="news-section-hd">1. Lịch sự kiện kinh tế Mỹ</h3>
+              <div id="newsSchedule" />
+            </div>
+
+            <div className="news-section">
+              <h3 className="news-section-hd">2. Kết quả chỉ số kinh tế Mỹ</h3>
+              <div id="newsResults" />
+            </div>
+
+            <div className="news-section">
+              <h3 className="news-section-hd">3. Tin kinh tế chứng khoán Việt Nam</h3>
+              <div id="newsVN" />
+            </div>
           </aside>
         </div>
 
-        <Footer>
-          Thông tin thị trường · Cập nhật tự động hàng ngày (GitHub Actions) · Tham khảo, không phải khuyến nghị đầu tư.
-          Panel gắn nhãn <b>Mẫu</b>/<b>Proxy</b>/<b>Nội suy</b> không dùng như số chốt lệnh.
-          <span id="liveMeta" />
-        </Footer>
       </main>
     </>
   );
