@@ -30,12 +30,6 @@ export default function WorldIndicesApp() {
           </div>
         </div>
 
-        <div className="notice">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#E08A00" strokeWidth="1.4" /><path d="M8 4.6v4.2M8 11.2v.6" stroke="#E08A00" strokeWidth="1.6" strokeLinecap="round" /></svg>
-          <div>
-            <b>Trạng thái dữ liệu.</b> Giá đóng cửa phiên gần nhất là số liệu tham chiếu. Các mục gắn nhãn <span className="t-note">chờ dữ liệu</span> chưa được nối nguồn. Bố cục xếp theo thứ tự quét bảng của chuyên gia CK Việt Nam: <b>Châu Á (JP · Hang Seng trước)</b> → <b>Hoa Kỳ</b> → <b>Châu Âu</b>; hàng hoá ưu tiên dầu → vàng → thép/đồng → nông sản XK.
-          </div>
-        </div>
 
         <div className="toolbar">
           <div className="seg" id="grpSeg" role="group" aria-label="Lọc theo nhóm thị trường">

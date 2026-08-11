@@ -33,15 +33,6 @@ export default function HistoryApp() {
           </div>
         </div>
 
-        <div className="notice">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#E08A00" strokeWidth="1.4" /><path d="M8 4.6v4.2M8 11.2v.6" stroke="#E08A00" strokeWidth="1.6" strokeLinecap="round" /></svg>
-          <div>
-            <b>Về dữ liệu lịch sử.</b> Lợi suất Kho bạc Mỹ và DXY được backfill ~2 năm từ nguồn công khai (US Treasury, Yahoo Finance).
-            VN-Index, lợi suất TPCP VN, dư nợ margin, USD/VND, độ rộng HOSE <b>chưa có nguồn lịch sử miễn phí đáng tin cậy</b> — các chuỗi này
-            tích luỹ dần mỗi ngày kể từ khi tính năng này triển khai, giống cách các panel <span className="dtag dtag-proxy">Proxy</span> khác trên site hoạt động.
-            Sự kiện được ghi nhận thủ công/qua agent nghiên cứu — xem <code>automation/README.md</code>.
-          </div>
-        </div>
 
         <section className="panel" style={{ marginTop: 20 }}>
           <div className="p-hd">

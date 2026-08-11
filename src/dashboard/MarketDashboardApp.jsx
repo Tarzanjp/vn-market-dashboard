@@ -53,18 +53,6 @@ export default function MarketDashboardApp() {
       </section>
 
       <main className="wrap">
-        <div className="notice">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#F5C542" strokeWidth="1.4" /><path d="M8 4.6v4.2M8 11.2v.6" stroke="#F5C542" strokeWidth="1.6" strokeLinecap="round" /></svg>
-          <div>
-            <b>Trạng thái dữ liệu · nhãn nguồn.</b>{" "}
-            <span className="dtag dtag-live">Tham chiếu chốt</span> lợi suất/chỉ số có neo ngày as-of ·{" "}
-            <span className="dtag dtag-est">Nội suy (e)</span> kỳ hạn TPCP ·{" "}
-            <span className="dtag dtag-sample">Mẫu</span> chuỗi phiên &amp; dư nợ margin ·{" "}
-            <span className="dtag dtag-proxy">Proxy</span> F&amp;G Việt Nam, chỉ số rủi ro đòn bẩy.{" "}
-            <b>Auto hàng ngày</b> (GitHub Actions): UST, VN-Index, DXY, F&amp;G US → <code>data/live.json</code>.
-            Margin / độ rộng chi tiết HOSE / TPCP VN: mẫu hoặc snapshot khi có API — luôn đọc <i>as-of</i>.
-          </div>
-        </div>
 
         <div className="layout">
           <div className="col-main">
