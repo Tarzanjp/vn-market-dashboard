@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-10T17:14:45+07:00",
-  "asof": "2026-08-10",
+  "generatedAtIct": "2026-08-11T11:05:28+07:00",
+  "asof": "2026-08-11",
   "quality": {
     "usYields": "live",
     "fgUs": "live",
@@ -16,8 +16,8 @@
   "usYields": [
     {
       "t": "1 năm",
-      "y": 4.01,
-      "d": -0.05,
+      "y": 4.04,
+      "d": 0.03,
       "m": 0.0,
       "yr": 0.0,
       "x": 1,
@@ -25,8 +25,8 @@
     },
     {
       "t": "3 năm",
-      "y": 4.25,
-      "d": -0.06,
+      "y": 4.31,
+      "d": 0.06,
       "m": 0.0,
       "yr": 0.0,
       "x": 3,
@@ -34,8 +34,8 @@
     },
     {
       "t": "5 năm",
-      "y": 4.35,
-      "d": -0.05,
+      "y": 4.41,
+      "d": 0.06,
       "m": 0.0,
       "yr": 0.0,
       "x": 5,
@@ -43,8 +43,8 @@
     },
     {
       "t": "10 năm",
-      "y": 4.65,
-      "d": -0.04,
+      "y": 4.72,
+      "d": 0.07,
       "m": 0.0,
       "yr": 0.0,
       "x": 10,
@@ -52,37 +52,37 @@
     },
     {
       "t": "30 năm",
-      "y": 5.19,
-      "d": -0.03,
+      "y": 5.25,
+      "d": 0.06,
       "m": 0.0,
       "yr": 0.0,
       "x": 30,
       "est": false
     }
   ],
-  "usYieldsAsof": "2026-08-07",
+  "usYieldsAsof": "2026-08-10",
   "fgUs": {
-    "score": 63.7,
+    "score": 64.4,
     "hist": {
       "prev": 63.7,
       "week": 50.7,
       "month": 46.8,
       "year": 58.4
     },
-    "asofEt": "2026-08-10"
+    "asofEt": "2026-08-11"
   },
-  "fgUsFetchedAt": "2026-08-10T17:14:45.819541+07:00",
+  "fgUsFetchedAt": "2026-08-11T11:05:28.630714+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
-    "price": 1776.77,
-    "prev": 1768.06,
-    "chg": 8.71,
-    "pct": 0.49,
-    "date": "2026-08-10"
+    "price": 1779.72,
+    "prev": 1776.77,
+    "chg": 2.95,
+    "pct": 0.17,
+    "date": "2026-08-11"
   },
-  "vnIndexFetchedAt": "2026-08-10T17:14:45.863336+07:00",
-  "dxy": 99.71,
-  "dxyFetchedAt": "2026-08-10T17:14:45.917340+07:00",
+  "vnIndexFetchedAt": "2026-08-11T11:05:28.771251+07:00",
+  "dxy": 99.79,
+  "dxyFetchedAt": "2026-08-11T11:05:28.882640+07:00",
   "vnYields": [
     {
       "t": "10 năm",
@@ -215,9 +215,5 @@
   "notes": [
     "Nguồn free: US Treasury CSV, Yahoo Finance (VN-Index/DXY), CNN Fear & Greed.",
     "Grok fill: public/data/grok-fill.json (proxy) — không ghi đè field quality=live."
-  ],
-  "sourceNotes": [
-    "Tin nhanh chứng khoán — Margin toàn thị trường tăng mạnh, TCBS dẫn đầu, SHS lần đầu lọt Top 10 (Q2/2026): https://www.tinnhanhchungkhoan.vn/margin-toan-thi-truong-tang-manh-tcbs-dan-dau-shs-lan-dau-lot-top-10-hds-tang-gap-doi-du-no-post394381.html",
-    "CafeF — Dư nợ margin toàn thị trường lập kỷ lục gần 450.000 tỷ, loạt CTCK cho vay tỷ USD (21/7/2026): https://cafef.vn/du-no-margin-toan-thi-truong-lap-ky-luc-gan-450000-ty-loat-ctck-cho-vay-ty-usd-188260721001349581.chn"
   ]
 }
