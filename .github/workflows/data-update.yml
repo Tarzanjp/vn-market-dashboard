@@ -49,5 +49,6 @@ jobs:
             public/data/history/*.jsonl
             public/data/history/index.json
             public/data/news-raw.json
+            public/data/world-live.json
           commit_user_name: "github-actions[bot]"
           commit_user_email: "github-actions[bot]@users.noreply.github.com"

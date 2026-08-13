@@ -120,6 +120,7 @@ $dataFiles = @(
   "public/data/grok-fill.json",
   "public/data/news-raw.json",
   "public/data/news.json",
+  "public/data/world-live.json",
   "public/data/history",
   "public/data/events.json"
 )

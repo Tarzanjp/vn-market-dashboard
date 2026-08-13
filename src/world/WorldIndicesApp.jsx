@@ -50,7 +50,7 @@ export default function WorldIndicesApp() {
 
         <p className="tvnote" id="tvNote">
           Biểu đồ trực tiếp do <a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView</a> cung cấp, cập nhật theo thời gian thực.
-          Giá số trong ô là số đóng cửa/tham chiếu gần nhất; biểu đồ nhỏ mới là dữ liệu realtime.
+          Giá số trong ô lấy qua Yahoo Finance, cập nhật định kỳ theo lịch tự động của trang (vài lần/ngày) — không phải theo từng tick.
           Bấm vào ô bất kỳ để mở biểu đồ đầy đủ trên TradingView.
         </p>
 

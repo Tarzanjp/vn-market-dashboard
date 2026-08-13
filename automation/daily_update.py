@@ -41,6 +41,24 @@ HISTORY_QUALITY_FIELDS = (
 )
 NEWS_RAW_JSON = DATA / "news-raw.json"
 NEWS_JSON = DATA / "news.json"
+WORLD_LIVE_JSON = DATA / "world-live.json"
+# Mã Yahoo Finance cho các thị trường trong src/data/worldInstruments.js (trang
+# Thế giới). Chỉ những mã đã có số tĩnh (v khác null) mới liệt kê ở đây — các
+# mã còn lại (nhiều cặp FX chéo, hàng hoá phụ, VCB retail rates) đã ghi rõ
+# "chưa live" trong worldInstruments.js và không có nguồn Yahoo đáng tin, giữ
+# nguyên số tĩnh thay vì cố fetch rồi fail âm thầm.
+WORLD_SYMBOLS = {
+    "VNINDEX": "^VNINDEX.VN",
+    "N225": "^N225", "HSI": "^HSI", "SSEC": "000001.SS", "SZI": "399001.SZ",
+    "KS11": "^KS11", "TWII": "^TWII", "STI": "^STI", "JKSE": "^JKSE",
+    "KLSE": "^KLSE", "SENSEX": "^BSESN", "AXJO": "^AXJO", "NZ50": "^NZ50",
+    "SPX": "^GSPC", "IXIC": "^IXIC", "DJI": "^DJI", "VIX": "^VIX", "RUT": "^RUT",
+    "GDAXI": "^GDAXI", "SX5E": "^STOXX50E", "FTSE": "^FTSE", "FCHI": "^FCHI",
+    "BFX": "^BFX", "GSPTSE": "^GSPTSE", "BVSP": "^BVSP",
+    "DXY": "DX-Y.NYB", "USDVND": "VND=X", "USDJPY": "USDJPY=X",
+    "WTI": "CL=F", "GOLD": "GC=F",
+    "BTC": "BTC-USD",
+}
 # Nguồn RSS miễn phí, chính chủ — không cần API key. Mỗi feed gắn category để
 # agent tổng hợp tin (xem automation/agent_daily_prompt.md) biết cách gắn nhãn.
 # maxAgeDays/maxItems áp riêng từng feed — Fed chỉ ra tin vài lần/tháng nên cần
@@ -365,6 +383,32 @@ def write_news_raw() -> None:
     }
     NEWS_RAW_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     log(f"wrote {NEWS_RAW_JSON.relative_to(ROOT)} ({len(items)} items)")
+
+
+def fetch_world_markets() -> dict:
+    """Giá thật cho trang Thế giới (the-gioi.html), qua cùng Yahoo Finance chart
+    API đang dùng cho VN-Index/DXY. Trước đây trang này chỉ có số tĩnh baked
+    vào src/data/worldInstruments.js (không có automation nào cập nhật), nên
+    Nikkei/HSI/S&P... đứng yên nhiều ngày dù thị trường thật đã biến động."""
+    quotes = {}
+    for wid, sym in WORLD_SYMBOLS.items():
+        q = fetch_yahoo_quote(sym)
+        if q:
+            quotes[wid] = {
+                "price": q["price"], "prev": q["prev"],
+                "chg": q["chg"], "pct": q["pct"], "date": q["date"],
+            }
+        else:
+            log(f"world market {wid} ({sym}) fail")
+    log(f"world markets OK {len(quotes)}/{len(WORLD_SYMBOLS)}")
+    return quotes
+
+
+def write_world_live() -> None:
+    quotes = fetch_world_markets()
+    payload = {"generatedAtIct": now_ict().isoformat(timespec="seconds"), "quotes": quotes}
+    WORLD_LIVE_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    log(f"wrote {WORLD_LIVE_JSON.relative_to(ROOT)} ({len(quotes)} symbols)")
 
 
 def parse_json_object(raw: str) -> dict:
@@ -791,6 +835,10 @@ def main(skip_fetch: bool = False, auto_grok: bool = True) -> int:
             write_news_raw()
         except Exception as e:
             log(f"news raw fetch fail (non-fatal): {e}")
+        try:
+            write_world_live()
+        except Exception as e:
+            log(f"world markets fetch fail (non-fatal): {e}")
     q = live.get("quality") or {}
     live_count = sum(1 for v in q.values() if v == "live")
     proxy_count = sum(1 for v in q.values() if v == "proxy")

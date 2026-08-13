@@ -231,4 +231,32 @@ export function initWorldIndices() {
   // widget đã tự cập nhật realtime bên trong iframe của nó rồi).
 
   render();
+
+  // Số trong worldInstruments.js chỉ là fallback tĩnh (baked lúc viết file).
+  // Ghi đè bằng public/data/world-live.json — do automation/daily_update.py
+  // fetch qua Yahoo Finance cùng cơ chế với VN-Index/DXY của trang chính.
+  // Render tĩnh trước để trang không trắng khi chờ fetch; fetch lỗi/thiếu mã
+  // nào thì tile đó giữ nguyên số tĩnh, không có gì vỡ.
+  loadLiveOverlay();
+
+  async function loadLiveOverlay() {
+    try {
+      const res = await fetch("data/world-live.json", { cache: "no-store" });
+      if (!res.ok) return;
+      const data = await res.json();
+      const quotes = data.quotes || {};
+      let changed = false;
+      MARKETS.forEach(m => {
+        const q = quotes[m.id];
+        if (!q || q.price == null) return;
+        m.v = q.price;
+        m.p = q.pct;
+        m.c = q.chg;
+        changed = true;
+      });
+      if (changed) render();
+    } catch {
+      // Không có mạng / file chưa tồn tại — giữ số tĩnh làm dự phòng, không báo lỗi.
+    }
+  }
 }
