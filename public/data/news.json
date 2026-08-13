@@ -1,24 +1,88 @@
 {
-  "generatedAtIct": "2026-08-11T16:00:24+07:00",
+  "generatedAtIct": "2026-08-13T08:38:47+07:00",
   "items": [
     {
-      "date": "2026-08-11",
-      "time": "11:59",
-      "category": "vn-macro",
+      "date": "2026-08-13",
+      "time": "08:11",
+      "category": "us-macro",
       "impact": 2,
-      "title": "Thiếu sức mạnh từ trụ, VN-Index giằng co dưới mốc 1.800 điểm",
+      "title": "S&P 500 tăng điểm sau báo cáo CPI, giá dầu chững lại do cảnh báo về nhu cầu",
       "stats": [],
       "bullets": [
-        "Trong 10 cổ phiếu vốn hóa lớn nhất VN-Index, chỉ 2 mã tăng nhẹ, 4 mã giảm, còn lại tham chiếu.",
-        "Thiếu sức mạnh dẫn dắt từ nhóm blue-chip khiến chỉ số dao động hẹp trong phiên sáng; nhóm vừa và nhỏ cũng chững đà tăng."
+        "Chỉ số S&P 500 tăng điểm sau khi báo cáo CPI Mỹ được công bố; cổ phiếu liên quan trí tuệ nhân tạo (AI) là điểm sáng của phiên.",
+        "Giá dầu chững lại do cảnh báo về nhu cầu."
       ],
-      "vnImpact": "Khi nhóm vốn hóa lớn không dẫn dắt, chỉ số dễ đi ngang dù dòng tiền vẫn có ở nhóm vừa/nhỏ — đáng theo dõi xem thanh khoản có lan tỏa trở lại nhóm trụ hay tiếp tục phân hóa.",
-      "tags": [
-        "VN-Index",
-        "Blue-chip"
+      "vnImpact": "CPI Mỹ phù hợp kỳ vọng củng cố khả năng Fed giữ nguyên lãi suất, hỗ trợ khẩu vị rủi ro toàn cầu — thường tác động tích cực gián tiếp tới dòng vốn ngoại và tâm lý nhóm cổ phiếu công nghệ/tăng trưởng tại VN, dù độ trễ truyền dẫn còn tùy diễn biến DXY và tỷ giá USD/VND.",
+      "tags": ["S&P 500", "CPI Mỹ", "Fed"],
+      "source": "VnEconomy — Chứng khoán",
+      "sourceUrl": "https://vneconomy.vn/sp-500-tang-diem-sau-bao-cao-cpi-gia-dau-chung-lai-do-canh-bao-ve-nhu-cau.htm"
+    },
+    {
+      "date": "2026-08-13",
+      "time": "07:24",
+      "category": "us-macro",
+      "impact": 2,
+      "title": "Giá vàng lên đỉnh 2 tháng sau báo cáo lạm phát Mỹ, SPDR Gold Trust mua liên tục",
+      "stats": [["Giá vàng thế giới", ">4.400 USD/oz", "up"]],
+      "bullets": [
+        "Giá vàng thế giới vượt 4.400 USD/oz trong phiên thứ Tư (12/8) sau khi số liệu lạm phát Mỹ phù hợp kỳ vọng, củng cố khả năng Fed giữ nguyên lãi suất tại cuộc họp tháng 9.",
+        "Quỹ SPDR Gold Trust tiếp tục mua vào."
       ],
-      "source": "VnEconomy",
-      "sourceUrl": "https://vneconomy.vn/thieu-suc-manh-tu-tru-vn-index-giang-co-duoi-moc-1800-diem.htm"
+      "vnImpact": "Giá vàng tăng cùng kỳ vọng Fed giữ nguyên lãi suất thường đi kèm DXY suy yếu — một yếu tố có thể giảm áp lực lên tỷ giá USD/VND, dù đây là kênh truyền dẫn gián tiếp và còn phụ thuộc diễn biến thực tế của cuộc họp FOMC tháng 9.",
+      "tags": ["Vàng", "Lạm phát Mỹ", "Fed"],
+      "source": "VnEconomy — Chứng khoán",
+      "sourceUrl": "https://vneconomy.vn/gia-vang-len-dinh-2-thang-sau-bao-cao-lam-phat-my-spdr-gold-trust-mua-lien-tuc.htm"
+    },
+    {
+      "date": "2026-08-12",
+      "time": "21:56",
+      "category": "vn-macro",
+      "impact": 2,
+      "title": "VN-Index tiến gần vùng đỉnh cũ 1800-1810 điểm",
+      "stats": [["Vùng kháng cự", "1.800-1.810 điểm", "dim"]],
+      "bullets": [
+        "VN-Index tiến gần vùng đỉnh cũ 1.800-1.810 điểm; một số công ty chứng khoán đưa ra nhận định và khuyến nghị đầu tư cho phiên 13/8."
+      ],
+      "vnImpact": "Vùng 1.800-1.810 là kháng cự kỹ thuật quan trọng từng chặn đà tăng trước đây — cách chỉ số phản ứng quanh vùng này (bứt phá dứt khoát hay quay đầu) là tín hiệu xu hướng ngắn hạn đáng chú ý.",
+      "tags": ["VN-Index", "Kháng cự kỹ thuật"],
+      "source": "VnEconomy — Chứng khoán",
+      "sourceUrl": "https://vneconomy.vn/vn-index-tien-gan-vung-dinh-cu-1800-1810-diem.htm"
+    },
+    {
+      "date": "2026-08-12",
+      "time": "21:55",
+      "category": "vn-macro",
+      "impact": 1,
+      "title": "Nhà đầu tư cá nhân chốt lời bán ròng gần 800 tỷ đồng",
+      "stats": [
+        ["NĐT cá nhân bán ròng", "790,4 tỷ đồng", "down"],
+        ["Bán ròng khớp lệnh", "577,9 tỷ đồng", "down"]
+      ],
+      "bullets": [
+        "Nhà đầu tư cá nhân bán ròng 790,4 tỷ đồng trong phiên, trong đó bán ròng khớp lệnh 577,9 tỷ đồng."
+      ],
+      "vnImpact": "Áp lực chốt lời từ khối cá nhân khi chỉ số tiến gần vùng kháng cự cũ là diễn biến thường thấy — cần theo dõi dòng tiền đối ứng từ khối tự doanh/tổ chức để đánh giá chỉ số có đủ lực vượt kháng cự hay không.",
+      "tags": ["Khối cá nhân", "Bán ròng"],
+      "source": "VnEconomy — Chứng khoán",
+      "sourceUrl": "https://vneconomy.vn/nha-dau-tu-ca-nhan-chot-loi-ban-rong-gan-800-ty-dong.htm"
+    },
+    {
+      "date": "2026-08-12",
+      "time": "16:21",
+      "category": "vn-macro",
+      "impact": 2,
+      "title": "Áp lực đáo hạn trái phiếu gia tăng trong 12 tháng tới, giá trị 242 nghìn tỷ",
+      "stats": [
+        ["Trái phiếu đáo hạn 12 tháng tới", "242 nghìn tỷ đồng", "up"],
+        ["So với 12 tháng gần nhất", "189 nghìn tỷ đồng", "dim"]
+      ],
+      "bullets": [
+        "Tổng giá trị trái phiếu doanh nghiệp đáo hạn trong 12 tháng tới lên tới 242 nghìn tỷ đồng, cao hơn mức 189 nghìn tỷ đồng của 12 tháng gần nhất."
+      ],
+      "vnImpact": "Áp lực đáo hạn trái phiếu tăng có thể siết thanh khoản của các doanh nghiệp phát hành, đặc biệt nhóm bất động sản — rủi ro lan tỏa sang tâm lý nhà đầu tư cổ phiếu liên quan nếu khả năng tái cấu trúc/đảo nợ gặp khó khăn.",
+      "tags": ["Trái phiếu doanh nghiệp", "Đáo hạn nợ"],
+      "source": "VnEconomy — Chứng khoán",
+      "sourceUrl": "https://vneconomy.vn/ap-luc-dao-han-trai-phieu-gia-tang-trong-12-thang-toi-gia-tri-242-nghin-ty.htm"
     },
     {
       "date": "2026-08-11",
@@ -26,89 +90,14 @@
       "category": "vn-macro",
       "impact": 2,
       "title": "Khối margin 446 nghìn tỷ: vốn vay không còn chỉ phục vụ giao dịch ngắn hạn",
-      "stats": [
-        [
-          "Dư nợ margin",
-          "446.000 tỷ",
-          "dim"
-        ]
-      ],
+      "stats": [["Dư nợ margin", "446.000 tỷ", "dim"]],
       "bullets": [
         "Thị trường chứng khoán là nơi dễ vay và huy động vốn, nhưng cũng dễ xảy ra bán hạ đòn bẩy khi sức ép thanh khoản tăng và vòng xoáy siết nợ lan rộng."
       ],
-      "vnImpact": "Dư nợ margin ở vùng kỷ lục làm thị trường nhạy hơn với các cú sốc thanh khoản — một đợt giảm mạnh bất ngờ có thể kích hoạt bán giải chấp dây chuyền, đúng như rủi ro mà chỉ số rủi ro đòn bẩy trên trang này đang theo dõi.",
-      "tags": [
-        "Margin",
-        "Thanh khoản"
-      ],
+      "vnImpact": "Dư nợ margin ở vùng kỷ lục làm thị trường nhạy hơn với các cú sốc thanh khoản — một đợt giảm mạnh bất ngờ có thể kích hoạt bán giải chấp dây chuyền, cùng nhóm rủi ro với áp lực đáo hạn trái phiếu đang gia tăng.",
+      "tags": ["Margin", "Thanh khoản"],
       "source": "VnEconomy",
       "sourceUrl": "https://vneconomy.vn/khoi-margin-446-nghin-ty-von-vay-khong-con-la-cong-cu-don-bay-cho-giao-dich-ngan-han-thong-thuong.htm"
-    },
-    {
-      "date": "2026-08-11",
-      "time": "11:10",
-      "category": "vn-macro",
-      "impact": 2,
-      "title": "Các quỹ ETF đổi xu hướng, rút ròng trở lại trong tuần qua",
-      "stats": [
-        [
-          "Rút ròng tuần",
-          "94,2 tỷ",
-          "down"
-        ],
-        [
-          "Vào ròng tuần trước",
-          "93,2 tỷ",
-          "dim"
-        ]
-      ],
-      "bullets": [
-        "Trong tuần 3–7/8/2026, nhóm quỹ ETF bị rút ròng khoảng 94,2 tỷ đồng, đảo chiều từ mức vào ròng nhẹ gần 93,2 tỷ đồng tuần trước đó."
-      ],
-      "vnImpact": "Dòng vốn ETF là một kênh vốn ngoại thụ động quan trọng cho nhóm vốn hóa lớn — khi đảo chiều rút ròng, đây là một lực cản thêm cho thanh khoản khối ngoại, cùng chiều với việc chỉ số thiếu sức mạnh từ nhóm trụ phiên này.",
-      "tags": [
-        "Khối ngoại",
-        "ETF"
-      ],
-      "source": "VnEconomy",
-      "sourceUrl": "https://vneconomy.vn/cac-etf-lai-doi-xu-huong-rut-rong-trong-tuan-qua.htm"
-    },
-    {
-      "date": "2026-08-11",
-      "time": "11:18",
-      "category": "geopolitical",
-      "impact": 1,
-      "title": "Trung Quốc tăng tốc mua vàng dự trữ, dự báo còn tiếp tục",
-      "stats": [],
-      "bullets": [
-        "Mục tiêu chiến lược đằng sau việc tích lũy vàng của Trung Quốc được cho là liên quan đến tham vọng quốc tế hóa đồng nhân dân tệ để cạnh tranh với USD."
-      ],
-      "vnImpact": "Xu hướng các ngân hàng trung ương (đặc biệt Trung Quốc) tăng dự trữ vàng nằm trong dòng chảy đa dạng hóa khỏi USD dài hạn — một yếu tố có thể góp phần hạ nhiệt DXY theo thời gian, qua đó gián tiếp giảm áp lực lên tỷ giá USD/VND, dù đây là kênh truyền dẫn chậm và gián tiếp hơn nhiều so với quyết định lãi suất Fed.",
-      "tags": [
-        "Vàng",
-        "DXY",
-        "Trung Quốc"
-      ],
-      "source": "VnEconomy",
-      "sourceUrl": "https://vneconomy.vn/trung-quoc-tang-toc-do-mua-vang-du-tru-duoc-du-bao-tiep-tuc-mua.htm"
-    },
-    {
-      "date": "2026-07-30",
-      "time": "01:00",
-      "category": "fed",
-      "impact": 3,
-      "title": "Federal Reserve công bố tuyên bố FOMC",
-      "stats": [],
-      "bullets": [
-        "Fed phát hành tuyên bố FOMC chính thức ngày 29/7/2026 (giờ Mỹ). Bản tin RSS gốc chỉ có tiêu đề, không kèm tóm tắt nội dung — xem nguồn gốc để biết chi tiết đầy đủ."
-      ],
-      "vnImpact": "Quyết định lãi suất Fed là kênh truyền dẫn quan trọng nhất tới thị trường Việt Nam: qua lợi suất Kho bạc Mỹ, chỉ số DXY, rồi tới tỷ giá USD/VND và dư địa điều hành lãi suất của NHNN.",
-      "tags": [
-        "FOMC",
-        "Lãi suất"
-      ],
-      "source": "Federal Reserve",
-      "sourceUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm"
     }
   ]
 }

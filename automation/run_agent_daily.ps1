@@ -13,6 +13,18 @@
 # or bad local run can't silently race/overwrite the Actions pipeline.
 
 $ErrorActionPreference = "Stop"
+
+# Force UTF-8 everywhere before anything else runs. The repo path contains Japanese
+# characters (OneDrive\ドキュメント\...) — without this, child processes (the `claude`
+# CLI in particular) can inherit the system ANSI codepage, mis-decode the path when
+# checking it against --allowedTools' write-path allowlist, and silently fail every
+# Write/Edit with a mojibake'd "not in allowed paths" error (seen in agent-last-run.txt:
+# Task 2 news.json curation completed but the write itself was rejected this way).
+chcp 65001 | Out-Null
+$OutputEncoding = [System.Text.Encoding]::UTF8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$env:PYTHONUTF8 = "1"
+
 $Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 Set-Location $Root
 
