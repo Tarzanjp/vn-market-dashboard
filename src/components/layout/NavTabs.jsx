@@ -23,6 +23,13 @@ export default function NavTabs({ active }) {
         </svg>
         <span>Lịch sử</span>
       </a>
+      <a href="dong-tien-nganh.html" aria-current={active === "sectorFlows" ? "page" : undefined}>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M13.6 8A5.6 5.6 0 1 1 11.8 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+          <path d="M11.6 1.6v2.7h2.7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span>Dòng tiền ngành</span>
+      </a>
     </nav>
   );
 }
