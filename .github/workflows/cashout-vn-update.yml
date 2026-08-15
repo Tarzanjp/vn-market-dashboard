@@ -1,7 +1,13 @@
 # Dòng tiền & Cashout (VN) — fetch riêng vì cần vnstock (+pandas), tách khỏi
 # data-update.yml (cố tình chỉ dùng thư viện chuẩn, xem automation/README.md).
-# Push vào main ở bước cuối sẽ tự kích hoạt deploy.yml (build + deploy Pages),
-# nên trang dong-tien-cashout.html tự cập nhật theo, không cần bước deploy riêng.
+#
+# LƯU Ý: push của git-auto-commit-action dùng GITHUB_TOKEN mặc định — GitHub
+# CỐ TÌNH không cho push bằng GITHUB_TOKEN tự kích hoạt workflow khác (chặn
+# vòng lặp đệ quy), nên nó KHÔNG tự gọi deploy.yml dù deploy.yml có
+# `on: push: branches: [main]`. Vì vậy bước cuối phải chủ động gọi
+# `workflow_dispatch` cho deploy.yml — nếu thiếu bước này, cashout-vn.json
+# được cập nhật trong repo nhưng trang thật trên GitHub Pages vẫn đứng yên
+# (đã kiểm chứng trực tiếp: gh-pages không đổi sau lần chạy đầu không có bước này).
 name: Cashout VN data update
 
 on:
@@ -12,6 +18,7 @@ on:
 
 permissions:
   contents: write
+  actions: write # cần để gọi workflow_dispatch cho deploy.yml ở bước cuối
 
 concurrency:
   group: cashout-vn-update
@@ -36,9 +43,16 @@ jobs:
         run: python automation/vn_cashout/fetch_cashout_data.py
 
       - name: Commit & push snapshot
+        id: autocommit
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "data: cashout VN snapshot (auto)"
           file_pattern: public/data/cashout-vn.json
           commit_user_name: "github-actions[bot]"
           commit_user_email: "github-actions[bot]@users.noreply.github.com"
+
+      - name: Trigger Pages redeploy
+        if: steps.autocommit.outputs.changes_detected == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main

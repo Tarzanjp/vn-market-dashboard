@@ -1,6 +1,15 @@
 # Primary data pipeline: free APIs + optional Grok (XAI_API_KEY) → public/data/live.json
 # This is the system of record for daily data. The local agent (automation/run_agent_daily.ps1)
 # is a manual/backup tool only — it never pushes to main directly, it opens a PR instead.
+#
+# NOTE: git-auto-commit-action pushes using the default GITHUB_TOKEN — GitHub
+# deliberately does not let GITHUB_TOKEN-authored pushes trigger other
+# workflows (anti-recursion guard), so this commit does NOT auto-fire
+# deploy.yml's `on: push` even though deploy.yml watches branch main.
+# Verified directly: past auto-commits here (e.g. 7830277 on 2026-08-14) have
+# no matching "Build and deploy to Pages" run — the site only caught up when
+# a real push happened to follow. The last step below closes that gap by
+# explicitly dispatching deploy.yml.
 name: Daily market data update
 
 on:
@@ -13,6 +22,7 @@ on:
 
 permissions:
   contents: write
+  actions: write # cần để gọi workflow_dispatch cho deploy.yml ở bước cuối
 
 concurrency:
   group: daily-market-update
@@ -39,6 +49,7 @@ jobs:
         run: python automation/daily_update.py
 
       - name: Commit & push snapshot
+        id: autocommit
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "data: daily market snapshot (auto)"
@@ -52,3 +63,9 @@ jobs:
             public/data/world-live.json
           commit_user_name: "github-actions[bot]"
           commit_user_email: "github-actions[bot]@users.noreply.github.com"
+
+      - name: Trigger Pages redeploy
+        if: steps.autocommit.outputs.changes_detected == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
