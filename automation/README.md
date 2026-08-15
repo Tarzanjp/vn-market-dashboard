@@ -266,13 +266,40 @@ missing, and a small "Agent tổng hợp lúc ..." timestamp (from
 `generatedAtIct`) so it's clear how fresh the curated cards are, independent
 of how fresh the raw feed underneath them is.
 
+## Third pipeline: `vn-vnstock-update.yml` (sector flows + cashout)
+
+`public/data/sector-flows.json` (Dòng tiền ngành) and `public/data/cashout-vn.json`
+(Dòng tiền & Cashout) both need `vnstock` (+`pandas`) — a real dependency,
+unlike `daily_update.py`'s stdlib-only design — so they're deliberately kept
+out of `data-update.yml`. Rather than two more separate workflows,
+`.github/workflows/vn-vnstock-update.yml` installs `vnstock` once, runs
+`automation/sector_flows/fetch_sector_flows.py` then
+`automation/vn_cashout/fetch_cashout_data.py` back to back (with a `sleep`
+between them — vnstock's free/guest tier caps at 20 requests/min, and both
+scripts together sit close to that ceiling), and commits both output files in
+one go. Runs weekdays at 15:00 ICT / 17:00 JST (08:00 UTC), right after HOSE
+closes. See `automation/sector_flows/README.md` and
+`automation/vn_cashout/README.md` for what's real data vs. estimated proxy
+vs. no-free-source-available in each.
+
 ## Deploy pipeline
 
 `.github/workflows/deploy.yml` builds the Vite app (`npm ci && npm run build`)
 and publishes `dist/` to the `gh-pages` branch via `peaceiris/actions-gh-pages`
 (`force_orphan: true`, so history on that branch is squashed on every deploy).
-It's triggered on every push to `main`, so a data-only commit from
-`data-update.yml` automatically triggers a fresh rebuild+republish.
+It's declared to trigger on every push to `main` — but in practice **that
+push trigger does not fire for the data workflows' own auto-commits**:
+`git-auto-commit-action` pushes using the default `GITHUB_TOKEN`, and GitHub
+deliberately blocks `GITHUB_TOKEN`-authored pushes from triggering other
+workflows (an anti-recursion guard). This was verified directly — past
+auto-commits had no matching deploy run, so the live site only caught up
+whenever an unrelated real (human-authored) push happened to follow. All
+three data workflows (`data-update.yml`, `vn-vnstock-update.yml`) now close
+that gap explicitly: after a successful `git-auto-commit-action` step
+(guarded on its `changes_detected` output), a final step runs
+`gh workflow run deploy.yml --ref main` to fire the rebuild+republish. If you
+add a fourth data workflow, copy that pattern — don't assume the `push`
+trigger alone is enough.
 
 GitHub Pages must be configured once as **Settings → Pages → Source: Deploy
 from a branch → `gh-pages` / `/(root)`**. Keeping data-fetch and

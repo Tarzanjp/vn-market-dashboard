@@ -6,10 +6,13 @@ Dòng tiền theo ngành (HOSE) — tháng & quý → public/data/sector-flows.j
 Đây là công cụ ĐỘC LẬP với automation/daily_update.py (vốn cố tình chỉ dùng
 thư viện chuẩn Python, xem automation/README.md). Script này cần `vnstock`
 (và pandas đi kèm) để lấy 10 chỉ số ngành ICB cấp 1 do HOSE công bố chính
-thức, qua nguồn VCI mà vnstock bọc lại — KHÔNG chạy trong pipeline tự động
-chính, chạy thủ công khi cần cập nhật.
+thức, qua nguồn VCI mà vnstock bọc lại.
 
-Cài đặt: pip install vnstock
+Chạy tự động hàng ngày cùng automation/vn_cashout/fetch_cashout_data.py
+trong .github/workflows/vn-vnstock-update.yml (một lần cài vnstock, chạy
+nối tiếp 2 script, commit chung). Vẫn chạy tay được nếu cần:
+
+Cài đặt: pip install -r automation/sector_flows/requirements.txt
 Chạy:    py automation/sector_flows/fetch_sector_flows.py
 
 Dữ liệu: giá đóng cửa (close) + khối lượng (volume) hàng ngày của từng chỉ
@@ -28,6 +31,7 @@ from __future__ import annotations
 
 import json
 import sys
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -103,9 +107,13 @@ def build() -> dict:
     log(f"fetch benchmark {BENCHMARK[0]}")
     bench_daily = fetch_history(BENCHMARK[0])
 
+    # Tài khoản khách (guest) của vnstock giới hạn 20 requests/phút — cách
+    # quãng nhẹ giữa các mã để an toàn khi script này chạy nối tiếp cùng
+    # automation/vn_cashout/fetch_cashout_data.py trong cùng một workflow.
     sector_daily = {}
     for sym, name in SECTORS:
         log(f"fetch {sym} ({name})")
+        time.sleep(1.5)
         sector_daily[sym] = fetch_history(sym)
 
     result = {

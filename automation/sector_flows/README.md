@@ -2,8 +2,11 @@
 
 Công cụ độc lập — **không** chạy trong `automation/daily_update.py` (vốn cố
 tình chỉ dùng thư viện chuẩn Python, xem `automation/README.md`). Đây là một
-nhánh riêng vì cần `vnstock` (kéo theo `pandas`), chạy thủ công khi cần cập
-nhật dữ liệu ngành.
+nhánh riêng vì cần `vnstock` (kéo theo `pandas`).
+
+**Tự động:** chạy hàng ngày cùng `automation/vn_cashout/fetch_cashout_data.py`
+trong một workflow chung — `.github/workflows/vn-vnstock-update.yml`
+(15:00 ICT / 17:00 JST, T2–T6). Vẫn chạy tay được khi cần:
 
 ## Cài đặt & chạy
 

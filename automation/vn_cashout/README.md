@@ -3,6 +3,12 @@
 Công cụ độc lập — cần `vnstock` (kéo theo `pandas`), giống `automation/sector_flows/`.
 Không chạy trong `daily_update.py` (cố tình chỉ dùng thư viện chuẩn).
 
+**Tự động:** chạy hàng ngày cùng `automation/sector_flows/fetch_sector_flows.py`
+trong một workflow chung — `.github/workflows/vn-vnstock-update.yml`
+(15:00 ICT / 17:00 JST, T2–T6) — cài `vnstock` một lần, chạy nối tiếp 2
+script, commit chung, trigger deploy chung, thay vì 2 workflow rời rạc.
+Vẫn chạy tay được khi cần:
+
 ## Cài đặt & chạy
 
 ```bash

@@ -1,0 +1,72 @@
+# Gộp mọi thứ cần vnstock (+pandas) vào MỘT workflow — cả sector-flows lẫn
+# cashout đều dùng cùng nguồn (VCI qua vnstock), nên cài đặt 1 lần, chạy nối
+# tiếp 2 script, commit chung 1 lần, trigger deploy 1 lần — thay vì 2 workflow
+# riêng chạy rời rạc (cài vnstock 2 lần, 2 commit, 2 lần trigger deploy).
+#
+# Tách khỏi data-update.yml (cố tình chỉ dùng thư viện chuẩn Python, xem
+# automation/README.md) — đó là pipeline "miễn phí, không phụ thuộc" cho dữ
+# liệu lõi (VN-Index/DXY/lợi suất/tin tức); đây là pipeline riêng cho các
+# trang bổ sung cần vnstock.
+#
+# LƯU Ý: git-auto-commit-action push bằng GITHUB_TOKEN mặc định — GitHub cố
+# tình không cho push bằng GITHUB_TOKEN tự kích hoạt workflow khác (chặn vòng
+# lặp đệ quy), nên bước cuối phải chủ động gọi workflow_dispatch cho
+# deploy.yml (xem ghi chú tương tự trong data-update.yml, đã kiểm chứng trực
+# tiếp là cần thiết — thiếu bước này thì repo có dữ liệu mới nhưng trang live
+# không tự cập nhật).
+name: VN vnstock data update (sector flows + cashout)
+
+on:
+  schedule:
+    # Ngay sau khi HOSE đóng cửa: 15:00 ICT = 17:00 JST = 08:00 UTC (T2–T6)
+    - cron: "0 8 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write # cần để gọi workflow_dispatch cho deploy.yml ở bước cuối
+
+concurrency:
+  group: vn-vnstock-update
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies (dùng chung cho cả 2 script)
+        run: pip install -r automation/vn_cashout/requirements.txt
+
+      - name: Fetch sector-flows snapshot (10 ngành ICB, tháng & quý)
+        run: python automation/sector_flows/fetch_sector_flows.py
+
+      - name: Cách quãng để tránh vượt rate limit vnstock (20 req/phút, tài khoản khách)
+        run: sleep 12
+
+      - name: Fetch cashout snapshot (tổng GTGD, khối ngoại, 5 ngành, 4 ticker)
+        run: python automation/vn_cashout/fetch_cashout_data.py
+
+      - name: Commit & push snapshot
+        id: autocommit
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "data: VN sector-flows + cashout snapshot (auto)"
+          file_pattern: >-
+            public/data/sector-flows.json
+            public/data/cashout-vn.json
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+
+      - name: Trigger Pages redeploy
+        if: steps.autocommit.outputs.changes_detected == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
