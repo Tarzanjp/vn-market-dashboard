@@ -1,0 +1,44 @@
+# Dòng tiền & Cashout (VN) — fetch riêng vì cần vnstock (+pandas), tách khỏi
+# data-update.yml (cố tình chỉ dùng thư viện chuẩn, xem automation/README.md).
+# Push vào main ở bước cuối sẽ tự kích hoạt deploy.yml (build + deploy Pages),
+# nên trang dong-tien-cashout.html tự cập nhật theo, không cần bước deploy riêng.
+name: Cashout VN data update
+
+on:
+  schedule:
+    # Ngay sau khi HOSE đóng cửa: 15:00 ICT = 17:00 JST = 08:00 UTC (T2–T6)
+    - cron: "0 8 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cashout-vn-update
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r automation/vn_cashout/requirements.txt
+
+      - name: Fetch cashout snapshot (VCI via vnstock)
+        run: python automation/vn_cashout/fetch_cashout_data.py
+
+      - name: Commit & push snapshot
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "data: cashout VN snapshot (auto)"
+          file_pattern: public/data/cashout-vn.json
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
