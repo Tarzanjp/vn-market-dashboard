@@ -50,6 +50,7 @@ export default function SectorFlowsApp() {
 
         <div className="toolbar">
           <div className="seg" id="sfFreqSeg" role="group" aria-label="Chọn kỳ">
+            <button data-f="daily" aria-pressed="false">Theo ngày</button>
             <button data-f="monthly" aria-pressed="true">Theo tháng</button>
             <button data-f="quarterly" aria-pressed="false">Theo quý</button>
           </div>

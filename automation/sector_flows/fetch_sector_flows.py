@@ -19,6 +19,11 @@ Dữ liệu: giá đóng cửa (close) + khối lượng (volume) hàng ngày c�
 số ngành, từ nguồn VCI (Vietcap) qua vnstock — đây là chỉ số ngành ICB cấp 1
 HOSE tự tính (không phải rổ tự chọn), lịch sử có từ ~09/2019.
 
+Output có 3 tần suất: monthly, quarterly (resample từ daily, không giới hạn
+số kỳ xuất ra) và daily (mỗi kỳ = 1 phiên, CHỈ xuất DAILY_SHOWN phiên gần
+nhất — xem hằng số ở trên — để tránh file JSON phình to vì lịch sử daily từ
+2022 có ~1.150 phiên × 10 ngành).
+
 Giới hạn cần nói rõ (không bịa số):
 - HOSE gộp Ngân hàng + Chứng khoán + Bảo hiểm chung vào VNFIN (Tài chính) —
   không có chỉ số ngành Ngân hàng riêng công khai qua nguồn này.
@@ -60,7 +65,13 @@ START = "2022-01-01"
 
 # Tham số RRG đơn giản hoá (không phải công thức JdK RS-Ratio/RS-Momentum
 # gốc — xấp xỉ minh bạch, xem hàm rs_ratio_momentum() bên dưới).
-RS_WINDOW = 4  # số kỳ dùng làm nền so sánh (SMA) cho RS-Ratio
+RS_WINDOW = 4  # số kỳ dùng làm nền so sánh (SMA) cho RS-Ratio (monthly/quarterly)
+RS_WINDOW_DAILY = 20  # ~1 tháng giao dịch — nền SMA riêng cho tần suất ngày;
+# RS_WINDOW=4 (4 NGÀY) quá ngắn/nhiễu để dùng làm nền so sánh khi tính theo ngày.
+DAILY_SHOWN = 23  # số phiên gần nhất XUẤT RA JSON cho tần suất ngày (~1 tháng
+# giao dịch) — giữ file nhẹ. RS-Ratio/Momentum vẫn tính trên TOÀN BỘ lịch sử đã
+# fetch (từ START) để có đủ nền SMA RS_WINDOW_DAILY phiên trước khi cắt, tránh
+# NaN/méo giá trị ở các phiên đầu cửa sổ xuất ra.
 
 
 def log(msg: str) -> None:
@@ -124,11 +135,13 @@ def build() -> dict:
             "turnover_bn": "Ước tính = Σ(volume × close) mỗi ngày trong kỳ / 1e9 — KHÔNG phải GTGD khớp lệnh thật do HOSE công bố, chỉ dùng so sánh tương đối giữa ngành/kỳ.",
             "return_pct": "% thay đổi giá đóng cửa cuối kỳ so với cuối kỳ trước.",
             "rrg": "Xấp xỉ đơn giản hoá kiểu JdK RS-Ratio/RS-Momentum, không phải công thức gốc — xem docstring rs_ratio_momentum() trong script.",
+            "daily": f"Như monthly/quarterly nhưng mỗi kỳ = 1 phiên (không resample). Chỉ xuất {DAILY_SHOWN} phiên gần nhất (~1 tháng) để giữ file nhẹ — RS-Ratio/Momentum dùng nền SMA {RS_WINDOW_DAILY} phiên riêng (RS_WINDOW={RS_WINDOW} của monthly/quarterly quá ngắn cho tần suất ngày).",
         },
         "sectors": [{"id": sym, "name": name} for sym, name in SECTORS],
         "benchmark": {"id": BENCHMARK[0], "name": BENCHMARK[1]},
         "monthly": [],
         "quarterly": [],
+        "daily": [],
     }
 
     for freq_key, freq_code in (("monthly", "ME"), ("quarterly", "QE")):
@@ -160,6 +173,46 @@ def build() -> dict:
                     "rs_momentum": None if t not in rs_mom.index or pd.isna(rs_mom.loc[t]) else round(float(rs_mom.loc[t]), 2),
                 })
 
+    # --- daily: mỗi kỳ = 1 phiên, không resample (khác monthly/quarterly ở
+    # trên). return_pct/turnover_bn tính theo CÔNG THỨC GIỐNG resample_period
+    # (chỉ khác là "kỳ" = 1 ngày thay vì cuối tháng/quý) — turnover_bn của 1
+    # ngày = turnover riêng ngày đó (không Σ nhiều ngày như monthly/quarterly).
+    def daily_frame(df: pd.DataFrame) -> pd.DataFrame:
+        close = df["close"]
+        turnover_bn = (df["close"] * df["volume"]) / 1e9
+        out = pd.DataFrame({"close": close, "turnover_bn": turnover_bn})
+        out["return_pct"] = out["close"].pct_change() * 100
+        return out
+
+    bench_d = daily_frame(bench_daily)
+    sector_d = {sym: daily_frame(sector_daily[sym]) for sym, _ in SECTORS}
+    # RS-Ratio/Momentum tính 1 lần trên TOÀN BỘ lịch sử mỗi mã (đủ nền SMA
+    # RS_WINDOW_DAILY phiên) — chỉ CẮT phần xuất ra JSON ở bước append bên dưới.
+    rs_daily = {sym: rs_ratio_momentum(sector_d[sym]["close"], bench_d["close"], window=RS_WINDOW_DAILY) for sym, _ in SECTORS}
+
+    shown_days = sorted(bench_d.index)[-DAILY_SHOWN:]
+    for t in shown_days:
+        total_turnover = sum(
+            sector_d[sym]["turnover_bn"].get(t, 0.0) or 0.0 for sym, _ in SECTORS
+        )
+        for sym, name in SECTORS:
+            row = sector_d[sym]
+            if t not in row.index or pd.isna(row.loc[t, "close"]):
+                continue
+            rs_ratio, rs_mom = rs_daily[sym]
+            turnover_bn = float(row.loc[t, "turnover_bn"] or 0.0)
+            result["daily"].append({
+                "period": t.strftime("%Y-%m-%d"),
+                "date": t.strftime("%Y-%m-%d"),
+                "sector": sym,
+                "close": round(float(row.loc[t, "close"]), 2),
+                "return_pct": None if pd.isna(row.loc[t, "return_pct"]) else round(float(row.loc[t, "return_pct"]), 2),
+                "turnover_bn": round(turnover_bn, 1),
+                "turnover_share_pct": round(turnover_bn / total_turnover * 100, 2) if total_turnover else None,
+                "rs_ratio": None if t not in rs_ratio.index or pd.isna(rs_ratio.loc[t]) else round(float(rs_ratio.loc[t]), 2),
+                "rs_momentum": None if t not in rs_mom.index or pd.isna(rs_mom.loc[t]) else round(float(rs_mom.loc[t]), 2),
+            })
+
     return result
 
 
@@ -171,7 +224,7 @@ def main() -> int:
         return 1
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-    log(f"wrote {OUT.relative_to(ROOT)} monthly={len(data['monthly'])} quarterly={len(data['quarterly'])}")
+    log(f"wrote {OUT.relative_to(ROOT)} monthly={len(data['monthly'])} quarterly={len(data['quarterly'])} daily={len(data['daily'])}")
     return 0
 
 

@@ -35,12 +35,18 @@ export function initSectorFlows(data) {
   }
   function hideTooltip() { tooltip.classList.remove("show"); }
 
-  function rowsFor(f) { return data[f]; }
+  // `|| []` phòng khi sector-flows.json cũ (trước khi thêm tần suất "daily")
+  // chưa kịp có field này — tránh vỡ trang trong lúc chờ pipeline chạy lại.
+  function rowsFor(f) { return data[f] || []; }
   function periodsFor(f) { return [...new Set(rowsFor(f).map((r) => r.period))].sort(); }
   function periodLabel(p, f) {
     if (f === "monthly") {
       const [y, m] = p.split("-");
       return "T" + parseInt(m, 10) + "/" + y.slice(2);
+    }
+    if (f === "daily") {
+      const [, m, d] = p.split("-");
+      return d + "/" + m;
     }
     return p.replace("-", " ");
   }
@@ -74,10 +80,14 @@ export function initSectorFlows(data) {
   }
 
   /* ============ Heatmap ============ */
+  // Hàng = kỳ (mới nhất trên cùng), cột = ngành — xem CLAUDE.md: không đổi
+  // thứ tự dữ liệu gốc (grouped/periodsFor vẫn sort tăng dần), chỉ đảo chiều
+  // mảng hiển thị (`rows`) để tránh look-ahead/off-by-one khi tính maxAbs.
   function renderHeat() {
     const { periods, bySector } = grouped(freq);
     const windowN = freq === "monthly" ? 24 : periods.length;
-    const shown = periods.slice(-windowN);
+    const shown = periods.slice(-windowN); // tăng dần (cũ → mới) — dùng để tính range/maxAbs
+    const rows = [...shown].reverse(); // mới → cũ, thứ tự hiển thị theo hàng
 
     let maxAbs = 0.0001;
     data.sectors.forEach((s) => shown.forEach((p) => {
@@ -91,33 +101,41 @@ export function initSectorFlows(data) {
       return (lb?.turnover_share_pct || 0) - (la?.turnover_share_pct || 0);
     });
 
+    // dd/mm/yyyy từ field "date" (ngày cuối kỳ thật) đã có sẵn trong JSON —
+    // rõ ràng hơn nhãn viết tắt "T8/26" dùng ở các biểu đồ khác của trang.
+    function dateLabel(p) {
+      for (const s of data.sectors) {
+        const r = bySector[s.id][p];
+        if (r && r.date) {
+          const [y, m, d] = r.date.split("-");
+          return `${d}/${m}/${y}`;
+        }
+      }
+      return periodLabel(p, freq);
+    }
+
     const table = el("sfHeatTable");
     table.innerHTML = "";
     const thead = document.createElement("thead");
     const htr = document.createElement("tr");
     htr.appendChild(document.createElement("th"));
-    shown.forEach((p) => {
+    order.forEach((s) => {
       const th = document.createElement("th");
-      th.textContent = periodLabel(p, freq);
+      th.title = s.name + " (" + s.id + ")";
+      th.textContent = SECTOR_SHORT[s.id] || s.id;
       htr.appendChild(th);
     });
     thead.appendChild(htr);
     table.appendChild(thead);
 
     const tbody = document.createElement("tbody");
-    order.forEach((s) => {
+    rows.forEach((p) => {
       const tr = document.createElement("tr");
       const th = document.createElement("th");
-      const nameSpan = document.createElement("span");
-      nameSpan.textContent = s.name;
-      const codeSpan = document.createElement("span");
-      codeSpan.className = "sf-code";
-      codeSpan.textContent = s.id;
-      th.appendChild(nameSpan);
-      th.appendChild(codeSpan);
+      th.textContent = dateLabel(p);
       tr.appendChild(th);
 
-      shown.forEach((p) => {
+      order.forEach((s) => {
         const r = bySector[s.id][p];
         const td = document.createElement("td");
         td.className = "sf-cell";
@@ -128,7 +146,7 @@ export function initSectorFlows(data) {
             ? mixColor("var(--surface-2)", "var(--tang)", Math.min(Math.abs(t), 1))
             : mixColor("var(--surface-2)", "var(--giam)", Math.min(Math.abs(t), 1));
           const info = {
-            name: s.name, code: s.id, period: periodLabel(p, freq),
+            name: s.name, code: s.id, period: dateLabel(p),
             ret: r.return_pct, turn: r.turnover_bn, share: r.turnover_share_pct,
           };
           td.addEventListener("pointerenter", (e) => showHeatTip(e, info));
@@ -145,7 +163,7 @@ export function initSectorFlows(data) {
     });
     table.appendChild(tbody);
 
-    el("sfHeatRange").textContent = periodLabel(shown[0], freq) + " → " + periodLabel(shown[shown.length - 1], freq);
+    el("sfHeatRange").textContent = dateLabel(shown[shown.length - 1]) + " → " + dateLabel(shown[0]);
     el("sfHeatMin").textContent = "−" + maxAbs.toFixed(1) + "%";
     el("sfHeatMax").textContent = "+" + maxAbs.toFixed(1) + "%";
   }
@@ -446,12 +464,16 @@ export function initSectorFlows(data) {
 
     const monthlyPeriods = periodsFor("monthly");
     const quarterlyPeriods = periodsFor("quarterly");
+    const dailyPeriods = periodsFor("daily");
     const meta = el("sfMetaRow");
     meta.innerHTML = "";
     [
       "10 ngành ICB · benchmark " + data.benchmark.name,
       monthlyPeriods.length + " tháng dữ liệu (" + periodLabel(monthlyPeriods[0], "monthly") + " → " + periodLabel(monthlyPeriods[monthlyPeriods.length - 1], "monthly") + ")",
       quarterlyPeriods.length + " quý (" + periodLabel(quarterlyPeriods[0], "quarterly") + " → " + periodLabel(quarterlyPeriods[quarterlyPeriods.length - 1], "quarterly") + ")",
+      ...(dailyPeriods.length
+        ? [dailyPeriods.length + " phiên gần nhất (" + periodLabel(dailyPeriods[0], "daily") + " → " + periodLabel(dailyPeriods[dailyPeriods.length - 1], "daily") + ")"]
+        : []),
     ].forEach((t) => {
       const span = document.createElement("span");
       span.textContent = t;
