@@ -33,7 +33,9 @@ overwrite the Actions pipeline.
    - DXY (US Dollar Index) via Yahoo Finance
    - CNN Fear & Greed Index
 2. **Optional xAI Grok API fill** — only if `XAI_API_KEY` is set — for fields the
-   free sources can't provide: `margin`, `vnYields`, `breadth`, `usdVnd`, `foreign`.
+   free sources can't provide: `margin`, `vnYields`, `breadth`, `usdVnd`, `foreign`,
+   `proprietary` (tự doanh net flow — consumed by the Cashout page's own
+   pipeline, see `automation/vn_cashout/README.md`).
 3. **Merge `public/data/grok-fill.json`** — a human- or agent-edited file (see
    below) — into whatever the API calls produced.
 4. **Writes `public/data/live.json`** (the file the React app fetches at
@@ -53,7 +55,7 @@ py automation/apply_grok_fill.py         # merge public/data/grok-fill.json only
 | Field | If the free API already marked it `live` | Otherwise |
 |--|--|--|
 | `usYields`, `vnIndex`, `dxy`, `fgUs` | **Never overwritten** by Grok | Grok fills it in, `quality=proxy` |
-| `margin`, `vnYields`, `breadth`, `usdVnd`, `foreign` | *(no free API exists for these)* | Grok fills it in, `quality=proxy` |
+| `margin`, `vnYields`, `breadth`, `usdVnd`, `foreign`, `proprietary` | *(no free API exists for these)* | Grok fills it in, `quality=proxy` |
 
 The dashboard UI reflects this directly — panels are labeled **Mẫu** (sample) /
 **Proxy** / **Nội suy** (interpolated) so numbers are never presented as an

@@ -13,9 +13,22 @@ Nguồn: VCI (qua vnstock) — bulk price_board cho TOÀN BỘ mã HOSE/HNX/UPCO
 trong một lần gọi (GTGD khớp lệnh tích luỹ + khối ngoại mua/bán từng mã),
 cộng lịch sử 5 phiên của vài mã đại diện mỗi ngành để tính vol ratio.
 
+Cũng trích thêm (từ CHÍNH bulk price_board đã gọi — không tốn thêm request):
+- Room ngoại còn lại (match_current_room/match_total_room, đơn vị cổ phiếu)
+  cho 4 mã TICKERS + danh sách "Sắp cạn room ngoại" (top 8 mã thanh khoản đủ
+  lớn, room % thấp nhất, toàn thị trường).
+- Top-of-book bid/ask (giá + khối lượng mức 1) cho 4 mã TICKERS — độ sâu
+  thanh khoản thô, dùng ước tính spread khi cần đặt lệnh khối lượng lớn.
+
 Giới hạn cần nói rõ (không bịa số):
 - "Tự doanh" (proprietary flow) KHÔNG có nguồn dữ liệu miễn phí qua API
-  này — giữ nguyên là trường nhập tay trên trang, script này không điền.
+  này. Thay vào đó, script đọc public/data/live.json (ghi bởi
+  automation/daily_update.py) và lấy field "proprietary" NẾU nó của đúng
+  phiên hôm nay (asof khớp ngày ICT hiện tại) — field đó do agent/Grok
+  nghiên cứu công khai điền, quality=proxy, xem merge_grok_fill() trong
+  daily_update.py. Vì báo chí VN rất hiếm khi công bố số tự doanh theo
+  phiên, trường này sẽ THƯỜNG XUYÊN là None ("missing") — đó là hành vi
+  đúng (thà "—" còn hơn bịa số), không phải lỗi.
 - "5D Avg Vol Ratio" mỗi ngành là ước tính từ khối lượng của 1-3 mã đại
   diện lớn nhất ngành đó (theo GTGD hôm nay), KHÔNG phải toàn bộ ngành.
 """
@@ -32,6 +45,7 @@ from vnstock import Vnstock
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "public" / "data" / "cashout-vn.json"
+LIVE_JSON = ROOT / "public" / "data" / "live.json"
 
 # (tên ngành ICB thật, nhãn hiển thị EN) — khớp với listing.symbols_by_industries()
 SECTOR_DEFS = [
@@ -58,6 +72,42 @@ def num(series):
     return pd.to_numeric(series, errors="coerce").fillna(0)
 
 
+def load_proprietary_from_live(today_ict: str) -> tuple[float | None, str]:
+    """
+    Đọc public/data/live.json (ghi bởi daily_update.py) để lấy field
+    "proprietary" (tự doanh, agent-sourced qua grok-fill.json merge) NẾU nó
+    của đúng phiên hôm nay. Không carry-forward từ ngày khác — tránh lặp lại
+    vô hạn một số cũ dưới nhãn "proxy" mỗi ngày (cùng lý do với
+    merge_grok_fill() trong daily_update.py).
+    Trả về (net_tỷ_VND | None, quality: "proxy" | "missing").
+    """
+    if not LIVE_JSON.exists():
+        log("live.json không tồn tại — proprietaryNetBn = missing")
+        return None, "missing"
+    try:
+        live = json.loads(LIVE_JSON.read_text(encoding="utf-8"))
+    except Exception as e:
+        log(f"live.json đọc lỗi: {e!r} — proprietaryNetBn = missing")
+        return None, "missing"
+
+    if live.get("asof") != today_ict:
+        log(f"live.json asof={live.get('asof')} khác hôm nay ({today_ict}) — proprietaryNetBn = missing")
+        return None, "missing"
+
+    quality = (live.get("quality") or {}).get("proprietary")
+    if quality not in ("proxy", "live"):
+        log(f"live.json proprietary quality={quality!r} — proprietaryNetBn = missing")
+        return None, "missing"
+
+    net = (live.get("proprietary") or {}).get("net")
+    if not isinstance(net, (int, float)):
+        log("live.json proprietary.net không phải số — proprietaryNetBn = missing")
+        return None, "missing"
+
+    log(f"proprietaryNetBn={net} (proxy, từ live.json asof={today_ict})")
+    return float(net), "proxy"
+
+
 def main() -> int:
     vs = Vnstock()
 
@@ -77,6 +127,9 @@ def main() -> int:
     for col in (
         "match_accumulated_value", "match_foreign_buy_value", "match_foreign_sell_value",
         "match_match_price", "listing_ref_price",
+        "match_current_room", "match_total_room",
+        "bid_ask_bid_1_price", "bid_ask_bid_1_volume",
+        "bid_ask_ask_1_price", "bid_ask_ask_1_volume",
     ):
         board[col] = num(board[col])
 
@@ -136,6 +189,12 @@ def main() -> int:
             "vol_ratio_proxy_symbols": top3,
         })
 
+    def room_pct(current, total):
+        return round(float(current) / float(total) * 100, 1) if total and total > 0 else None
+
+    def spread_pct(bid1, ask1):
+        return round((float(ask1) - float(bid1)) / float(bid1) * 100, 2) if bid1 and bid1 > 0 else None
+
     tickers_out = []
     for sym, sector_label in TICKERS:
         row = board[board["listing_symbol"] == sym]
@@ -143,29 +202,71 @@ def main() -> int:
             log(f"ticker {sym} not found in board")
             continue
         r = row.iloc[0]
+        bid1, ask1 = r["bid_ask_bid_1_price"], r["bid_ask_ask_1_price"]
         tickers_out.append({
             "code": sym,
             "sector": sector_label,
             "foreign_buy_bn": round(r["match_foreign_buy_value"] / 1e9, 2),
             "foreign_sell_bn": round(r["match_foreign_sell_value"] / 1e9, 2),
+            "foreign_room_pct": room_pct(r["match_current_room"], r["match_total_room"]),
+            "bid1_price": float(bid1) if bid1 else None,
+            "bid1_vol": float(r["bid_ask_bid_1_volume"]) if bid1 else None,
+            "ask1_price": float(ask1) if ask1 else None,
+            "ask1_vol": float(r["bid_ask_ask_1_volume"]) if ask1 else None,
+            "spread_pct": spread_pct(bid1, ask1),
         })
+
+    # "Sắp cạn room ngoại" — quét TOÀN BỘ board đã fetch sẵn (không gọi thêm
+    # request), lọc mã có room ngoại > 0 (đủ điều kiện sở hữu nước ngoài) và
+    # đủ thanh khoản (≥5 tỷ VND/phiên, tránh mã ít giao dịch làm nhiễu danh
+    # sách), sắp theo room % còn lại tăng dần — nhóm 8 mã foreign investor sắp
+    # hết room mua thêm trên sàn (phải giao dịch thoả thuận nếu muốn mua tiếp).
+    room_board = board.copy()
+    room_board["room_pct_val"] = room_board.apply(
+        lambda r: room_pct(r["match_current_room"], r["match_total_room"]), axis=1
+    )
+    room_board["turnover_bn_val"] = room_board["match_accumulated_value"] / 1000
+    room_board = room_board[
+        room_board["match_total_room"].gt(0) & room_board["room_pct_val"].notna()
+        & room_board["turnover_bn_val"].ge(5)
+    ].sort_values("room_pct_val", ascending=True)
+    foreign_room_watch = [
+        {
+            "code": rr["listing_symbol"],
+            "room_pct": rr["room_pct_val"],
+            "turnover_bn": round(rr["turnover_bn_val"], 1),
+        }
+        for _, rr in room_board.head(8).iterrows()
+    ]
+
+    generated_at = pd.Timestamp.now(tz="Asia/Bangkok")
+    today_ict = generated_at.date().isoformat()
+    proprietary_net_bn, proprietary_quality = load_proprietary_from_live(today_ict)
 
     payload = {
         "schemaVersion": "1.0",
-        "generatedAtIct": pd.Timestamp.now(tz="Asia/Bangkok").isoformat(timespec="seconds"),
+        "generatedAtIct": generated_at.isoformat(timespec="seconds"),
         "source": "VCI (qua thư viện mã nguồn mở vnstock) — bulk price_board toàn bộ mã HOSE/HNX/UPCOM",
         "method": {
             "totalTurnoverBn": "Σ GTGD khớp lệnh tích luỹ toàn bộ mã (accumulated_value), đơn vị tỷ VND — số thật từ snapshot.",
             "foreignNetBn": "Σ (foreign_buy_value − foreign_sell_value) toàn bộ mã — số thật từ snapshot, đơn vị tỷ VND.",
             "sectorValueChg": "GTGD & %thay đổi (bình quân theo GTGD) của các mã thuộc nhóm ngành ICB tương ứng — số thật.",
             "volRatio": "Ước tính từ khối lượng hôm nay / TB 5 phiên của 1-3 mã đại diện lớn nhất ngành (theo GTGD) — KHÔNG phải toàn ngành.",
-            "proprietaryFlow": "Không có nguồn dữ liệu miễn phí qua API này — vẫn là trường nhập tay trên trang, script không điền.",
+            "proprietaryFlow": "Không có nguồn dữ liệu miễn phí qua API này. Lấy từ public/data/live.json field 'proprietary' (agent nghiên cứu công khai, xem daily_update.py merge_grok_fill), CHỈ khi cùng phiên hôm nay — quality=proxy. Không có nguồn cùng ngày → null (quality=missing), KHÔNG bịa/carry-forward.",
             "tickerForeignFlow": "foreign_buy_value / foreign_sell_value thật của từng mã, KHÔNG phải ước tính toàn bộ lệnh mua/bán (không tách được lệnh của NĐT trong nước).",
+            "foreignRoom": "current_room/total_room thật từ price_board (đơn vị cổ phiếu) — room % = current_room/total_room×100. Mã có total_room=0 (không giới hạn sở hữu nước ngoài hoặc thiếu dữ liệu) bị loại khỏi foreignRoomWatch.",
+            "topOfBook": "Giá + khối lượng đặt mua/bán tốt nhất (mức 1) thật từ price_board tại thời điểm snapshot — KHÔNG phải toàn bộ sổ lệnh (chỉ 1 trong 3 mức API trả về). spread_pct = (ask1−bid1)/bid1×100.",
+        },
+        "quality": {
+            "foreignNetBn": "live",
+            "proprietaryNetBn": proprietary_quality,
         },
         "totalTurnoverBn": round(total_turnover_bn, 1),
         "foreignNetBn": round(foreign_net_bn, 1),
+        "proprietaryNetBn": round(proprietary_net_bn, 1) if proprietary_net_bn is not None else None,
         "sectors": sectors_out,
         "tickers": tickers_out,
+        "foreignRoomWatch": foreign_room_watch,
     }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)

@@ -1,12 +1,12 @@
-# Gộp mọi thứ cần vnstock (+pandas) vào MỘT workflow — cả sector-flows lẫn
-# cashout đều dùng cùng nguồn (VCI qua vnstock), nên cài đặt 1 lần, chạy nối
-# tiếp 2 script, commit chung 1 lần, trigger deploy 1 lần — thay vì 2 workflow
-# riêng chạy rời rạc (cài vnstock 2 lần, 2 commit, 2 lần trigger deploy).
+# Gộp mọi thứ cần vnstock (+pandas) vào MỘT workflow — sector-flows, cashout,
+# và vn_insight đều dùng cùng nguồn (VCI qua vnstock), nên cài đặt 1 lần, chạy
+# nối tiếp 3 script, commit chung 1 lần, trigger deploy 1 lần — thay vì nhiều
+# workflow rời rạc (cài vnstock nhiều lần, nhiều commit, nhiều lần trigger deploy).
 #
 # Bước cuối chạy compute_regime.py (automation/vn_regime/, STDLIB-ONLY —
-# không cần cài gì thêm) ngay sau 2 fetch trên, đọc lại chính JSON vừa ghi để
+# không cần cài gì thêm) ngay sau 3 fetch trên, đọc lại chính JSON vừa ghi để
 # tính 4 điểm số regime + tích luỹ vào history/regime-<year>.jsonl. Đặt ở đây
-# thay vì workflow riêng vì nó phụ thuộc trực tiếp vào output của 2 bước
+# thay vì workflow riêng vì nó phụ thuộc trực tiếp vào output của các bước
 # trên trong cùng lần chạy.
 #
 # Tách khỏi data-update.yml (cố tình chỉ dùng thư viện chuẩn Python, xem
@@ -20,12 +20,17 @@
 # deploy.yml (xem ghi chú tương tự trong data-update.yml, đã kiểm chứng trực
 # tiếp là cần thiết — thiếu bước này thì repo có dữ liệu mới nhưng trang live
 # không tự cập nhật).
-name: VN vnstock data update (sector flows + cashout + regime)
+name: VN vnstock data update (sector flows + cashout + insight + regime)
 
 on:
   schedule:
-    # Ngay sau khi HOSE đóng cửa: 15:00 ICT = 17:00 JST = 08:00 UTC (T2–T6)
-    - cron: "0 8 * * 1-5"
+    # 16:30 ICT = 09:30 UTC (T2–T6) — cố tình chạy SAU vòng data-update.yml
+    # buổi chiều (16:00 ICT), không phải ngay lúc HOSE đóng cửa (15:00 ICT)
+    # như trước. fetch_cashout_data.py đọc public/data/live.json để lấy field
+    # "proprietary" (tự doanh, agent-sourced) — merge chỉ nhận khi asof của
+    # live.json khớp đúng phiên hôm nay, nên nếu chạy trước 16:00 ICT thì
+    # live.json luôn là của hôm qua và proprietaryNetBn sẽ luôn "missing".
+    - cron: "30 9 * * 1-5"
   workflow_dispatch:
 
 permissions:
@@ -48,7 +53,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies (dùng chung cho cả 2 script)
+      - name: Install dependencies (dùng chung cho cả 3 script — cùng vnstock+pandas)
         run: pip install -r automation/vn_cashout/requirements.txt
 
       - name: Fetch sector-flows snapshot (10 ngành ICB, tháng & quý)
@@ -57,8 +62,14 @@ jobs:
       - name: Cách quãng để tránh vượt rate limit vnstock (20 req/phút, tài khoản khách)
         run: sleep 12
 
-      - name: Fetch cashout snapshot (tổng GTGD, khối ngoại, 5 ngành, 4 ticker)
+      - name: Fetch cashout snapshot (tổng GTGD, khối ngoại, 5 ngành, 4 ticker, room ngoại)
         run: python automation/vn_cashout/fetch_cashout_data.py
+
+      - name: Cách quãng để tránh vượt rate limit vnstock (20 req/phút, tài khoản khách)
+        run: sleep 12
+
+      - name: Fetch tín hiệu tổ chức (VN30 futures basis + giao dịch cổ đông lớn/nội bộ, ~32 request)
+        run: python automation/vn_insight/fetch_market_insight.py
 
       - name: Compute regime scores + tích luỹ lịch sử (stdlib-only)
         run: python automation/vn_regime/compute_regime.py
@@ -67,10 +78,11 @@ jobs:
         id: autocommit
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "data: VN sector-flows + cashout + regime snapshot (auto)"
+          commit_message: "data: VN sector-flows + cashout + insight + regime snapshot (auto)"
           file_pattern: >-
             public/data/sector-flows.json
             public/data/cashout-vn.json
+            public/data/vn-insight.json
             public/data/regime.json
             public/data/history/regime-*.jsonl
           commit_user_name: "github-actions[bot]"

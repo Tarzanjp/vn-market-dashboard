@@ -469,6 +469,7 @@ def missing_fields_for_grok(live: dict) -> list[str]:
         ("breadth", live.get("breadth")),
         ("usdVnd", live.get("usdVnd")),
         ("foreign", live.get("foreign")),
+        ("proprietary", live.get("proprietary")),
     ]
     for name, val in checklist:
         if q.get(name) == "live":
@@ -532,8 +533,12 @@ def fetch_grok_auto_fill(live: dict) -> dict:
         "Do not override fields already marked live in qualityApi.\n"
         f"API context already fetched:\n{json.dumps(context, ensure_ascii=False)}\n\n"
         "JSON schema keys allowed: schemaVersion, asof, sourceNotes, quality, "
-        "vnIndex, usYields, vnYields, margin, breadth, usdVnd, foreign, fgUs, dxy, notes.\n"
+        "vnIndex, usYields, vnYields, margin, breadth, usdVnd, foreign, proprietary, fgUs, dxy, notes.\n"
         "margin.days[].debt is tỷ đồng. breadth.all has a,d,u,ceil,floor,total.\n"
+        "proprietary is { net, note }: net tự doanh (proprietary trading) mua/bán "
+        "ròng của các CTCK trên HOSE, phiên gần nhất, đơn vị tỷ VND — chỉ điền nếu "
+        "có nguồn công khai, đây là số RẤT hiếm khi báo chí VN công bố nên thường "
+        "nên bỏ trống hơn là đoán.\n"
         "Return pure JSON."
     )
 
@@ -620,7 +625,7 @@ def merge_grok_fill(live: dict, grok: dict) -> dict:
         return (live.get("quality") or {}).get(field) == "live"
 
     # --- fields Grok luôn được điền nếu có (không có free API ổn định) ---
-    for field in ("margin", "vnYields", "breadth", "usdVnd", "foreign"):
+    for field in ("margin", "vnYields", "breadth", "usdVnd", "foreign", "proprietary"):
         if grok.get(field) not in (None, {}, []):
             live[field] = grok[field]
             live.setdefault("quality", {})[field] = gq.get(field) or "proxy"
@@ -667,7 +672,7 @@ def build_live(prev: dict, grok: dict | None = None) -> dict:
     # nay (xem merge_grok_fill). Đánh dấu rõ "stale" thay vì im lặng mang
     # nguyên trạng thái quality cũ theo, để history_row_from_live() không ghi
     # nhầm các phiên này là "proxy" mới khi thực ra chỉ là số liệu cũ lặp lại.
-    for field in ("vnYields", "margin", "breadth", "usdVnd", "foreign"):
+    for field in ("vnYields", "margin", "breadth", "usdVnd", "foreign", "proprietary"):
         quality[field] = "stale" if prev.get(field) else "missing"
 
     live = {
@@ -689,6 +694,7 @@ def build_live(prev: dict, grok: dict | None = None) -> dict:
         "breadth": prev.get("breadth"),
         "usdVnd": prev.get("usdVnd"),
         "foreign": prev.get("foreign"),
+        "proprietary": prev.get("proprietary"),
         "notes": [
             "Nguồn free: US Treasury CSV, Yahoo Finance (VN-Index/DXY), CNN Fear & Greed.",
             "Grok fill: public/data/grok-fill.json (proxy) — không ghi đè field quality=live.",

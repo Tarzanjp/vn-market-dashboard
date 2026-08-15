@@ -11,7 +11,8 @@
     "breadth": "proxy",
     "usdVnd": "proxy",
     "vnYields": "proxy",
-    "foreign": "missing"
+    "foreign": "missing",
+    "proprietary": "missing"
   },
   "vnIndex": {
     "price": 1768.06,
@@ -43,5 +44,9 @@
     { "t": "5 năm", "y": 4.08, "d": 0, "m": 0, "yr": 0, "x": 5, "est": true },
     { "t": "10 năm", "y": 4.54, "d": 0, "m": 0, "yr": 0, "x": 10, "est": false }
   ],
+  "proprietary": {
+    "net": -85,
+    "note": "Ví dụ — tự doanh (proprietary) bán ròng ~85 tỷ VND trên HOSE phiên gần nhất. RẤT hiếm khi có nguồn công khai; thường nên bỏ trống field này (quality=missing) hơn là đoán."
+  },
   "notes": ["File ví dụ — copy thành grok-fill.json sau khi Grok trả JSON thật"]
 }

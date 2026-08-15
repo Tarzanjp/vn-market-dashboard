@@ -32,6 +32,9 @@ for a real example of this happening safely — that's the correct behavior).
    - USD/VND central rate if available
    - VN government bond yields if available
    - Foreign net buy/sell if available
+   - Proprietary trading (tự doanh) net buy/sell on HOSE if publicly reported —
+     this is rare in Vietnamese press (unlike foreign net flow), so it's normal
+     and expected to omit this field most days rather than guess
 3. Write file `public/data/grok-fill.json` as a pure JSON object (UTF-8), following the schema in `public/data/grok-fill.example.json` and `automation/README.md`.
 4. Set `quality.*` to `proxy` for agent-sourced fields. Omit fields you cannot verify.
 5. Put source names/URLs in `sourceNotes`.

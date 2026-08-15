@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import SiteHeader from "../components/layout/SiteHeader.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import { useCashout } from "../hooks/useCashout.js";
+import { useMarketInsight } from "../hooks/useMarketInsight.js";
 import { initCashout } from "./cashoutEngine.js";
 import "../styles/tokens.css";
 import "../styles/layout.css";
@@ -9,13 +10,14 @@ import "./cashout.css";
 
 export default function CashoutApp() {
   const { data, status } = useCashout();
+  const { data: insight, status: insightStatus } = useMarketInsight();
   const initedRef = useRef(false);
 
   useEffect(() => {
-    if (status === "loading" || initedRef.current) return;
+    if (status === "loading" || insightStatus === "loading" || initedRef.current) return;
     initedRef.current = true;
-    initCashout(status === "ready" ? data : null);
-  }, [status, data]);
+    initCashout(status === "ready" ? data : null, insightStatus === "ready" ? insight : null);
+  }, [status, data, insightStatus, insight]);
 
   return (
     <>
@@ -75,32 +77,27 @@ export default function CashoutApp() {
               <div className="co-flow-item" id="flowForeign">
                 <div className="co-flow-item-hd">
                   <span className="name">Foreign Net Flow <span className="vi">(Khối ngoại Ròng)</span></span>
+                  <span className="co-flow-quality" id="flowForeignQ" />
                 </div>
                 <div className="co-flow-current">
                   <span className="amt num" id="flowForeignVal" />
                   <span className="unit">VND Billion</span>
                   <span className="dir-tag" id="flowForeignTag" />
                 </div>
-                <div className="co-flow-form">
-                  <input type="number" id="flowForeignInput" step="10" aria-label="Khối ngoại ròng — cập nhật" />
-                  <button type="button" onClick={() => window.updateFlow("foreign")}>Cập nhật</button>
-                </div>
+                <p className="co-flow-hint" id="flowForeignHint" />
               </div>
 
               <div className="co-flow-item" id="flowProp">
                 <div className="co-flow-item-hd">
                   <span className="name">Proprietary Flow <span className="vi">(Tự doanh)</span></span>
+                  <span className="co-flow-quality" id="flowPropQ" />
                 </div>
                 <div className="co-flow-current">
                   <span className="amt num" id="flowPropVal" />
                   <span className="unit">VND Billion</span>
                   <span className="dir-tag" id="flowPropTag" />
                 </div>
-                <div className="co-flow-form">
-                  <input type="number" id="flowPropInput" step="10" aria-label="Tự doanh — cập nhật" />
-                  <button type="button" onClick={() => window.updateFlow("prop")}>Cập nhật</button>
-                </div>
-                <p className="co-flow-hint">Chưa có nguồn dữ liệu miễn phí cho Tự doanh — luôn cần nhập tay.</p>
+                <p className="co-flow-hint" id="flowPropHint" />
               </div>
             </div>
           </div>
@@ -151,9 +148,48 @@ export default function CashoutApp() {
           </div>
         </section>
 
+        {/* ④ Sắp cạn room ngoại */}
+        <section className="panel" style={{ marginTop: 16 }}>
+          <div className="p-hd">
+            <div>
+              <h2>🚧 Sắp cạn room ngoại</h2>
+              <span className="sub">Mã có room sở hữu nước ngoài còn lại thấp nhất toàn thị trường (thanh khoản ≥5 tỷ VND/phiên) — khối ngoại gần như không thể mua thêm qua khớp lệnh, phải giao dịch thoả thuận nếu muốn mua tiếp.</span>
+            </div>
+          </div>
+          <div className="p-body">
+            <div className="co-table-scroll">
+              <table className="co-table" id="roomWatchTable">
+                <thead>
+                  <tr>
+                    <th>Mã</th>
+                    <th>Room ngoại còn lại</th>
+                    <th>GTGD (tỷ)</th>
+                  </tr>
+                </thead>
+                <tbody id="roomWatchTableBody" />
+              </table>
+            </div>
+          </div>
+        </section>
+
+        {/* ⑤ Tín hiệu tổ chức (VN30) */}
+        <section className="panel" style={{ marginTop: 16 }}>
+          <div className="p-hd">
+            <div>
+              <h2>🏛️ Tín hiệu tổ chức (VN30)</h2>
+              <span className="sub">Basis hợp đồng tương lai VN30F1M so với VN30 giao ngay, và giao dịch cổ đông lớn/nội bộ công bố gần đây của 30 mã cấu thành VN30.</span>
+            </div>
+          </div>
+          <div className="p-body">
+            <div className="co-vn30-stats" id="vn30Stats" />
+            <div className="co-insider-list" id="insiderList" />
+          </div>
+        </section>
+
         <Footer>
           Tổng GTGD, khối ngoại ròng, GTGD/%thay đổi theo ngành, và khối ngoại mua/bán của 4 mã dẫn dắt lấy từ snapshot thật (nguồn VCI qua vnstock) khi trang tải được <code>data/cashout-vn.json</code>.
-          5D Avg Vol Ratio là ước tính từ 1 mã đại diện lớn nhất mỗi ngành, không phải toàn ngành. Tự doanh (proprietary flow) không có nguồn miễn phí — luôn là số nhập tay.
+          5D Avg Vol Ratio là ước tính từ 1 mã đại diện lớn nhất mỗi ngành, không phải toàn ngành. Tự doanh (proprietary flow) không có nguồn miễn phí — agent tự động tìm số công khai mỗi ngày (nhãn Proxy khi có); phần lớn phiên sẽ hiện "—" vì báo chí VN hiếm khi công bố số này.
+          Room ngoại, top-of-book bid/ask, basis VN30F1M là số thật từ snapshot VCI. Giao dịch cổ đông lớn/nội bộ chỉ theo dõi 30 mã VN30, tiêu đề hiển thị nguyên văn từ công bố HOSE — không tự tách số lượng cổ phiếu.
           Không sử dụng trực tiếp cho quyết định đầu tư.
         </Footer>
       </main>

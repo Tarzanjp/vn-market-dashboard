@@ -57,20 +57,13 @@
 .co-flow-current .dir-tag{margin-left:auto;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px}
 .co-flow-current .dir-tag.buy{background:var(--up-soft);color:var(--tang)}
 .co-flow-current .dir-tag.sell{background:var(--down-soft);color:var(--giam)}
-.co-flow-form{display:flex;gap:8px}
-.co-flow-form input[type="number"]{
-  flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;
-  color:var(--text);font-family:var(--mono);font-size:13px;padding:8px 10px;outline:none;
-}
-.co-flow-form input[type="number"]:focus{border-color:var(--blue)}
-.co-flow-form button{
-  flex:none;background:var(--blue);color:#fff;border:none;border-radius:8px;
-  font-weight:700;font-size:12px;padding:8px 14px;cursor:pointer;transition:filter .15s;
-}
-.co-flow-form button:hover{filter:brightness(1.08)}
+.co-flow-quality{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:100px;white-space:nowrap;text-transform:uppercase;letter-spacing:.02em}
+.co-flow-quality:empty{display:none}
+.co-flow-quality.live{background:var(--up-soft);color:var(--tang)}
+.co-flow-quality.proxy{background:var(--fill);color:var(--muted)}
+.co-flow-quality.preset{background:var(--fill);color:var(--dim)}
+.co-flow-quality.missing{display:none}
 .co-flow-hint{margin:8px 0 0;font-size:10.5px;color:var(--dim)}
-.co-flow-flash{animation:co-flash-bg .9s ease}
-@keyframes co-flash-bg{0%{background:rgba(0,113,227,.12)}100%{background:var(--surface-2)}}
 
 /* ---------- sector matrix ---------- */
 .co-table-scroll{overflow-x:auto}
@@ -116,8 +109,26 @@ table.co-table tbody tr:last-child td{border-bottom:none}
 .co-net-row .net-val{font-family:var(--mono);font-size:16px;font-weight:800;display:flex;align-items:center;gap:4px}
 .co-net-val.buy{color:var(--tang)}
 .co-net-val.sell{color:var(--giam)}
+.co-mini-row{display:flex;align-items:center;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--muted)}
+.co-mini-row .num{font-family:var(--mono);color:var(--text);font-weight:600}
+
+/* ---------- room ngoại watch + tín hiệu tổ chức ---------- */
+.co-vn30-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.co-vn30-tile{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.co-vn30-tile .k{font-size:10.5px;color:var(--dim);font-weight:600}
+.co-vn30-tile .v{font-size:17px;font-weight:800}
+.co-vn30-tile .v.buy{color:var(--tang)}
+.co-vn30-tile .v.sell{color:var(--giam)}
+.co-insider-list{display:flex;flex-direction:column;max-height:340px;overflow-y:auto}
+.co-insider-row{display:grid;grid-template-columns:52px 1fr auto 76px;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line-soft);font-size:12px}
+.co-insider-row:last-child{border-bottom:none}
+.co-insider-code{font-family:var(--mono);font-weight:700}
+.co-insider-title{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.co-insider-date{font-family:var(--mono);font-size:10.5px;color:var(--dim);text-align:right}
 
 @media(max-width:640px){
   .co-banner{flex-wrap:wrap}
   .co-banner .cb-val{text-align:left}
+  .co-insider-row{grid-template-columns:44px 1fr;grid-template-rows:auto auto}
+  .co-insider-row .co-insider-date{grid-column:2;text-align:left}
 }

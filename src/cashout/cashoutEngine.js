@@ -26,9 +26,11 @@ const PRESET_STOCKS = [
 ];
 const PRESET_TURNOVER = 18500;
 const PRESET_FOREIGN = -320;
-const PRESET_PROP = 210;
+// Không có PRESET_PROP: Proprietary Flow (tự doanh) không có nguồn dữ liệu
+// miễn phí và hầu như không có nguồn công khai nào để bịa mẫu hợp lý — luôn
+// "—" trừ khi agent thực sự tìm được số hôm nay (xem quality.proprietaryNetBn).
 
-export function initCashout(data) {
+export function initCashout(data, insight) {
   const el = (id) => document.getElementById(id);
 
   let SECTOR_DATA = PRESET_SECTORS;
@@ -43,8 +45,10 @@ export function initCashout(data) {
   if (isReal && Array.isArray(data.tickers) && data.tickers.length) {
     LEADING_STOCKS = data.tickers.map((t) => ({
       code: t.code, sector: t.sector, buy: t.foreign_buy_bn, sell: t.foreign_sell_bn,
+      roomPct: t.foreign_room_pct, spreadPct: t.spread_pct,
     }));
   }
+  const FOREIGN_ROOM_WATCH = isReal && Array.isArray(data.foreignRoomWatch) ? data.foreignRoomWatch : [];
 
   /* ============ Đồng hồ ============ */
   function tick() {
@@ -108,26 +112,38 @@ export function initCashout(data) {
   numInput.addEventListener("input", () => setTurnover(parseFloat(numInput.value) || 0));
   rangeInput.addEventListener("input", () => setTurnover(parseFloat(rangeInput.value) || 0));
 
-  /* ============ Foreign / Proprietary flow ============ */
-  function renderFlow(key) {
+  /* ============ Foreign / Proprietary flow (read-only, tự động) ============ */
+  const FLOW_HINT = {
+    foreign: { missing: "Chưa có dữ liệu.", proxy: "Nguồn: agent nghiên cứu công khai — số ước tính, không phải snapshot sàn." },
+    prop: { missing: "Chưa có nguồn công khai cho phiên hôm nay — agent tự động kiểm tra mỗi ngày.", proxy: "Nguồn: agent nghiên cứu công khai — số ước tính, không phải snapshot sàn." },
+  };
+  const FLOW_Q_LABEL = { live: "Dữ liệu thật", proxy: "Proxy", preset: "Mẫu", missing: "" };
+
+  // v: số (tỷ VND) hoặc null nếu chưa có dữ liệu. quality: live|proxy|preset|missing.
+  function renderFlow(key, v, quality) {
     const valEl = el(key === "foreign" ? "flowForeignVal" : "flowPropVal");
     const tagEl = el(key === "foreign" ? "flowForeignTag" : "flowPropTag");
-    const input = el(key === "foreign" ? "flowForeignInput" : "flowPropInput");
-    const v = parseFloat(input.value) || 0;
+    const qEl = el(key === "foreign" ? "flowForeignQ" : "flowPropQ");
+    const hintEl = el(key === "foreign" ? "flowForeignHint" : "flowPropHint");
+
+    qEl.textContent = FLOW_Q_LABEL[quality] || "";
+    qEl.className = "co-flow-quality " + quality;
+
+    if (typeof v !== "number" || Number.isNaN(v)) {
+      valEl.textContent = "—";
+      valEl.className = "amt num";
+      tagEl.textContent = "";
+      tagEl.className = "dir-tag";
+      hintEl.textContent = (FLOW_HINT[key] || {}).missing || "";
+      return;
+    }
     const isBuy = v >= 0;
     valEl.textContent = (isBuy ? "+" : "") + v.toLocaleString("en-US");
     valEl.className = "amt num " + (isBuy ? "buy" : "sell");
     tagEl.textContent = isBuy ? "Mua ròng / Net Buy" : "Bán ròng / Net Sell";
     tagEl.className = "dir-tag " + (isBuy ? "buy" : "sell");
+    hintEl.textContent = quality === "proxy" ? (FLOW_HINT[key] || {}).proxy || "" : "";
   }
-
-  window.updateFlow = function (key) {
-    renderFlow(key);
-    const item = el(key === "foreign" ? "flowForeign" : "flowProp");
-    item.classList.remove("co-flow-flash");
-    void item.offsetWidth;
-    item.classList.add("co-flow-flash");
-  };
 
   /* ============ VN Core Sector Matrix ============ */
   function classify(chg, volRatio) {
@@ -219,24 +235,115 @@ export function initCashout(data) {
             ${isNetBuy ? "▲" : "▼"} ${isNetBuy ? "+" : ""}${net.toLocaleString("en-US")} tỷ
           </span>
         </div>
+        <div class="co-mini-row">
+          <span>Room ngoại còn lại</span>
+          <span class="num">${typeof s.roomPct === "number" ? s.roomPct.toFixed(1) + "%" : "—"}</span>
+        </div>
+        <div class="co-mini-row">
+          <span>Spread (bid/ask)</span>
+          <span class="num">${typeof s.spreadPct === "number" ? s.spreadPct.toFixed(2) + "%" : "—"}</span>
+        </div>
       `;
       grid.appendChild(card);
+    });
+  }
+
+  /* ============ Sắp cạn room ngoại ============ */
+  function renderForeignRoomWatch() {
+    const tbody = el("roomWatchTableBody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    if (!FOREIGN_ROOM_WATCH.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 3;
+      td.style.textAlign = "center";
+      td.style.color = "var(--dim)";
+      td.textContent = "— Chưa có dữ liệu (cần cashout-vn.json có foreignRoomWatch)";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+    FOREIGN_ROOM_WATCH.forEach((r) => {
+      const tr = document.createElement("tr");
+      const tdCode = document.createElement("td");
+      tdCode.textContent = r.code;
+      tdCode.style.fontWeight = "700";
+      const tdRoom = document.createElement("td");
+      tdRoom.className = "num";
+      tdRoom.textContent = typeof r.room_pct === "number" ? r.room_pct.toFixed(1) + "%" : "—";
+      tdRoom.style.color = typeof r.room_pct === "number" && r.room_pct <= 1 ? "var(--giam)" : "var(--text)";
+      const tdTurn = document.createElement("td");
+      tdTurn.className = "num";
+      tdTurn.textContent = typeof r.turnover_bn === "number" ? r.turnover_bn.toLocaleString("en-US") : "—";
+      tr.appendChild(tdCode); tr.appendChild(tdRoom); tr.appendChild(tdTurn);
+      tbody.appendChild(tr);
+    });
+  }
+
+  /* ============ Tín hiệu tổ chức (VN30) ============ */
+  function renderInsight() {
+    const statsEl = el("vn30Stats");
+    const listEl = el("insiderList");
+    if (!statsEl || !listEl) return;
+
+    const v30 = insight && insight.vn30;
+    if (v30 && v30.quality === "live") {
+      const isContango = v30.basis >= 0;
+      statsEl.innerHTML = `
+        <div class="co-vn30-tile"><span class="k">VN30 giao ngay</span><span class="v num">${v30.spot.toLocaleString("en-US")}</span></div>
+        <div class="co-vn30-tile"><span class="k">VN30F1M (tương lai)</span><span class="v num">${v30.futures.toLocaleString("en-US")}</span></div>
+        <div class="co-vn30-tile"><span class="k">Basis</span><span class="v num ${isContango ? "buy" : "sell"}">${isContango ? "+" : ""}${v30.basis.toLocaleString("en-US")} (${isContango ? "+" : ""}${v30.basis_pct}%)</span></div>
+      `;
+    } else {
+      statsEl.innerHTML = `<p style="color:var(--dim);font-size:12.5px;margin:0">— Chưa có dữ liệu basis VN30F1M hôm nay.</p>`;
+    }
+
+    const trades = (insight && Array.isArray(insight.insiderTrades)) ? insight.insiderTrades : [];
+    listEl.innerHTML = "";
+    if (!trades.length) {
+      listEl.innerHTML = `<p style="color:var(--dim);font-size:12.5px;margin:10px 0 0">— Không có giao dịch cổ đông lớn/nội bộ nào công bố trong 30 ngày qua (30 mã VN30).</p>`;
+      return;
+    }
+    trades.slice(0, 15).forEach((t) => {
+      const row = document.createElement("div");
+      row.className = "co-insider-row";
+      const isBuy = (t.direction || "").toLowerCase() === "buy";
+      const isSell = (t.direction || "").toLowerCase() === "sell";
+      row.innerHTML = `
+        <span class="co-insider-code">${t.ticker}</span>
+        <span class="co-insider-title">${t.title_vi || t.title_en || "—"}</span>
+        <span class="dir-tag ${isBuy ? "buy" : isSell ? "sell" : ""}">${isBuy ? "Mua" : isSell ? "Bán" : "—"}</span>
+        <span class="co-insider-date">${t.date || "—"}</span>
+      `;
+      listEl.appendChild(row);
     });
   }
 
   /* ============ Khởi tạo giá trị ban đầu ============ */
   const initialTurnover = isReal && typeof data.totalTurnoverBn === "number"
     ? Math.round(data.totalTurnoverBn) : PRESET_TURNOVER;
-  const initialForeign = isReal && typeof data.foreignNetBn === "number"
-    ? Math.round(data.foreignNetBn) : PRESET_FOREIGN;
-
-  el("flowForeignInput").value = initialForeign;
-  el("flowPropInput").value = PRESET_PROP;
   setTurnover(initialTurnover);
-  renderFlow("foreign");
-  renderFlow("prop");
+
+  const dataQuality = (isReal && data.quality) || {};
+  if (isReal && typeof data.foreignNetBn === "number") {
+    renderFlow("foreign", Math.round(data.foreignNetBn), dataQuality.foreignNetBn || "live");
+  } else if (isReal) {
+    renderFlow("foreign", null, "missing");
+  } else {
+    renderFlow("foreign", PRESET_FOREIGN, "preset");
+  }
+
+  if (isReal && typeof data.proprietaryNetBn === "number") {
+    renderFlow("prop", Math.round(data.proprietaryNetBn), dataQuality.proprietaryNetBn || "proxy");
+  } else {
+    renderFlow("prop", null, "missing");
+  }
+
   renderSectorTable();
   renderStocks();
+  renderForeignRoomWatch();
+  renderInsight();
 
   /* ============ Trạng thái dữ liệu + ghi chú ============ */
   const statusEl = el("dataStatus");
