@@ -12,6 +12,7 @@ export default defineConfig(({ command }) => ({
   build: {
     rollupOptions: {
       input: {
+        regime: resolve(__dirname, "buc-tranh-thi-truong.html"),
         main: resolve(__dirname, "index.html"),
         theGioi: resolve(__dirname, "the-gioi.html"),
         lichSu: resolve(__dirname, "lich-su.html"),

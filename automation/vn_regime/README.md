@@ -27,6 +27,13 @@ script đó vừa ghi trong cùng lần chạy) — không có workflow riêng.
   này — join theo `date` với `public/data/history/<year>.jsonl` để xem
   verdict hôm đó dự báo đúng diễn biến VN-Index N phiên sau hay không.
 
+  Mỗi dòng còn giữ nguyên `cashoutSectors` (5 ngành) và `cashoutTickers`
+  (HPG/TCB/VHM/SSI) sao chép từ `cashout-vn.json` — file đó bị **ghi đè**
+  mỗi lần chạy nên chỉ có snapshot hôm nay; không sao chép vào đây thì chi
+  tiết từng ngành/mã của các phiên trước sẽ mất vĩnh viễn, không backtest
+  lại được. `sector-flows.json` thì KHÔNG cần sao chép vì bản thân nó đã tự
+  lưu lịch sử tháng/quý từ 2019 (không có nguy cơ mất dữ liệu tương tự).
+
 ## Thiết kế: xuống cấp trung thực khi thiếu lịch sử
 
 Không có đủ dữ liệu → điểm số trả về `null` với `band: "insufficient_history"`

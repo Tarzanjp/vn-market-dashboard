@@ -156,6 +156,12 @@ def build_today_row(live: dict | None, sector_flows: dict | None, cashout: dict 
         "sectorRRG": sector_rrg_counts(sector_flows),
         "vnIndex": ((live or {}).get("vnIndex") or {}).get("price"),
         "vnIndexPct": ((live or {}).get("vnIndex") or {}).get("pct"),
+        # cashout-vn.json bị GHI ĐÈ mỗi ngày (chỉ giữ snapshot hôm nay) — sao
+        # chép nguyên 5 ngành + 4 ticker vào đây để không mất khi ngày mai đè
+        # lên. sector-flows.json thì KHÔNG cần sao chép vì bản thân nó đã tự
+        # lưu lịch sử tháng/quý từ 2019 rồi (không có nguy cơ mất dữ liệu).
+        "cashoutSectors": (cashout or {}).get("sectors"),
+        "cashoutTickers": (cashout or {}).get("tickers"),
     }
 
 

@@ -2,9 +2,7 @@
    world.css and history.css (shared rules live in styles/tokens.css and
    styles/layout.css). */
 
-.page-hd{padding:30px 0 4px;display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap}
-.page-hd h2{margin:0;font-size:clamp(26px,3.6vw,38px);font-weight:600;letter-spacing:-.028em}
-.page-hd p{margin:5px 0 0;color:var(--muted);font-size:14px}
+/* Tiêu đề trang (.page-hd) dùng chung — xem styles/layout.css */
 
 .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}
 .seg{display:flex;padding:2px;border-radius:9px;background:var(--fill);gap:2px;flex-wrap:wrap}
@@ -108,13 +106,9 @@ table.sf-data tbody tr:hover{background:var(--surface-2)}
 .sf-table-scroll{max-height:70vh;overflow:auto}
 
 @media(max-width:1024px){
-  .page-hd{padding:22px 0 4px}
-  .page-hd h2{font-size:clamp(24px,3.5vw,32px)}
   .sf-rrg-layout{grid-template-columns:1fr}
 }
 @media(max-width:640px){
-  .page-hd{padding:16px 0 2px}
-  .page-hd h2{font-size:clamp(22px,6.5vw,28px)}
   .toolbar{margin-top:12px;flex-direction:column;align-items:stretch}
   .seg{width:100%}
   .seg button{flex:1 1 auto}

@@ -1,46 +1,18 @@
-import { useEffect, useState } from "react";
+import { useJsonFetch } from "./useJsonFetch.js";
 
 /**
  * Fetches public/data/news.json — the curated news feed produced by the local
  * agent from public/data/news-raw.json (see automation/agent_daily_prompt.md).
- * Returns { items, generatedAtIct, status }. `items` is [] (not null) when the
- * file is missing/empty so callers can render an honest "chưa có tin" state
- * instead of crashing on a null map().
+ * Returns { items, generatedAtIct, status }. `items` is [] (not null) once
+ * settled — success or failure — so callers can render an honest "chưa có
+ * tin" state instead of crashing on a null map(); stays null only while
+ * "loading". Unlike useSectorFlows/useCashout, this hook never surfaces
+ * "error" to its caller — a fetch failure here has always meant "show the
+ * empty state", not "show an error state".
  */
 export function useNews() {
-  const [items, setItems] = useState(null);
-  const [generatedAtIct, setGeneratedAtIct] = useState(null);
-  const [status, setStatus] = useState("loading");
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const res = await fetch("data/news.json", { cache: "no-store" });
-        if (!res.ok) {
-          if (cancelled) return;
-          setItems([]);
-          setStatus("ready");
-          return;
-        }
-        const data = await res.json();
-        if (cancelled) return;
-        setItems(Array.isArray(data.items) ? data.items : []);
-        setGeneratedAtIct(data.generatedAtIct || null);
-        setStatus("ready");
-      } catch {
-        if (cancelled) return;
-        setItems([]);
-        setStatus("ready");
-      }
-    }
-
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return { items, generatedAtIct, status };
+  const { data, status } = useJsonFetch("data/news.json");
+  const items = status === "loading" ? null : (Array.isArray(data?.items) ? data.items : []);
+  const generatedAtIct = data?.generatedAtIct || null;
+  return { items, generatedAtIct, status: status === "error" ? "ready" : status };
 }

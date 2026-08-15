@@ -1,6 +1,14 @@
 export default function NavTabs({ active }) {
   return (
     <nav className="nav" aria-label="Điều hướng chính">
+      <a href="buc-tranh-thi-truong.html" aria-current={active === "regime" ? "page" : undefined}>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle cx="8" cy="8" r="6.3" stroke="currentColor" strokeWidth="1.4" />
+          <circle cx="8" cy="8" r="2.4" stroke="currentColor" strokeWidth="1.4" />
+          <circle cx="8" cy="8" r="0.9" fill="currentColor" />
+        </svg>
+        <span>Bức tranh</span>
+      </a>
       <a href="index.html" aria-current={active === "dashboard" ? "page" : undefined}>
         <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <rect x="1.6" y="1.6" width="5.2" height="5.2" rx="1.4" stroke="currentColor" strokeWidth="1.4" />

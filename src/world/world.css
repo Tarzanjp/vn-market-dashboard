@@ -2,10 +2,7 @@
    Shared tokens (:root) live in styles/tokens.css; shared header/nav/notice/
    panel/footer base rules live in styles/layout.css. */
 
-/* ---------- tiêu đề trang ---------- */
-.page-hd{padding:30px 0 4px;display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap}
-.page-hd h2{margin:0;font-size:clamp(26px,3.6vw,38px);font-weight:600;letter-spacing:-.028em}
-.page-hd p{margin:5px 0 0;color:var(--muted);font-size:14px}
+/* Tiêu đề trang (.page-hd) dùng chung — xem styles/layout.css */
 
 /* ---------- thanh công cụ ---------- */
 .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}
@@ -98,8 +95,6 @@ tbody tr:last-child td{border-bottom:0}
 /* tablet */
 @media(max-width:1024px){
   .wrap{padding:0 18px}
-  .page-hd{padding:22px 0 4px}
-  .page-hd h2{font-size:clamp(24px,3.5vw,32px)}
   .toolbar{gap:8px}
   .tiles{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px}
   .sub-hd p{max-width:100%}
@@ -125,9 +120,6 @@ tbody tr:last-child td{border-bottom:0}
   .brand p{font-size:11px}
   .nav a{padding:8px 11px}
   .nav a span{display:none}
-  .page-hd{padding:16px 0 2px}
-  .page-hd h2{font-size:clamp(22px,6.5vw,28px)}
-  .page-hd p{font-size:13px}
   .notice{font-size:12px;padding:11px 12px}
   .toolbar{margin-top:12px;flex-direction:column;align-items:stretch}
   .seg{width:100%}
