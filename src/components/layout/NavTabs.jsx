@@ -30,6 +30,12 @@ export default function NavTabs({ active }) {
         </svg>
         <span>Dòng tiền ngành</span>
       </a>
+      <a href="dong-tien-cashout.html" aria-current={active === "cashout" ? "page" : undefined}>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M8 1.8c2.6 3.1 4.3 5.5 4.3 7.7a4.3 4.3 0 1 1-8.6 0c0-2.2 1.7-4.6 4.3-7.7z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+        </svg>
+        <span>Cashout</span>
+      </a>
     </nav>
   );
 }

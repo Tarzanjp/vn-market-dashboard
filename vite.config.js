@@ -16,6 +16,7 @@ export default defineConfig(({ command }) => ({
         theGioi: resolve(__dirname, "the-gioi.html"),
         lichSu: resolve(__dirname, "lich-su.html"),
         dongTienNganh: resolve(__dirname, "dong-tien-nganh.html"),
+        dongTienCashout: resolve(__dirname, "dong-tien-cashout.html"),
       },
     },
   },
