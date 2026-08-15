@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAtIct": "2026-08-15T20:07:06+07:00",
+  "date": "2026-08-14",
+  "method": {
+    "liquidity": "Percentile của GTGD hôm nay trên lịch sử tích luỹ (rolling) — tự thích nghi theo thời gian, không phải ngưỡng cố định.",
+    "positioning": "TB khối ngoại ròng 5 phiên gần nhất, quy đổi thô sang thang 0-100 (v1, chưa hiệu chỉnh bằng backtest). Margin debt đã lưu vào lịch sử nhưng chưa gộp vào công thức.",
+    "momentum": "% số ngành ICB đang ở góc Dẫn dắt+Cải thiện trên bản đồ RRG (public/data/sector-flows.json).",
+    "macro": "TB F&G Mỹ + xu hướng DXY 10 phiên gần nhất, quy đổi thô sang thang 0-100 (v1, chưa hiệu chỉnh bằng backtest).",
+    "divergence": "Quy tắc thô so từng cặp điểm số có ý nghĩa thật (không phải so combinatorial toàn bộ) — xem compute_divergence() trong script."
+  },
+  "scores": {
+    "liquidity": {
+      "value": null,
+      "band": "insufficient_history",
+      "n": 0,
+      "basis": "cần ≥20 phiên lịch sử, hiện có 0"
+    },
+    "positioning": {
+      "value": null,
+      "band": "insufficient_history",
+      "n": 1,
+      "basis": "cần ≥5 phiên lịch sử, hiện có 1"
+    },
+    "momentum": {
+      "value": 90.0,
+      "band": "healthy",
+      "n": 10,
+      "basis": "9/10 ngành ở góc Dẫn dắt+Cải thiện (kỳ 2026-08)"
+    },
+    "macro": {
+      "value": 65.0,
+      "band": "healthy",
+      "n": 1,
+      "basis": "F&G Mỹ (chưa có đủ lịch sử DXY)"
+    }
+  },
+  "verdict": {
+    "cls": "ok",
+    "label": "Đồng thuận tích cực",
+    "summary": "4 điểm số đồng thuận tích cực, trung bình 78/100."
+  },
+  "divergence": [],
+  "dataQuality": {
+    "historyDepthDays": 1,
+    "note": "Đã tích luỹ 1 phiên. Liquidity/Positioning cần thêm dữ liệu (percentile cần ≥20 phiên) trước khi đáng tin."
+  },
+  "inputs": {
+    "date": "2026-08-14",
+    "turnoverBn": 17012.8,
+    "foreignNetBn": -900.6,
+    "marginBn": 446000,
+    "dxy": 99.64,
+    "us10y": 4.68,
+    "fgUs": 65.0,
+    "sectorRRG": {
+      "leading": 5,
+      "weakening": 0,
+      "lagging": 1,
+      "improving": 4,
+      "n": 10,
+      "period": "2026-08"
+    },
+    "vnIndex": 1729.08,
+    "vnIndexPct": -2.07
+  }
+}

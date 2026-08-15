@@ -266,7 +266,7 @@ missing, and a small "Agent tổng hợp lúc ..." timestamp (from
 `generatedAtIct`) so it's clear how fresh the curated cards are, independent
 of how fresh the raw feed underneath them is.
 
-## Third pipeline: `vn-vnstock-update.yml` (sector flows + cashout)
+## Third pipeline: `vn-vnstock-update.yml` (sector flows + cashout + regime)
 
 `public/data/sector-flows.json` (Dòng tiền ngành) and `public/data/cashout-vn.json`
 (Dòng tiền & Cashout) both need `vnstock` (+`pandas`) — a real dependency,
@@ -276,11 +276,38 @@ out of `data-update.yml`. Rather than two more separate workflows,
 `automation/sector_flows/fetch_sector_flows.py` then
 `automation/vn_cashout/fetch_cashout_data.py` back to back (with a `sleep`
 between them — vnstock's free/guest tier caps at 20 requests/min, and both
-scripts together sit close to that ceiling), and commits both output files in
-one go. Runs weekdays at 15:00 ICT / 17:00 JST (08:00 UTC), right after HOSE
-closes. See `automation/sector_flows/README.md` and
-`automation/vn_cashout/README.md` for what's real data vs. estimated proxy
-vs. no-free-source-available in each.
+scripts together sit close to that ceiling), then
+`automation/vn_regime/compute_regime.py` (stdlib-only, reads the two JSON
+files just written rather than fetching anything new — see below), and
+commits everything in one go. Runs weekdays at 15:00 ICT / 17:00 JST
+(08:00 UTC), right after HOSE closes. See `automation/sector_flows/README.md`
+and `automation/vn_cashout/README.md` for what's real data vs. estimated
+proxy vs. no-free-source-available in each.
+
+### Regime engine (`automation/vn_regime/`)
+
+Synthesizes `live.json` + `sector-flows.json` + `cashout-vn.json` into four
+scores (Liquidity / Positioning / Momentum / Macro), one verdict, and
+divergence flags when the scores disagree with each other — the Ray Dalio–
+style reframing discussed with the user (see the `regime-architecture`
+artifact published earlier in that conversation for the full rationale).
+Two outputs:
+
+- `public/data/regime.json` — the latest verdict, self-documenting (`method`
+  field explains each score's formula in the file itself).
+- `public/data/history/regime-<year>.jsonl` — one upserted row per session,
+  same idempotent pattern as `history/<year>.jsonl`. This is both the input
+  Liquidity Score's percentile calculation needs (thresholds are rolling/
+  adaptive, not the fixed 20,000/12,000 tỷ VND numbers `dong-tien-cashout.html`
+  currently hardcodes) and the future backtest log (join on `date` against
+  `history/<year>.jsonl`'s `vnIndex` to check whether a given verdict
+  actually predicted what happened next).
+
+No dashboard page consumes `regime.json` yet — this is data-layer work only.
+Scores degrade honestly when history is thin (`band: "insufficient_history"`,
+`value: null`) rather than inventing numbers; see
+`automation/vn_regime/README.md` for the exact thresholds and, importantly,
+which formulas are still an uncalibrated v1 guess.
 
 ## Deploy pipeline
 
