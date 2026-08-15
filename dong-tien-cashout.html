@@ -63,6 +63,12 @@
   .hd h1 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
   .hd p { margin: 1px 0 0; font-size: 11.5px; color: var(--text-dim); }
   .hd .clock { margin-left: auto; font-family: var(--mono); font-size: 12.5px; color: var(--text-dim); }
+  .data-status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 100px; background: var(--card-bg-2); border: 1px solid var(--border); color: var(--text-dim); }
+  .data-status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-faint); flex: none; }
+  .data-status.live { color: var(--good); border-color: rgba(34,197,94,.35); }
+  .data-status.live .dot { background: var(--good); box-shadow: 0 0 0 2px rgba(34,197,94,.2); }
+  .data-status.preset { color: var(--warn); border-color: rgba(245,158,11,.35); }
+  .data-status.preset .dot { background: var(--warn); }
 
   main { padding-top: 24px; }
 
@@ -217,6 +223,7 @@
       <h1>Dòng tiền & Cashout Monitor</h1>
       <p>HOSE/HNX · Sector Shift & Liquidity Risk Dashboard</p>
     </div>
+    <span class="data-status preset" id="dataStatus"><span class="dot"></span><span id="dataStatusText">Đang tải dữ liệu…</span></span>
     <div class="clock" id="clock">--:--:--</div>
   </div>
 </header>
@@ -295,6 +302,7 @@
             <input type="number" id="flowPropInput" value="210" step="10" aria-label="Tự doanh — cập nhật">
             <button type="button" onclick="updateFlow('prop')">Cập nhật</button>
           </div>
+          <p style="margin:8px 0 0;font-size:10.5px;color:var(--text-faint)">Chưa có nguồn dữ liệu miễn phí cho Tự doanh — luôn cần nhập tay.</p>
         </div>
       </div>
     </div>
@@ -328,7 +336,7 @@
         <span class="lg-dot" style="background:var(--good)"></span>Vol Ratio &gt; 1.2 &amp; % Change &gt; 0 → <b style="color:var(--good)">Cash Inflow (Dòng tiền vào)</b>&nbsp;&nbsp;&nbsp;
         <span class="lg-dot" style="background:var(--bad)"></span>Vol Ratio &gt; 1.2 &amp; % Change &lt; 0 → <b style="color:var(--bad)">Cash Outflow (Tháo chạy)</b>&nbsp;&nbsp;&nbsp;
         <span class="lg-dot" style="background:var(--neutral)"></span>Còn lại → Neutral / Rotation<br>
-        ※ Toàn bộ số liệu ngành là dữ liệu mẫu (preset/simulated), không phải dữ liệu khớp lệnh thật từ HOSE/HNX.
+        <span id="sectorDataNote">※ Toàn bộ số liệu ngành là dữ liệu mẫu (preset/simulated), không phải dữ liệu khớp lệnh thật từ HOSE/HNX.</span>
       </div>
     </div>
   </section>
@@ -339,7 +347,7 @@
       <div>
         <span class="eyebrow">03 · Leading Tickers</span>
         <h2>🎯 Market Leader Flow (Ticker Tracking)</h2>
-        <p class="sub">Ước tính giá trị mua/bán trong phiên của 4 mã dẫn dắt thị trường (1 phiên · giá trị mô phỏng). Độ dài thanh được chuẩn hoá theo giá trị lớn nhất trong 4 mã.</p>
+        <p class="sub" id="stocksSub">Giá trị mua/bán của khối ngoại (Foreign Buy/Sell Value) trong phiên của 4 mã dẫn dắt thị trường — không bao gồm lệnh của NĐT trong nước. Độ dài thanh được chuẩn hoá theo giá trị lớn nhất trong 4 mã.</p>
       </div>
     </div>
     <div class="card-body">
@@ -347,9 +355,10 @@
     </div>
   </section>
 
-  <footer>
-    Toàn bộ dữ liệu ngành, mã dẫn dắt và dòng vốn khối ngoại/tự doanh trên trang này là dữ liệu mẫu (preset/simulated) phục vụ minh hoạ giao diện,
-    không phải dữ liệu giao dịch thật từ HOSE/HNX. Không sử dụng trực tiếp cho quyết định đầu tư — hãy thay bằng nguồn dữ liệu chính thức khi triển khai thật.
+  <footer id="pageFooter">
+    Tổng GTGD, khối ngoại ròng, GTGD/%thay đổi theo ngành, và khối ngoại mua/bán của 4 mã dẫn dắt lấy từ snapshot thật (nguồn VCI qua vnstock) khi trang tải được <code>data/cashout-vn.json</code>.
+    5D Avg Vol Ratio là ước tính từ 1 mã đại diện lớn nhất mỗi ngành, không phải toàn ngành. Tự doanh (proprietary flow) không có nguồn miễn phí — luôn là số nhập tay.
+    Không sử dụng trực tiếp cho quyết định đầu tư.
   </footer>
 </main>
 
@@ -444,8 +453,10 @@
   renderFlow("prop");
 
   /* ============ ② VN Core Sector Matrix ============ */
-  // Dữ liệu mẫu (preset/simulated) — không phải số liệu khớp lệnh thật
-  const SECTOR_DATA = [
+  // Dữ liệu mẫu (preset/simulated) — dùng làm fallback nếu chưa fetch được
+  // data/cashout-vn.json (xem loadRealData() cuối file để biết phần nào là
+  // số thật khi fetch thành công).
+  let SECTOR_DATA = [
     { en: "Securities",        vi: "Chứng khoán",      chg: 3.1,  value: 1420, volRatio: 1.67 },
     { en: "Steel & Materials", vi: "Thép",              chg: 2.4,  value: 1650, volRatio: 1.58 },
     { en: "Technology",        vi: "Công nghệ",         chg: 1.5,  value: 290,  volRatio: 1.31 },
@@ -511,7 +522,9 @@
   renderSectorTable();
 
   /* ============ ③ Market Leader Flow ============ */
-  const LEADING_STOCKS = [
+  // Dữ liệu mẫu (preset/simulated) — dùng làm fallback nếu chưa fetch được
+  // data/cashout-vn.json.
+  let LEADING_STOCKS = [
     { code: "HPG", sector: "Thép / Steel", buy: 452, sell: 381 },
     { code: "TCB", sector: "Ngân hàng / Banking", buy: 318, sell: 296 },
     { code: "VHM", sector: "Bất động sản / Real Estate", buy: 274, sell: 312 },
@@ -535,15 +548,15 @@
           <span class="s-sector">${s.sector}</span>
         </div>
         <div class="bar-row">
-          <div class="bar-label"><span>Estimated Buy Vol</span><span class="bar-val num">${s.buy.toLocaleString("en-US")} tỷ</span></div>
+          <div class="bar-label"><span>Foreign Buy Value</span><span class="bar-val num">${s.buy.toLocaleString("en-US")} tỷ</span></div>
           <div class="bar-track"><div class="bar-fill buy" style="width:${(s.buy / maxVal * 100).toFixed(1)}%"></div></div>
         </div>
         <div class="bar-row">
-          <div class="bar-label"><span>Estimated Sell Vol</span><span class="bar-val num">${s.sell.toLocaleString("en-US")} tỷ</span></div>
+          <div class="bar-label"><span>Foreign Sell Value</span><span class="bar-val num">${s.sell.toLocaleString("en-US")} tỷ</span></div>
           <div class="bar-track"><div class="bar-fill sell" style="width:${(s.sell / maxVal * 100).toFixed(1)}%"></div></div>
         </div>
         <div class="net-row">
-          <span class="net-label">Net Flow Direction</span>
+          <span class="net-label">Foreign Net Flow</span>
           <span class="net-val ${isNetBuy ? "buy" : "sell"} num">
             ${isNetBuy ? "▲" : "▼"} ${isNetBuy ? "+" : ""}${net.toLocaleString("en-US")} tỷ
           </span>
@@ -553,6 +566,67 @@
     });
   }
   renderStocks();
+
+  /* ============ Nạp dữ liệu thật (nếu có) ============ */
+  // Fetch public/data/cashout-vn.json — do automation/vn_cashout/fetch_cashout_data.py
+  // tạo ra (nguồn VCI qua vnstock, xem README trong thư mục đó). Nếu không
+  // fetch được (file chưa tồn tại / lỗi mạng), giữ nguyên toàn bộ dữ liệu
+  // mẫu đã render ở trên — không tự bịa số để lấp khoảng trống.
+  const statusEl = document.getElementById("dataStatus");
+  const statusText = document.getElementById("dataStatusText");
+  const sectorNote = document.getElementById("sectorDataNote");
+  const stocksSub = document.getElementById("stocksSub");
+
+  function setPresetStatus() {
+    statusEl.className = "data-status preset";
+    statusText.textContent = "Dữ liệu mẫu (preset)";
+  }
+
+  async function loadRealData() {
+    try {
+      const res = await fetch("data/cashout-vn.json", { cache: "no-store" });
+      if (!res.ok) { setPresetStatus(); return; }
+      const data = await res.json();
+
+      // Tổng GTGD + khối ngoại ròng: số thật, người dùng vẫn chỉnh tay được sau đó.
+      if (typeof data.totalTurnoverBn === "number") {
+        setTurnover(Math.round(data.totalTurnoverBn));
+      }
+      if (typeof data.foreignNetBn === "number") {
+        document.getElementById("flowForeignInput").value = Math.round(data.foreignNetBn);
+        renderFlow("foreign");
+      }
+
+      // Ma trận ngành: số thật (GTGD + %thay đổi), vol ratio là ước tính
+      // từ 1 mã đại diện lớn nhất mỗi ngành (không phải toàn ngành).
+      if (Array.isArray(data.sectors) && data.sectors.length) {
+        SECTOR_DATA = data.sectors
+          .filter((s) => s.vol_ratio != null)
+          .map((s) => ({ en: s.en, vi: s.vi, chg: s.chg, value: s.value_bn, volRatio: s.vol_ratio }));
+        renderSectorTable();
+        sectorNote.textContent =
+          "※ GTGD & % thay đổi là số thật (snapshot " + (data.generatedAtIct || "") + "). " +
+          "5D Avg Vol Ratio là ước tính từ 1 mã đại diện lớn nhất mỗi ngành theo GTGD, không phải toàn ngành.";
+      }
+
+      // 4 mã dẫn dắt: khối ngoại mua/bán thật của từng mã.
+      if (Array.isArray(data.tickers) && data.tickers.length) {
+        LEADING_STOCKS = data.tickers.map((t) => ({
+          code: t.code, sector: t.sector, buy: t.foreign_buy_bn, sell: t.foreign_sell_bn,
+        }));
+        renderStocks();
+        stocksSub.textContent =
+          "Khối ngoại mua/bán thật (Foreign Buy/Sell Value) trong phiên của 4 mã dẫn dắt — không bao gồm lệnh của NĐT trong nước. " +
+          "Độ dài thanh được chuẩn hoá theo giá trị lớn nhất trong 4 mã.";
+      }
+
+      statusEl.className = "data-status live";
+      statusText.textContent = "Dữ liệu thật · " + (data.generatedAtIct || "");
+    } catch {
+      setPresetStatus();
+    }
+  }
+  loadRealData();
 })();
 </script>
 </body>
