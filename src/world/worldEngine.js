@@ -28,15 +28,6 @@ export function initWorldIndices() {
     if (m.c == null && m.v != null && m.p != null) m.c = m.v - m.v / (1 + m.p / 100);
   });
 
-  function spark(m) {
-    let s = 0; for (const ch of m.id) s = (s * 31 + ch.charCodeAt(0)) >>> 0;
-    const rnd = () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-    const N = 32, out = []; let x = 1;
-    for (let i = 0; i < N; i++) { x *= 1 + (rnd() - 0.47) * 0.012; out.push(x); }
-    const last = out[N - 1];
-    return out.map(v => v / last);
-  }
-
   function status(m) {
     const d = new Date(Date.now() + m.tz * 3600000);
     const h = d.getUTCHours() + d.getUTCMinutes() / 60, day = d.getUTCDay();
@@ -51,18 +42,6 @@ export function initWorldIndices() {
   /* ============================================================
      3. VẼ Ô CHỈ SỐ
      ============================================================ */
-  function sparkSVG(m) {
-    const d = spark(m), n = d.length, W = 200, H = 34;
-    const lo = Math.min(...d), hi = Math.max(...d), rg = (hi - lo) || 1;
-    const X = i => i / (n - 1) * W, Y = v => H - 2 - ((v - lo) / rg) * (H - 6);
-    const line = d.map((v, i) => (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1)).join(" ");
-    const area = line + ` L ${W} ${H} L 0 ${H} Z`;
-    const col = m.p == null ? "var(--dim)" : (m.p > 0 ? "var(--tang)" : m.p < 0 ? "var(--giam)" : "var(--dim)");
-    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
-      <path d="${area}" fill="${col}" opacity=".09"/>
-      <path d="${line}" fill="none" stroke="${col}" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
-    </svg>`;
-  }
   const EXTICON = `<svg class="t-ext" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
     <path d="M6.2 2.6H3.4A1.4 1.4 0 0 0 2 4v8.6A1.4 1.4 0 0 0 3.4 14H12a1.4 1.4 0 0 0 1.4-1.4V9.8"
           stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
@@ -72,11 +51,11 @@ export function initWorldIndices() {
   function tileHTML(m) {
     const st = status(m), na = m.v == null;
     const k = na ? "t-na" : (m.p > 0 ? "t-up" : m.p < 0 ? "t-down" : "");
-    // Luôn dùng biểu đồ TradingView trực tiếp (realtime); sparkSVG chỉ còn là fallback
-    // phòng khi một mã nào đó chưa có mã TradingView tương ứng trong TV (worldInstruments.js).
-    const chart = m.tv
-      ? `<div class="tv-slot" data-sym="${m.tv}"></div>`
-      : (na ? "" : sparkSVG(m));
+    // Luôn dùng biểu đồ TradingView trực tiếp (realtime). Mã nào chưa có mã TV
+    // tương ứng trong TV (worldInstruments.js) thì không vẽ gì — trước đây có
+    // sparkline giả (random walk theo seed) làm fallback, đã bỏ vì hiển thị số
+    // liệu bịa trông giống biểu đồ thật (vi phạm CLAUDE.md §1.5).
+    const chart = m.tv ? `<div class="tv-slot" data-sym="${m.tv}"></div>` : "";
     const inner = `
       <div class="t-top">
         <span class="t-name">${m.name}</span>

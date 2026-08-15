@@ -165,9 +165,12 @@ def fetch_us_treasury_yields(prev: dict) -> tuple[list | None, str]:
                 if yv is None:
                     continue
                 y_prev = get_y(prev_row, keys)
-                d = round(yv - y_prev, 2) if y_prev is not None else 0.0
+                d = round(yv - y_prev, 2) if y_prev is not None else None
+                # m (tháng)/yr (năm): CHƯA có nguồn tính (cần lịch sử dài hơi qua
+                # history/*.jsonl) — để None thay vì 0.0, để UI hiển thị "—" đúng
+                # luật CLAUDE.md §1.4 thay vì "+0,00" giả (trông như không đổi).
                 out.append(
-                    {"t": label, "y": round(yv, 2), "d": d, "m": 0.0, "yr": 0.0, "x": x, "est": est}
+                    {"t": label, "y": round(yv, 2), "d": d, "m": None, "yr": None, "x": x, "est": est}
                 )
             if len(out) >= 4:
                 asof = row_date(last)

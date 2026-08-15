@@ -32,7 +32,13 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA) {
     const byX = {};
     (partial || []).forEach(r => {
       if (r && r.x != null && r.y != null && !Number.isNaN(+r.y))
-        byX[+r.x] = { t: r.t, y: +r.y, d: +(r.d || 0), m: +(r.m || 0), yr: +(r.yr || 0), x: +r.x, est: !!r.est };
+        byX[+r.x] = {
+          t: r.t, y: +r.y,
+          d: r.d == null ? null : +r.d,
+          m: r.m == null ? null : +r.m,
+          yr: r.yr == null ? null : +r.yr,
+          x: +r.x, est: !!r.est,
+        };
     });
     return fallback.map(fb => {
       if (byX[fb.x]) return Object.assign({}, fb, byX[fb.x], { t: fb.t });
@@ -43,7 +49,7 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA) {
   /* --- Lợi suất Kho bạc Mỹ (%) --- */
   function loadUSYields() {
     const raw = (LIVE && Array.isArray(LIVE.usYields) && LIVE.usYields.length)
-      ? LIVE.usYields.map(r => ({ t: r.t, y: r.y, d: r.d ?? 0, m: r.m ?? 0, yr: r.yr ?? 0, x: r.x, est: !!r.est }))
+      ? LIVE.usYields.map(r => ({ t: r.t, y: r.y, d: r.d ?? null, m: r.m ?? null, yr: r.yr ?? null, x: r.x, est: !!r.est }))
       : null;
     return normalizeYields(raw, US_YIELD_FALLBACK);
   }
@@ -51,7 +57,7 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA) {
   /* --- Lợi suất TPCP Việt Nam (%) --- */
   function loadVNYields() {
     const raw = (LIVE && Array.isArray(LIVE.vnYields) && LIVE.vnYields.length)
-      ? LIVE.vnYields.map(r => ({ t: r.t, y: r.y, d: r.d ?? 0, m: r.m ?? 0, yr: r.yr ?? 0, x: r.x, est: !!r.est }))
+      ? LIVE.vnYields.map(r => ({ t: r.t, y: r.y, d: r.d ?? null, m: r.m ?? null, yr: r.yr ?? null, x: r.x, est: !!r.est }))
       : null;
     return normalizeYields(raw, VN_YIELD_FALLBACK);
   }
