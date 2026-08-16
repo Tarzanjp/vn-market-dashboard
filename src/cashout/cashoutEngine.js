@@ -361,8 +361,8 @@ export function initCashout(data, insight) {
     }
     if (Array.isArray(data.tickers) && data.tickers.length) {
       stocksSub.textContent =
-        "Khối ngoại mua/bán thật (Foreign Buy/Sell Value) trong phiên của 4 mã dẫn dắt — không bao gồm lệnh của NĐT trong nước. " +
-        "Độ dài thanh được chuẩn hoá theo giá trị lớn nhất trong 4 mã.";
+        "Khối ngoại mua/bán thật (Foreign Buy/Sell Value) trong phiên của 10 mã dẫn dắt (GTGD lớn nhất, chọn động mỗi phiên) — không bao gồm lệnh của NĐT trong nước. " +
+        "Độ dài thanh được chuẩn hoá theo giá trị lớn nhất trong nhóm.";
     }
   } else {
     statusEl.className = "pill";

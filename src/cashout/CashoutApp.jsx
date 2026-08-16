@@ -30,7 +30,7 @@ export default function CashoutApp() {
         <div className="page-hd">
           <div>
             <h2>Dòng tiền &amp; Cashout Monitor</h2>
-            <p>Sector Shift &amp; Liquidity Risk Dashboard — GTGD toàn thị trường, khối ngoại, ma trận ngành, và 4 mã dẫn dắt.</p>
+            <p>Sector Shift &amp; Liquidity Risk Dashboard — GTGD toàn thị trường, khối ngoại, ma trận ngành, và 10 mã dẫn dắt.</p>
           </div>
         </div>
 
@@ -140,7 +140,7 @@ export default function CashoutApp() {
           <div className="p-hd">
             <div>
               <h2>🎯 Market Leader Flow (Ticker Tracking)</h2>
-              <span className="sub" id="stocksSub">Giá trị mua/bán của khối ngoại (Foreign Buy/Sell Value) trong phiên của 4 mã dẫn dắt thị trường.</span>
+              <span className="sub" id="stocksSub">Giá trị mua/bán của khối ngoại (Foreign Buy/Sell Value) trong phiên của 10 mã dẫn dắt thị trường (GTGD lớn nhất, chọn động mỗi phiên).</span>
             </div>
           </div>
           <div className="p-body">
@@ -187,7 +187,7 @@ export default function CashoutApp() {
         </section>
 
         <Footer>
-          Tổng GTGD, khối ngoại ròng, GTGD/%thay đổi theo ngành, và khối ngoại mua/bán của 4 mã dẫn dắt lấy từ snapshot thật (nguồn VCI qua vnstock) khi trang tải được <code>data/cashout-vn.json</code>.
+          Tổng GTGD, khối ngoại ròng, GTGD/%thay đổi theo ngành, và khối ngoại mua/bán của 10 mã dẫn dắt (GTGD lớn nhất, chọn động mỗi phiên) lấy từ snapshot thật (nguồn VCI qua vnstock) khi trang tải được <code>data/cashout-vn.json</code>.
           5D Avg Vol Ratio là ước tính từ 1 mã đại diện lớn nhất mỗi ngành, không phải toàn ngành. Tự doanh (proprietary flow) không có nguồn miễn phí — agent tự động tìm số công khai mỗi ngày (nhãn Proxy khi có); phần lớn phiên sẽ hiện "—" vì báo chí VN hiếm khi công bố số này.
           Room ngoại, top-of-book bid/ask, basis VN30F1M là số thật từ snapshot VCI. Giao dịch cổ đông lớn/nội bộ chỉ theo dõi 30 mã VN30, tiêu đề hiển thị nguyên văn từ công bố HOSE — không tự tách số lượng cổ phiếu.
           Không sử dụng trực tiếp cho quyết định đầu tư.

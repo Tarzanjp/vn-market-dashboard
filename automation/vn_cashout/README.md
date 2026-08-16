@@ -24,7 +24,7 @@ Ghi ra `public/data/cashout-vn.json`, dùng bởi `dong-tien-cashout.html`.
 
 Lấy từ **một lần gọi** `price_board` cho toàn bộ ~700 mã HOSE/HNX/UPCOM (nguồn VCI):
 
-- **Thật**: Tổng GTGD toàn thị trường, khối ngoại ròng toàn thị trường, GTGD & %thay đổi theo 5 nhóm ngành (Ngân hàng/Bất động sản/Thép-VLXD/Chứng khoán/Bán lẻ-Thực phẩm), khối ngoại mua/bán của HPG/TCB/VHM/SSI, room ngoại còn lại (`foreign_room_pct`) + top-of-book bid/ask (`bid1_price`/`ask1_price`/`spread_pct`) của 4 mã đó, và danh sách "Sắp cạn room ngoại" (`foreignRoomWatch`, top 8 mã toàn thị trường theo room % thấp nhất, thanh khoản ≥5 tỷ VND/phiên) — cả 3 nhóm này trích ra từ CHÍNH `price_board` đã gọi, không tốn thêm request.
+- **Thật**: Tổng GTGD toàn thị trường, khối ngoại ròng toàn thị trường, GTGD & %thay đổi theo 5 nhóm ngành (Ngân hàng/Bất động sản/Thép-VLXD/Chứng khoán/Bán lẻ-Thực phẩm), khối ngoại mua/bán của 10 mã dẫn dắt (GTGD lớn nhất phiên, chọn ĐỘNG mỗi lần chạy — không hardcode danh sách), room ngoại còn lại (`foreign_room_pct`) + top-of-book bid/ask (`bid1_price`/`ask1_price`/`spread_pct`) của 10 mã đó, và danh sách "Sắp cạn room ngoại" (`foreignRoomWatch`, top 8 mã toàn thị trường theo room % thấp nhất, thanh khoản ≥5 tỷ VND/phiên) — cả 3 nhóm này trích ra từ CHÍNH `price_board` đã gọi, không tốn thêm request.
 - **Ước tính**: 5D Avg Vol Ratio mỗi ngành — chỉ tính từ 1 mã đại diện lớn nhất ngành đó (theo GTGD hôm nay), không phải toàn ngành.
 - **Không có nguồn miễn phí, lấy qua agent**: Tự doanh (proprietary flow) — script
   đọc `public/data/live.json` (do `automation/daily_update.py` ghi) và lấy field

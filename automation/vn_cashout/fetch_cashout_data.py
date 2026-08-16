@@ -13,11 +13,15 @@ Nguồn: VCI (qua vnstock) — bulk price_board cho TOÀN BỘ mã HOSE/HNX/UPCO
 trong một lần gọi (GTGD khớp lệnh tích luỹ + khối ngoại mua/bán từng mã),
 cộng lịch sử 5 phiên của vài mã đại diện mỗi ngành để tính vol ratio.
 
+"Market Leader Flow" (tickers[]): TOP_TICKERS_N (10) mã có GTGD khớp lệnh
+lớn nhất phiên — chọn ĐỘNG từ board mỗi lần chạy, không hardcode danh sách,
+nên luôn phản ánh đúng nhóm mã đang dẫn dắt dòng tiền hôm nay.
+
 Cũng trích thêm (từ CHÍNH bulk price_board đã gọi — không tốn thêm request):
 - Room ngoại còn lại (match_current_room/match_total_room, đơn vị cổ phiếu)
-  cho 4 mã TICKERS + danh sách "Sắp cạn room ngoại" (top 8 mã thanh khoản đủ
+  cho 10 mã trên + danh sách "Sắp cạn room ngoại" (top 8 mã thanh khoản đủ
   lớn, room % thấp nhất, toàn thị trường).
-- Top-of-book bid/ask (giá + khối lượng mức 1) cho 4 mã TICKERS — độ sâu
+- Top-of-book bid/ask (giá + khối lượng mức 1) cho 10 mã trên — độ sâu
   thanh khoản thô, dùng ước tính spread khi cần đặt lệnh khối lượng lớn.
 
 Giới hạn cần nói rõ (không bịa số):
@@ -56,12 +60,10 @@ SECTOR_DEFS = [
     (("Thực phẩm - Đồ uống", "Bán lẻ"), "F&B / Retail", "Bán lẻ/Thực phẩm"),
 ]
 
-TICKERS = [
-    ("HPG", "Thép / Steel"),
-    ("TCB", "Ngân hàng / Banking"),
-    ("VHM", "Bất động sản / Real Estate"),
-    ("SSI", "Chứng khoán / Securities"),
-]
+# "Market Leader Flow" — top N mã theo GTGD khớp lệnh toàn thị trường hôm nay,
+# chọn ĐỘNG từ board đã fetch sẵn (không hardcode danh sách cố định) để luôn
+# phản ánh đúng dòng tiền dẫn dắt phiên hiện tại thay vì lệch theo 1 rổ cũ.
+TOP_TICKERS_N = 10
 
 
 def log(msg: str) -> None:
@@ -189,23 +191,30 @@ def main() -> int:
             "vol_ratio_proxy_symbols": top3,
         })
 
+    # Nhãn ngành cho 10 mã dẫn dắt: dùng đúng nhãn EN/VI đã định nghĩa ở
+    # SECTOR_DEFS nếu mã thuộc 1 trong 5 ngành đó; ngoài ra hiển thị NGUYÊN
+    # VĂN tên ngành ICB thật từ industries (không tự dịch/bịa nhãn EN).
+    sector_label_by_industry = {}
+    for names, label_en, label_vi in SECTOR_DEFS:
+        for n in names:
+            sector_label_by_industry[n] = f"{label_vi} / {label_en}"
+
+    def sector_label_for(industry_name):
+        return sector_label_by_industry.get(industry_name, industry_name or "—")
+
     def room_pct(current, total):
         return round(float(current) / float(total) * 100, 1) if total and total > 0 else None
 
     def spread_pct(bid1, ask1):
         return round((float(ask1) - float(bid1)) / float(bid1) * 100, 2) if bid1 and bid1 > 0 else None
 
+    top_tickers_board = board.sort_values("match_accumulated_value", ascending=False).head(TOP_TICKERS_N)
     tickers_out = []
-    for sym, sector_label in TICKERS:
-        row = board[board["listing_symbol"] == sym]
-        if not len(row):
-            log(f"ticker {sym} not found in board")
-            continue
-        r = row.iloc[0]
+    for _, r in top_tickers_board.iterrows():
         bid1, ask1 = r["bid_ask_bid_1_price"], r["bid_ask_ask_1_price"]
         tickers_out.append({
-            "code": sym,
-            "sector": sector_label,
+            "code": r["listing_symbol"],
+            "sector": sector_label_for(r["industry_name"]),
             "foreign_buy_bn": round(r["match_foreign_buy_value"] / 1e9, 2),
             "foreign_sell_bn": round(r["match_foreign_sell_value"] / 1e9, 2),
             "foreign_room_pct": room_pct(r["match_current_room"], r["match_total_room"]),
@@ -215,6 +224,7 @@ def main() -> int:
             "ask1_vol": float(r["bid_ask_ask_1_volume"]) if ask1 else None,
             "spread_pct": spread_pct(bid1, ask1),
         })
+    log(f"top {TOP_TICKERS_N} tickers theo GTGD: {[t['code'] for t in tickers_out]}")
 
     # "Sắp cạn room ngoại" — quét TOÀN BỘ board đã fetch sẵn (không gọi thêm
     # request), lọc mã có room ngoại > 0 (đủ điều kiện sở hữu nước ngoài) và
