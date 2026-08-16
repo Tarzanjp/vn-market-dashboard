@@ -192,23 +192,32 @@ def compute_scores(today: dict, history_excl_today: dict) -> dict:
                                 "basis": f"cần ≥{MIN_HISTORY_FOR_PERCENTILE} phiên lịch sử, hiện có {n_liq}"}
 
     # --- Positioning: khối ngoại TB 5 phiên gần nhất (margin MoM sẽ gộp sau
-    # khi có đủ điểm dữ liệu tháng phân biệt — xem marginBn trong today row). ---
+    # khi có đủ điểm dữ liệu tháng phân biệt — xem marginBn trong today row).
+    # Không có nguồn lịch sử khối ngoại toàn thị trường miễn phí nào để
+    # backfill (đã kiểm tra price_board/quote.history/company.trading_stats
+    # qua vnstock — không endpoint nào có lịch sử foreign flow), nên khi CHƯA
+    # đủ 5 phiên, dùng TẠM số ít phiên hơn (kể cả chỉ 1 phiên hôm nay,
+    # real-time) thay vì chặn hẳn — công khai rõ n trong basis. ---
     recent_foreign = [r["foreignNetBn"] for r in past[-4:] if r.get("foreignNetBn") is not None]
     if today.get("foreignNetBn") is not None:
         recent_foreign = recent_foreign + [today["foreignNetBn"]]
     n_pos = len(recent_foreign)
-    if n_pos >= MIN_HISTORY_FOR_5D_AVG:
+    if n_pos >= 1:
         window = recent_foreign[-5:]
         avg5 = sum(window) / len(window)
         # Ngưỡng thô v1: quanh 0 tỷ = 50 điểm, mỗi 500 tỷ lệch = 15 điểm.
         # CHƯA hiệu chỉnh bằng dữ liệu thật — xem docstring đầu file.
         val = max(0.0, min(100.0, 50 + (avg5 / 500) * 15))
         band = "healthy" if val >= 60 else "caution" if val >= 40 else "danger"
-        scores["positioning"] = {"value": round(val, 1), "band": band, "n": n_pos,
-                                  "basis": f"khối ngoại TB {len(window)} phiên gần nhất = {avg5:.0f} tỷ VND"}
+        if n_pos >= MIN_HISTORY_FOR_5D_AVG:
+            basis = f"khối ngoại TB {len(window)} phiên gần nhất = {avg5:.0f} tỷ VND"
+        else:
+            basis = (f"{n_pos} phiên (real-time, CHƯA đủ {MIN_HISTORY_FOR_5D_AVG} phiên để làm mượt) "
+                     f"= {avg5:.0f} tỷ VND — sẽ biến động mạnh hơn cho tới khi tích luỹ đủ")
+        scores["positioning"] = {"value": round(val, 1), "band": band, "n": n_pos, "basis": basis}
     else:
         scores["positioning"] = {"value": None, "band": "insufficient_history", "n": n_pos,
-                                  "basis": f"cần ≥{MIN_HISTORY_FOR_5D_AVG} phiên lịch sử, hiện có {n_pos}"}
+                                  "basis": "chưa có dữ liệu khối ngoại hôm nay"}
 
     # --- Momentum: % ngành ở góc Dẫn dắt+Cải thiện trên RRG — không cần
     # lịch sử riêng, sector-flows.json đã tự có chiều sâu lịch sử. ---
@@ -322,7 +331,7 @@ def main() -> int:
         "date": date,
         "method": {
             "liquidity": "Percentile của GTGD hôm nay trên lịch sử tích luỹ (rolling) — tự thích nghi theo thời gian, không phải ngưỡng cố định. Lịch sử ban đầu có thể gồm phiên ước tính backfill (volume VNINDEX × hệ số quy đổi hiệu chỉnh từ 1 phiên thật) trước khi đủ phiên snapshot thật — xem automation/vn_regime/backfill_liquidity.py và tỷ lệ thật/ước tính trong scores.liquidity.basis.",
-            "positioning": "TB khối ngoại ròng 5 phiên gần nhất, quy đổi thô sang thang 0-100 (v1, chưa hiệu chỉnh bằng backtest). Margin debt đã lưu vào lịch sử nhưng chưa gộp vào công thức.",
+            "positioning": "TB khối ngoại ròng tối đa 5 phiên gần nhất, quy đổi thô sang thang 0-100 (v1, chưa hiệu chỉnh bằng backtest). Không có nguồn lịch sử foreign flow miễn phí để backfill (đã kiểm tra hết vnstock) — khi chưa đủ 5 phiên, dùng tạm ít phiên hơn (kể cả 1 phiên real-time), công khai rõ n trong scores.positioning.basis. Margin debt đã lưu vào lịch sử nhưng chưa gộp vào công thức.",
             "momentum": "% số ngành ICB đang ở góc Dẫn dắt+Cải thiện trên bản đồ RRG (public/data/sector-flows.json).",
             "macro": "TB F&G Mỹ + xu hướng DXY 10 phiên gần nhất, quy đổi thô sang thang 0-100 (v1, chưa hiệu chỉnh bằng backtest).",
             "divergence": "Quy tắc thô so từng cặp điểm số có ý nghĩa thật (không phải so combinatorial toàn bộ) — xem compute_divergence() trong script.",

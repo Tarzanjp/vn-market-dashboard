@@ -1,10 +1,10 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-16T08:41:29+07:00",
+  "generatedAtIct": "2026-08-16T09:10:13+07:00",
   "date": "2026-08-14",
   "method": {
     "liquidity": "Percentile của GTGD hôm nay trên lịch sử tích luỹ (rolling) — tự thích nghi theo thời gian, không phải ngưỡng cố định. Lịch sử ban đầu có thể gồm phiên ước tính backfill (volume VNINDEX × hệ số quy đổi hiệu chỉnh từ 1 phiên thật) trước khi đủ phiên snapshot thật — xem automation/vn_regime/backfill_liquidity.py và tỷ lệ thật/ước tính trong scores.liquidity.basis.",
-    "positioning": "TB khối ngoại ròng 5 phiên gần nhất, quy đổi thô sang thang 0-100 (v1, chưa hiệu chỉnh bằng backtest). Margin debt đã lưu vào lịch sử nhưng chưa gộp vào công thức.",
+    "positioning": "TB khối ngoại ròng tối đa 5 phiên gần nhất, quy đổi thô sang thang 0-100 (v1, chưa hiệu chỉnh bằng backtest). Không có nguồn lịch sử foreign flow miễn phí để backfill (đã kiểm tra hết vnstock) — khi chưa đủ 5 phiên, dùng tạm ít phiên hơn (kể cả 1 phiên real-time), công khai rõ n trong scores.positioning.basis. Margin debt đã lưu vào lịch sử nhưng chưa gộp vào công thức.",
     "momentum": "% số ngành ICB đang ở góc Dẫn dắt+Cải thiện trên bản đồ RRG (public/data/sector-flows.json).",
     "macro": "TB F&G Mỹ + xu hướng DXY 10 phiên gần nhất, quy đổi thô sang thang 0-100 (v1, chưa hiệu chỉnh bằng backtest).",
     "divergence": "Quy tắc thô so từng cặp điểm số có ý nghĩa thật (không phải so combinatorial toàn bộ) — xem compute_divergence() trong script."
@@ -17,10 +17,10 @@
       "basis": "percentile GTGD trên 86 phiên tích luỹ (0 thật + 86 ước tính backfill)"
     },
     "positioning": {
-      "value": null,
-      "band": "insufficient_history",
+      "value": 23.0,
+      "band": "danger",
       "n": 1,
-      "basis": "cần ≥5 phiên lịch sử, hiện có 1"
+      "basis": "1 phiên (real-time, CHƯA đủ 5 phiên để làm mượt) = -901 tỷ VND — sẽ biến động mạnh hơn cho tới khi tích luỹ đủ"
     },
     "momentum": {
       "value": 90.0,
@@ -36,11 +36,26 @@
     }
   },
   "verdict": {
-    "cls": "ok",
-    "label": "Đồng thuận tích cực",
-    "summary": "4 điểm số đồng thuận tích cực, trung bình 71/100."
+    "cls": "warn",
+    "label": "Tín hiệu lệch pha",
+    "summary": "2 cặp điểm số đang mâu thuẫn nhau — xem chi tiết trước khi kết luận theo điểm trung bình (59/100)."
   },
-  "divergence": [],
+  "divergence": [
+    {
+      "pair": [
+        "liquidity",
+        "positioning"
+      ],
+      "note": "Thanh khoản cao nhưng khối ngoại đang bán ròng mạnh — có thể là dòng tiền luân chuyển nội bộ, không phải tiền mới thật vào thị trường."
+    },
+    {
+      "pair": [
+        "momentum",
+        "positioning"
+      ],
+      "note": "Nhiều ngành đang mạnh trên RRG nhưng khối ngoại tiêu cực — sức mạnh có thể đến từ dòng tiền trong nước ngắn hạn, dễ đảo chiều khi khối ngoại tiếp tục bán."
+    }
+  ],
   "dataQuality": {
     "historyDepthDays": 87,
     "note": "Đã tích luỹ 87 phiên."
