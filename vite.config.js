@@ -18,6 +18,7 @@ export default defineConfig(({ command }) => ({
         lichSu: resolve(__dirname, "lich-su.html"),
         dongTienNganh: resolve(__dirname, "dong-tien-nganh.html"),
         dongTienCashout: resolve(__dirname, "dong-tien-cashout.html"),
+        huongDanDoc: resolve(__dirname, "huong-dan-doc.html"),
       },
     },
   },

@@ -44,6 +44,14 @@ export default function NavTabs({ active }) {
         </svg>
         <span>Cashout</span>
       </a>
+      <a href="huong-dan-doc.html" aria-current={active === "guide" ? "page" : undefined}>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle cx="8" cy="8" r="6.3" stroke="currentColor" strokeWidth="1.4" />
+          <path d="M6 6.2c0-1.1.9-1.9 2-1.9s2 .7 2 1.8c0 1.4-2 1.5-2 3.1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+          <circle cx="8" cy="11.4" r="0.85" fill="currentColor" />
+        </svg>
+        <span>Hướng dẫn</span>
+      </a>
     </nav>
   );
 }
