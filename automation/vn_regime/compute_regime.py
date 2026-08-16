@@ -146,6 +146,10 @@ def build_today_row(live: dict | None, sector_flows: dict | None, cashout: dict 
     return {
         "date": date,
         "turnoverBn": (cashout or {}).get("totalTurnoverBn"),
+        # "live" cho phiên có snapshot cashout-vn.json thật; các phiên backfill
+        # (xem backfill_liquidity.py) tự đặt "estimate_backfill" khi ghi row —
+        # dùng để công khai trong basis text tỷ lệ thật/ước tính của percentile.
+        "turnoverQuality": "live" if (cashout or {}).get("totalTurnoverBn") is not None else None,
         "foreignNetBn": (cashout or {}).get("foreignNetBn"),
         # marginBn: lưu lại để dùng sau (MoM cần vài điểm dữ liệu tháng phân biệt,
         # v1 CHƯA gộp vào công thức điểm số nào — xem docstring đầu file).
@@ -170,14 +174,19 @@ def compute_scores(today: dict, history_excl_today: dict) -> dict:
     scores: dict = {}
 
     # --- Liquidity: percentile GTGD trên lịch sử tích luỹ (tự thích nghi,
-    # không phải ngưỡng tuyệt đối 20.000/12.000 tỷ cố định). ---
+    # không phải ngưỡng tuyệt đối 20.000/12.000 tỷ cố định). Lịch sử có thể
+    # gồm cả phiên "estimate_backfill" (xem backfill_liquidity.py) — LUÔN công
+    # khai tỷ lệ thật/ước tính trong basis, không giấu trong con số tổng n. ---
     past_turnover = [r["turnoverBn"] for r in past if r.get("turnoverBn") is not None]
     n_liq = len(past_turnover)
+    n_liq_est = sum(1 for r in past if r.get("turnoverBn") is not None and r.get("turnoverQuality") == "estimate_backfill")
+    n_liq_live = n_liq - n_liq_est
     if today.get("turnoverBn") is not None and n_liq >= MIN_HISTORY_FOR_PERCENTILE:
         pct = percentile_rank(today["turnoverBn"], past_turnover)
         band = "healthy" if pct >= 60 else "caution" if pct >= 30 else "danger"
+        est_note = f" ({n_liq_live} thật + {n_liq_est} ước tính backfill)" if n_liq_est else ""
         scores["liquidity"] = {"value": pct, "band": band, "n": n_liq,
-                                "basis": f"percentile GTGD trên {n_liq} phiên tích luỹ"}
+                                "basis": f"percentile GTGD trên {n_liq} phiên tích luỹ{est_note}"}
     else:
         scores["liquidity"] = {"value": None, "band": "insufficient_history", "n": n_liq,
                                 "basis": f"cần ≥{MIN_HISTORY_FOR_PERCENTILE} phiên lịch sử, hiện có {n_liq}"}
@@ -312,7 +321,7 @@ def main() -> int:
         "generatedAtIct": now_ict().isoformat(timespec="seconds"),
         "date": date,
         "method": {
-            "liquidity": "Percentile của GTGD hôm nay trên lịch sử tích luỹ (rolling) — tự thích nghi theo thời gian, không phải ngưỡng cố định.",
+            "liquidity": "Percentile của GTGD hôm nay trên lịch sử tích luỹ (rolling) — tự thích nghi theo thời gian, không phải ngưỡng cố định. Lịch sử ban đầu có thể gồm phiên ước tính backfill (volume VNINDEX × hệ số quy đổi hiệu chỉnh từ 1 phiên thật) trước khi đủ phiên snapshot thật — xem automation/vn_regime/backfill_liquidity.py và tỷ lệ thật/ước tính trong scores.liquidity.basis.",
             "positioning": "TB khối ngoại ròng 5 phiên gần nhất, quy đổi thô sang thang 0-100 (v1, chưa hiệu chỉnh bằng backtest). Margin debt đã lưu vào lịch sử nhưng chưa gộp vào công thức.",
             "momentum": "% số ngành ICB đang ở góc Dẫn dắt+Cải thiện trên bản đồ RRG (public/data/sector-flows.json).",
             "macro": "TB F&G Mỹ + xu hướng DXY 10 phiên gần nhất, quy đổi thô sang thang 0-100 (v1, chưa hiệu chỉnh bằng backtest).",
