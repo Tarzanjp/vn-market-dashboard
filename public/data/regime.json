@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-16T14:26:18+07:00",
+  "generatedAtIct": "2026-08-16T15:23:57+07:00",
   "date": "2026-08-14",
   "method": {
     "liquidity": "Percentile của GTGD hôm nay trên lịch sử tích luỹ (rolling) — tự thích nghi theo thời gian, không phải ngưỡng cố định. Lịch sử ban đầu có thể gồm phiên ước tính backfill (volume VNINDEX × hệ số quy đổi hiệu chỉnh từ 1 phiên thật) trước khi đủ phiên snapshot thật — xem automation/vn_regime/backfill_liquidity.py và tỷ lệ thật/ước tính trong scores.liquidity.basis.",
@@ -158,7 +158,14 @@
         "bid1_vol": 200.0,
         "ask1_price": 200400.0,
         "ask1_vol": 1800.0,
-        "spread_pct": 0.05
+        "spread_pct": 0.05,
+        "pe": 68.63,
+        "pb": 9.16,
+        "roe": 14.8,
+        "foreigner_pct": 3.2,
+        "state_pct": 0.0,
+        "free_float_pct": 30.0,
+        "capacity_days_500bn": 2.1
       },
       {
         "code": "VIX",
@@ -170,7 +177,14 @@
         "bid1_vol": 767000.0,
         "ask1_price": 13500.0,
         "ask1_vol": 523500.0,
-        "spread_pct": 0.37
+        "spread_pct": 0.37,
+        "pe": 5.82,
+        "pb": 1.01,
+        "roe": 16.5,
+        "foreigner_pct": 7.0,
+        "state_pct": 0.0,
+        "free_float_pct": 100.0,
+        "capacity_days_500bn": 3.4
       },
       {
         "code": "VHM",
@@ -182,7 +196,14 @@
         "bid1_vol": 124500.0,
         "ask1_price": 68300.0,
         "ask1_vol": 4900.0,
-        "spread_pct": 0.15
+        "spread_pct": 0.15,
+        "pe": 7.02,
+        "pb": 2.16,
+        "roe": 32.7,
+        "foreigner_pct": 6.7,
+        "state_pct": 0.0,
+        "free_float_pct": 30.0,
+        "capacity_days_500bn": 4.0
       },
       {
         "code": "SSI",
@@ -194,7 +215,14 @@
         "bid1_vol": 1164100.0,
         "ask1_price": 24550.0,
         "ask1_vol": 176400.0,
-        "spread_pct": 0.2
+        "spread_pct": 0.2,
+        "pe": 11.42,
+        "pb": 1.51,
+        "roe": 13.4,
+        "foreigner_pct": 30.3,
+        "state_pct": 0.0,
+        "free_float_pct": 70.0,
+        "capacity_days_500bn": 4.0
       },
       {
         "code": "HPG",
@@ -206,7 +234,14 @@
         "bid1_vol": 642500.0,
         "ask1_price": 21300.0,
         "ask1_vol": 645400.0,
-        "spread_pct": 0.24
+        "spread_pct": 0.24,
+        "pe": 7.73,
+        "pb": 1.27,
+        "roe": 17.4,
+        "foreigner_pct": 21.7,
+        "state_pct": 0.0,
+        "free_float_pct": 60.0,
+        "capacity_days_500bn": 5.7
       },
       {
         "code": "SHB",
@@ -218,7 +253,14 @@
         "bid1_vol": 1900.0,
         "ask1_price": 11750.0,
         "ask1_vol": 1456500.0,
-        "spread_pct": 0.43
+        "spread_pct": 0.43,
+        "pe": 4.55,
+        "pb": 0.74,
+        "roe": 17.2,
+        "foreigner_pct": 3.7,
+        "state_pct": 0.6,
+        "free_float_pct": 75.0,
+        "capacity_days_500bn": 6.0
       },
       {
         "code": "TCB",
@@ -230,7 +272,14 @@
         "bid1_vol": 10100.0,
         "ask1_price": 32000.0,
         "ask1_vol": 852700.0,
-        "spread_pct": 0.16
+        "spread_pct": 0.16,
+        "pe": 8.36,
+        "pb": 1.27,
+        "roe": 14.8,
+        "foreigner_pct": 20.6,
+        "state_pct": 0.0,
+        "free_float_pct": 55.0,
+        "capacity_days_500bn": 6.8
       },
       {
         "code": "FPT",
@@ -242,7 +291,14 @@
         "bid1_vol": 3700.0,
         "ask1_price": 68400.0,
         "ask1_vol": 183600.0,
-        "spread_pct": 0.15
+        "spread_pct": 0.15,
+        "pe": 11.64,
+        "pb": 2.93,
+        "roe": 26.5,
+        "foreigner_pct": 27.4,
+        "state_pct": 5.6,
+        "free_float_pct": 85.0,
+        "capacity_days_500bn": 6.8
       },
       {
         "code": "MSN",
@@ -254,7 +310,14 @@
         "bid1_vol": 1200.0,
         "ask1_price": 66300.0,
         "ask1_vol": 900.0,
-        "spread_pct": 0.15
+        "spread_pct": 0.15,
+        "pe": 14.3,
+        "pb": 2.41,
+        "roe": 19.4,
+        "foreigner_pct": 24.1,
+        "state_pct": 0.0,
+        "free_float_pct": 60.0,
+        "capacity_days_500bn": 7.9
       },
       {
         "code": "GEX",
@@ -266,7 +329,14 @@
         "bid1_vol": 458300.0,
         "ask1_price": 24650.0,
         "ask1_vol": 54500.0,
-        "spread_pct": 0.2
+        "spread_pct": 0.2,
+        "pe": 23.52,
+        "pb": 1.63,
+        "roe": 7.5,
+        "foreigner_pct": 6.7,
+        "state_pct": 0.0,
+        "free_float_pct": 70.0,
+        "capacity_days_500bn": 9.2
       }
     ]
   }

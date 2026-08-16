@@ -65,6 +65,18 @@ SECTOR_DEFS = [
 # phản ánh đúng dòng tiền dẫn dắt phiên hiện tại thay vì lệch theo 1 rổ cũ.
 TOP_TICKERS_N = 10
 
+# "Năng lực hấp thụ vốn" (capacity) — quy ước participation-rate ≤15% GTGD/phiên
+# (phổ biến ở bàn giao dịch tổ chức để giảm market impact) và các mốc vốn MINH
+# HOẠ (không phải khuyến nghị quy mô vị thế — người đọc tự quy đổi theo vốn
+# thật). Xem capacity_days() trong main() cho công thức.
+CAPACITY_PARTICIPATION_PCT = 0.15
+CAPACITY_TIERS_BN = [500, 2000, 5000]
+CAPACITY_TICKER_TIER_BN = 500
+
+# Field dùng để tính leadersRollup — trung bình theo tỷ trọng GTGD của 10 mã
+# dẫn dắt, KHÔNG phải toàn thị trường (xem method["leadersRollup"] ở payload).
+LEADERS_ROLLUP_FIELDS = ["pe", "pb", "roe", "foreigner_pct", "state_pct", "free_float_pct"]
+
 
 def log(msg: str) -> None:
     print(f"[cashout_vn] {msg}", flush=True)
@@ -209,12 +221,69 @@ def main() -> int:
     def spread_pct(bid1, ask1):
         return round((float(ask1) - float(bid1)) / float(bid1) * 100, 2) if bid1 and bid1 > 0 else None
 
+    def pct_field(row, col):
+        v = row.get(col)
+        return round(float(v) * 100, 1) if v is not None and pd.notna(v) else None
+
+    def capacity_days(capital_bn: float, turnover_bn, participation_pct: float):
+        """Số phiên cần để giải ngân/rút `capital_bn` tỷ VND nếu tự giới hạn ở
+        `participation_pct` GTGD/phiên (participation-rate heuristic — quy ước
+        bàn giao dịch tổ chức phổ biến là giới hạn ≤10-20%/phiên để giảm market
+        impact). Dùng GTGD CỦA ĐÚNG PHIÊN HÔM NAY (snapshot 1 phiên/lần chạy,
+        KHÔNG phải ADTV nhiều phiên). Đây là cơ học thực thi lệnh, KHÔNG phải
+        khuyến nghị quy mô vị thế.
+        Golden case tính tay: capacity_days(500, 200, 0.15) = 500/(200*0.15) = 16.7."""
+        if not turnover_bn or turnover_bn <= 0:
+            return None
+        return round(capital_bn / (turnover_bn * participation_pct), 1)
+
+    def fetch_fundamentals(sym: str) -> dict:
+        """P/E, P/B, ROE (company.ratio_summary, dòng TTM mới nhất — báo cáo
+        theo quý, có độ trễ so với ngày công bố thật) + % sở hữu nước ngoài/
+        nhà nước/free-float (company.trading_stats) — 2 request MỚI/mã (không
+        có trong bulk price_board). Retry 1 lần rồi bỏ qua nếu lỗi, không làm
+        hỏng cả lượt chạy vì 1 mã lỗi tạm thời."""
+        out = {"pe": None, "pb": None, "roe": None,
+               "foreigner_pct": None, "state_pct": None, "free_float_pct": None}
+        for attempt in range(2):
+            try:
+                time.sleep(3.2)
+                ratio = vs.stock(symbol=sym, source="VCI").company.ratio_summary()
+                if ratio is not None and len(ratio):
+                    last = ratio.iloc[-1]
+                    out["pe"] = round(float(last["pe"]), 2) if pd.notna(last.get("pe")) else None
+                    out["pb"] = round(float(last["pb"]), 2) if pd.notna(last.get("pb")) else None
+                    out["roe"] = pct_field(last, "roe")
+                break
+            except Exception as e:
+                log(f"ratio_summary fail {sym} (attempt {attempt}): {e!r}")
+                time.sleep(15)
+        for attempt in range(2):
+            try:
+                time.sleep(3.2)
+                stats = vs.stock(symbol=sym, source="VCI").company.trading_stats()
+                if stats is not None and len(stats):
+                    r0 = stats.iloc[0]
+                    out["foreigner_pct"] = pct_field(r0, "foreigner_percentage")
+                    out["state_pct"] = pct_field(r0, "state_percentage")
+                    out["free_float_pct"] = pct_field(r0, "free_float_percentage")
+                break
+            except Exception as e:
+                log(f"trading_stats fail {sym} (attempt {attempt}): {e!r}")
+                time.sleep(15)
+        return out
+
     top_tickers_board = board.sort_values("match_accumulated_value", ascending=False).head(TOP_TICKERS_N)
     tickers_out = []
+    ticker_turnovers_bn = []  # song song với tickers_out — dùng làm trọng số cho leadersRollup
     for _, r in top_tickers_board.iterrows():
         bid1, ask1 = r["bid_ask_bid_1_price"], r["bid_ask_ask_1_price"]
+        sym = r["listing_symbol"]
+        log(f"fetch fundamentals {sym}")
+        fundamentals = fetch_fundamentals(sym)
+        ticker_turnover_bn = r["match_accumulated_value"] / 1000
         tickers_out.append({
-            "code": r["listing_symbol"],
+            "code": sym,
             "sector": sector_label_for(r["industry_name"]),
             "foreign_buy_bn": round(r["match_foreign_buy_value"] / 1e9, 2),
             "foreign_sell_bn": round(r["match_foreign_sell_value"] / 1e9, 2),
@@ -224,8 +293,27 @@ def main() -> int:
             "ask1_price": float(ask1) if ask1 else None,
             "ask1_vol": float(r["bid_ask_ask_1_volume"]) if ask1 else None,
             "spread_pct": spread_pct(bid1, ask1),
+            **fundamentals,
+            "capacity_days_500bn": capacity_days(CAPACITY_TICKER_TIER_BN, ticker_turnover_bn, CAPACITY_PARTICIPATION_PCT),
         })
+        ticker_turnovers_bn.append(ticker_turnover_bn)
     log(f"top {TOP_TICKERS_N} tickers theo GTGD: {[t['code'] for t in tickers_out]}")
+
+    # leadersRollup — trung bình theo tỷ trọng GTGD phiên hôm nay (turnover-
+    # weighted) của các field fundamentals/ownership trên 10 mã dẫn dắt, chỉ
+    # trên giá trị không null (tự chuẩn hoá lại trọng số khi có mã null). Đây
+    # là universe top-10-theo-GTGD (tickers_out), KHÁC universe top-10-theo-
+    # VỐN-HOÁ của market_concentration["topStocks"] bên dưới — không gộp nhầm.
+    def _weighted_avg(field: str):
+        pairs = [(t[field], w) for t, w in zip(tickers_out, ticker_turnovers_bn) if t.get(field) is not None and w]
+        total_w = sum(w for _, w in pairs)
+        return round(sum(v * w for v, w in pairs) / total_w, 2) if total_w else None
+
+    leaders_rollup = {
+        "n": len(tickers_out),
+        "weightBasis": "GTGD phiên hôm nay của từng mã (turnover-weighted)",
+        **{field: _weighted_avg(field) for field in LEADERS_ROLLUP_FIELDS},
+    }
 
     # "Sắp cạn room ngoại" — quét TOÀN BỘ board đã fetch sẵn (không gọi thêm
     # request), lọc mã có room ngoại > 0 (đủ điều kiện sở hữu nước ngoài) và
@@ -279,6 +367,17 @@ def main() -> int:
     }
     log(f"market cap concentration: top5={top5_pct}% top10={top10_pct}% (tổng vốn hoá ước tính {total_cap_bn:.0f} tỷ VND)")
 
+    # Năng lực hấp thụ vốn cấp thị trường — cùng công thức capacity_days(),
+    # dùng total_turnover_bn đã tính ở trên (không request thêm). Mốc vốn là
+    # MINH HOẠ để người đọc tự quy đổi theo vốn thật, không phải khuyến nghị.
+    capacity = {
+        "participationPct": round(CAPACITY_PARTICIPATION_PCT * 100, 1),
+        "tiers": [
+            {"capitalBn": tier, "days": capacity_days(tier, total_turnover_bn, CAPACITY_PARTICIPATION_PCT)}
+            for tier in CAPACITY_TIERS_BN
+        ],
+    }
+
     generated_at = pd.Timestamp.now(tz="Asia/Bangkok")
     today_ict = generated_at.date().isoformat()
     proprietary_net_bn, proprietary_quality = load_proprietary_from_live(today_ict)
@@ -297,6 +396,9 @@ def main() -> int:
             "foreignRoom": "current_room/total_room thật từ price_board (đơn vị cổ phiếu) — room % = current_room/total_room×100. Mã có total_room=0 (không giới hạn sở hữu nước ngoài hoặc thiếu dữ liệu) bị loại khỏi foreignRoomWatch.",
             "topOfBook": "Giá + khối lượng đặt mua/bán tốt nhất (mức 1) thật từ price_board tại thời điểm snapshot — KHÔNG phải toàn bộ sổ lệnh (chỉ 1 trong 3 mức API trả về). spread_pct = (ask1−bid1)/bid1×100.",
             "marketConcentration": "market_cap = số CP niêm yết × giá khớp lệnh gần nhất (hoặc giá tham chiếu nếu chưa khớp lệnh phiên này) — số thật từ price_board, đã đối chiếu khớp với company.trading_stats().market_cap. top5Pct/top10Pct = % tổng vốn hoá toàn thị trường (theo mã có market_cap>0) do 5/10 mã lớn nhất nắm giữ — dùng đánh giá rủi ro tập trung khi phân bổ theo tỷ trọng vốn hoá.",
+            "fundamentals": "pe/pb/roe từ company.ratio_summary() (dòng TTM mới nhất, báo cáo theo quý — CÓ ĐỘ TRỄ so với ngày công bố BCTC thật, không phải số real-time). foreigner_pct/state_pct/free_float_pct từ company.trading_stats() (snapshot sở hữu). Cả 2 nguồn là số thật của VCI, null nếu công ty chưa công bố/API lỗi tạm thời — không bịa.",
+            "capacity": f"Số phiên cần để giải ngân/rút vốn nếu tự giới hạn ở {CAPACITY_PARTICIPATION_PCT*100:.0f}% GTGD/phiên (participation-rate heuristic, quy ước thực thi tổ chức phổ biến ≤10-20%/phiên để giảm market impact) = capital_bn / (turnover_bn × participation_pct). Dùng GTGD CỦA ĐÚNG PHIÊN HÔM NAY (snapshot 1 phiên/lần chạy, không phải ADTV nhiều phiên). Mốc vốn (tiers/capacity_days_500bn) là MINH HOẠ, KHÔNG phải khuyến nghị quy mô vị thế — cơ học thực thi lệnh thuần tuý.",
+            "leadersRollup": "Trung bình theo tỷ trọng GTGD phiên hôm nay (turnover-weighted, chỉ trên giá trị không null, tự chuẩn hoá lại trọng số) của pe/pb/roe/foreigner_pct/state_pct/free_float_pct trên 10 mã dẫn dắt theo GTGD (tickers[]) — KHÔNG phải toàn thị trường, và KHÔNG cùng universe với marketConcentration.topStocks (universe đó là top-10 theo VỐN HOÁ, có thể khác top-10 theo GTGD).",
         },
         "quality": {
             "foreignNetBn": "live",
@@ -305,8 +407,10 @@ def main() -> int:
         "totalTurnoverBn": round(total_turnover_bn, 1),
         "foreignNetBn": round(foreign_net_bn, 1),
         "proprietaryNetBn": round(proprietary_net_bn, 1) if proprietary_net_bn is not None else None,
+        "capacity": capacity,
         "sectors": sectors_out,
         "tickers": tickers_out,
+        "leadersRollup": leaders_rollup,
         "foreignRoomWatch": foreign_room_watch,
         "marketConcentration": market_concentration,
     }

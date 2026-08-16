@@ -197,6 +197,20 @@ export default function CashoutApp() {
           </div>
         </section>
 
+        {/* ⑤b Năng lực hấp thụ vốn & định giá nhóm dẫn dắt */}
+        <section className="panel" style={{ marginTop: 16 }}>
+          <div className="p-hd">
+            <div>
+              <h2>📦 Năng lực hấp thụ vốn & định giá nhóm dẫn dắt</h2>
+              <span className="sub">Số phiên cần giải ngân/rút vốn nếu tự giới hạn ≤15% GTGD/phiên (cơ học thực thi lệnh, không phải khuyến nghị quy mô vị thế) — và định giá/cơ cấu sở hữu bình quân theo tỷ trọng GTGD của 10 mã dẫn dắt.</span>
+            </div>
+          </div>
+          <div className="p-body">
+            <div className="co-vn30-stats" id="capacityStats" />
+            <div className="co-vn30-stats" style={{ marginTop: 10 }} id="leadersRollupStats" />
+          </div>
+        </section>
+
         {/* ⑥ Tín hiệu tổ chức (VN30) */}
         <section className="panel" style={{ marginTop: 16 }}>
           <div className="p-hd">
@@ -215,6 +229,8 @@ export default function CashoutApp() {
           Tổng GTGD, khối ngoại ròng, GTGD/%thay đổi theo ngành, và khối ngoại mua/bán của 10 mã dẫn dắt (GTGD lớn nhất, chọn động mỗi phiên) lấy từ snapshot thật (nguồn VCI qua vnstock) khi trang tải được <code>data/cashout-vn.json</code>.
           5D Avg Vol Ratio là ước tính từ 1 mã đại diện lớn nhất mỗi ngành, không phải toàn ngành. Tự doanh (proprietary flow) không có nguồn miễn phí — agent tự động tìm số công khai mỗi ngày (nhãn Proxy khi có); phần lớn phiên sẽ hiện "—" vì báo chí VN hiếm khi công bố số này.
           Room ngoại, top-of-book bid/ask, basis VN30F1M là số thật từ snapshot VCI. Giao dịch cổ đông lớn/nội bộ chỉ theo dõi 30 mã VN30, tiêu đề hiển thị nguyên văn từ công bố HOSE — không tự tách số lượng cổ phiếu.
+          P/E, P/B, ROE, tỷ lệ sở hữu của 10 mã dẫn dắt lấy từ báo cáo quý thật (company.ratio_summary/trading_stats) — có độ trễ theo lịch công bố BCTC, không phải số real-time. Mức độ cô đặc vốn hoá tính từ toàn bộ price_board.
+          Năng lực hấp thụ vốn (capacity) = vốn ÷ (GTGD phiên hôm nay × 15%) — quy ước participation-rate phổ biến ở bàn giao dịch tổ chức, dùng GTGD của đúng phiên hôm nay (không phải trung bình nhiều phiên); mốc vốn chỉ là minh hoạ để tự quy đổi, không phải khuyến nghị quy mô vị thế. Định giá/sở hữu bình quân nhóm dẫn dắt tính theo tỷ trọng GTGD của 10 mã đó (turnover-weighted) — khác universe top-10 theo vốn hoá ở mục cô đặc vốn hoá bên trên.
           Không sử dụng trực tiếp cho quyết định đầu tư.
         </Footer>
       </main>

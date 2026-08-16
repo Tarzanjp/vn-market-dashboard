@@ -46,9 +46,16 @@ export function initCashout(data, insight) {
     LEADING_STOCKS = data.tickers.map((t) => ({
       code: t.code, sector: t.sector, buy: t.foreign_buy_bn, sell: t.foreign_sell_bn,
       roomPct: t.foreign_room_pct, spreadPct: t.spread_pct,
+      pe: t.pe, pb: t.pb, roe: t.roe,
+      foreignerPct: t.foreigner_pct, statePct: t.state_pct, freeFloatPct: t.free_float_pct,
+      capacityDays500bn: t.capacity_days_500bn,
     }));
   }
   const FOREIGN_ROOM_WATCH = isReal && Array.isArray(data.foreignRoomWatch) ? data.foreignRoomWatch : [];
+  // capacity (cấp thị trường) + leadersRollup — không có preset/mẫu, chỉ hiện
+  // khi có dữ liệu thật (isReal); panel tương ứng tự ẩn nếu null (xem renderCapacity/renderLeadersRollup).
+  const CAPACITY = isReal ? data.capacity : null;
+  const LEADERS_ROLLUP = isReal ? data.leadersRollup : null;
 
   /* ============ Đồng hồ ============ */
   function tick() {
@@ -243,6 +250,18 @@ export function initCashout(data, insight) {
           <span>Spread (bid/ask)</span>
           <span class="num">${typeof s.spreadPct === "number" ? s.spreadPct.toFixed(2) + "%" : "—"}</span>
         </div>
+        <div class="co-mini-row">
+          <span>Định giá</span>
+          <span class="num">P/E ${typeof s.pe === "number" ? s.pe.toFixed(1) : "—"} · P/B ${typeof s.pb === "number" ? s.pb.toFixed(1) : "—"} · ROE ${typeof s.roe === "number" ? s.roe.toFixed(1) + "%" : "—"}</span>
+        </div>
+        <div class="co-mini-row">
+          <span>Sở hữu</span>
+          <span class="num">Ngoại ${typeof s.foreignerPct === "number" ? s.foreignerPct.toFixed(1) + "%" : "—"} · NN ${typeof s.statePct === "number" ? s.statePct.toFixed(1) + "%" : "—"} · Free float ${typeof s.freeFloatPct === "number" ? s.freeFloatPct.toFixed(1) + "%" : "—"}</span>
+        </div>
+        <div class="co-mini-row">
+          <span>Thời gian hấp thụ (500 tỷ, ≤15%/phiên)</span>
+          <span class="num">${typeof s.capacityDays500bn === "number" ? s.capacityDays500bn.toFixed(1) + " phiên" : "—"}</span>
+        </div>
       `;
       grid.appendChild(card);
     });
@@ -326,6 +345,37 @@ export function initCashout(data, insight) {
     });
   }
 
+  /* ============ Năng lực hấp thụ vốn & định giá nhóm dẫn dắt ============ */
+  function renderCapacityAndRollup() {
+    const capEl = el("capacityStats");
+    if (capEl) {
+      const tiers = CAPACITY && Array.isArray(CAPACITY.tiers) ? CAPACITY.tiers : [];
+      capEl.innerHTML = tiers.length
+        ? tiers.map((t) => `
+            <div class="co-vn30-tile">
+              <span class="k">${t.capitalBn.toLocaleString("en-US")} tỷ VND</span>
+              <span class="v num">${typeof t.days === "number" ? t.days.toFixed(1) + " phiên" : "—"}</span>
+            </div>
+          `).join("")
+        : `<p style="color:var(--dim);font-size:12.5px;margin:0">— Chưa có dữ liệu.</p>`;
+    }
+
+    const rollupEl = el("leadersRollupStats");
+    if (rollupEl) {
+      const r = LEADERS_ROLLUP;
+      rollupEl.innerHTML = r
+        ? `
+          <div class="co-vn30-tile"><span class="k">P/E bình quân</span><span class="v num">${typeof r.pe === "number" ? r.pe.toFixed(1) : "—"}</span></div>
+          <div class="co-vn30-tile"><span class="k">P/B bình quân</span><span class="v num">${typeof r.pb === "number" ? r.pb.toFixed(1) : "—"}</span></div>
+          <div class="co-vn30-tile"><span class="k">ROE bình quân</span><span class="v num">${typeof r.roe === "number" ? r.roe.toFixed(1) + "%" : "—"}</span></div>
+          <div class="co-vn30-tile"><span class="k">Sở hữu ngoại bình quân</span><span class="v num">${typeof r.foreigner_pct === "number" ? r.foreigner_pct.toFixed(1) + "%" : "—"}</span></div>
+          <div class="co-vn30-tile"><span class="k">Sở hữu Nhà nước bình quân</span><span class="v num">${typeof r.state_pct === "number" ? r.state_pct.toFixed(1) + "%" : "—"}</span></div>
+          <div class="co-vn30-tile"><span class="k">Free float bình quân</span><span class="v num">${typeof r.free_float_pct === "number" ? r.free_float_pct.toFixed(1) + "%" : "—"}</span></div>
+        `
+        : `<p style="color:var(--dim);font-size:12.5px;margin:0">— Chưa có dữ liệu.</p>`;
+    }
+  }
+
   /* ============ Tín hiệu tổ chức (VN30) ============ */
   function renderInsight() {
     const statsEl = el("vn30Stats");
@@ -389,6 +439,7 @@ export function initCashout(data, insight) {
   renderStocks();
   renderForeignRoomWatch();
   renderMarketConcentration();
+  renderCapacityAndRollup();
   renderInsight();
 
   /* ============ Trạng thái dữ liệu + ghi chú ============ */
