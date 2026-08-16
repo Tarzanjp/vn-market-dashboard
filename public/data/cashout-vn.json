@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-16T05:12:52+07:00",
+  "generatedAtIct": "2026-08-16T14:30:44+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — bulk price_board toàn bộ mã HOSE/HNX/UPCOM",
   "method": {
     "totalTurnoverBn": "Σ GTGD khớp lệnh tích luỹ toàn bộ mã (accumulated_value), đơn vị tỷ VND — số thật từ snapshot.",
@@ -10,7 +10,8 @@
     "proprietaryFlow": "Không có nguồn dữ liệu miễn phí qua API này. Lấy từ public/data/live.json field 'proprietary' (agent nghiên cứu công khai, xem daily_update.py merge_grok_fill), CHỈ khi cùng phiên hôm nay — quality=proxy. Không có nguồn cùng ngày → null (quality=missing), KHÔNG bịa/carry-forward.",
     "tickerForeignFlow": "foreign_buy_value / foreign_sell_value thật của từng mã, KHÔNG phải ước tính toàn bộ lệnh mua/bán (không tách được lệnh của NĐT trong nước).",
     "foreignRoom": "current_room/total_room thật từ price_board (đơn vị cổ phiếu) — room % = current_room/total_room×100. Mã có total_room=0 (không giới hạn sở hữu nước ngoài hoặc thiếu dữ liệu) bị loại khỏi foreignRoomWatch.",
-    "topOfBook": "Giá + khối lượng đặt mua/bán tốt nhất (mức 1) thật từ price_board tại thời điểm snapshot — KHÔNG phải toàn bộ sổ lệnh (chỉ 1 trong 3 mức API trả về). spread_pct = (ask1−bid1)/bid1×100."
+    "topOfBook": "Giá + khối lượng đặt mua/bán tốt nhất (mức 1) thật từ price_board tại thời điểm snapshot — KHÔNG phải toàn bộ sổ lệnh (chỉ 1 trong 3 mức API trả về). spread_pct = (ask1−bid1)/bid1×100.",
+    "marketConcentration": "market_cap = số CP niêm yết × giá khớp lệnh gần nhất (hoặc giá tham chiếu nếu chưa khớp lệnh phiên này) — số thật từ price_board, đã đối chiếu khớp với company.trading_stats().market_cap. top5Pct/top10Pct = % tổng vốn hoá toàn thị trường (theo mã có market_cap>0) do 5/10 mã lớn nhất nắm giữ — dùng đánh giá rủi ro tập trung khi phân bổ theo tỷ trọng vốn hoá."
   },
   "quality": {
     "foreignNetBn": "live",
@@ -244,5 +245,61 @@
       "room_pct": 11.2,
       "turnover_bn": 36.4
     }
-  ]
+  ],
+  "marketConcentration": {
+    "top5Pct": 33.9,
+    "top10Pct": 45.4,
+    "topStocks": [
+      {
+        "code": "VIC",
+        "marketCapBn": 1555542.2,
+        "weightPct": 18.53
+      },
+      {
+        "code": "VCB",
+        "marketCapBn": 488807.0,
+        "weightPct": 5.82
+      },
+      {
+        "code": "VHM",
+        "marketCapBn": 280125.5,
+        "weightPct": 3.34
+      },
+      {
+        "code": "BID",
+        "marketCapBn": 278462.5,
+        "weightPct": 3.32
+      },
+      {
+        "code": "CTG",
+        "marketCapBn": 244270.4,
+        "weightPct": 2.91
+      },
+      {
+        "code": "TCB",
+        "marketCapBn": 226759.7,
+        "weightPct": 2.7
+      },
+      {
+        "code": "VPB",
+        "marketCapBn": 199141.5,
+        "weightPct": 2.37
+      },
+      {
+        "code": "GAS",
+        "marketCapBn": 183384.2,
+        "weightPct": 2.18
+      },
+      {
+        "code": "HPG",
+        "marketCapBn": 179413.0,
+        "weightPct": 2.14
+      },
+      {
+        "code": "MCH",
+        "marketCapBn": 178853.0,
+        "weightPct": 2.13
+      }
+    ]
+  }
 }

@@ -153,6 +153,14 @@ export default function RegimeApp() {
                   ))}
                 </div>
 
+                {regime.marketStats?.realizedVol20d != null && (
+                  <div className="rg-marketstat">
+                    <span className="k">📉 Biến động thực hiện VN-Index</span>
+                    <span className="v">{regime.marketStats.realizedVol20d.toFixed(1)}%/năm</span>
+                    <span className="note">{regime.marketStats.basis}</span>
+                  </div>
+                )}
+
                 {divergence.length > 0 ? (
                   <div className="rg-divergence">
                     {divergence.map((d, i) => (

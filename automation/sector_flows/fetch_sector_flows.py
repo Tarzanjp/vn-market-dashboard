@@ -96,6 +96,30 @@ def resample_period(df: pd.DataFrame, freq: str) -> pd.DataFrame:
     return out
 
 
+ATR_PERIOD = 14
+
+
+def compute_atr14_pct(df: pd.DataFrame) -> float | None:
+    """ATR(14) kiểu Wilder (EMA alpha=1/14 trên True Range) — trả về % so với
+    giá đóng cửa gần nhất để so sánh được biến động giữa các ngành có mức
+    điểm chỉ số khác nhau. Dùng chính df đã fetch cho RRG — không tốn thêm
+    request. None nếu chưa đủ ATR_PERIOD+1 phiên."""
+    if len(df) < ATR_PERIOD + 1:
+        return None
+    high, low, close = df["high"], df["low"], df["close"]
+    prev_close = close.shift(1)
+    true_range = pd.concat([
+        high - low,
+        (high - prev_close).abs(),
+        (low - prev_close).abs(),
+    ], axis=1).max(axis=1)
+    atr = true_range.ewm(alpha=1 / ATR_PERIOD, adjust=False, min_periods=ATR_PERIOD).mean()
+    last_atr, last_close = atr.iloc[-1], close.iloc[-1]
+    if pd.isna(last_atr) or not last_close:
+        return None
+    return round(float(last_atr / last_close * 100), 2)
+
+
 def rs_ratio_momentum(sector_close: pd.Series, bench_close: pd.Series, window: int = RS_WINDOW):
     """Xấp xỉ minh bạch kiểu JdK RRG:
     RS = giá ngành / giá benchmark (sức mạnh tương đối).
@@ -136,8 +160,12 @@ def build() -> dict:
             "return_pct": "% thay đổi giá đóng cửa cuối kỳ so với cuối kỳ trước.",
             "rrg": "Xấp xỉ đơn giản hoá kiểu JdK RS-Ratio/RS-Momentum, không phải công thức gốc — xem docstring rs_ratio_momentum() trong script.",
             "daily": f"Như monthly/quarterly nhưng mỗi kỳ = 1 phiên (không resample). Chỉ xuất {DAILY_SHOWN} phiên gần nhất (~1 tháng) để giữ file nhẹ — RS-Ratio/Momentum dùng nền SMA {RS_WINDOW_DAILY} phiên riêng (RS_WINDOW={RS_WINDOW} của monthly/quarterly quá ngắn cho tần suất ngày).",
+            "atr14Pct": f"ATR({ATR_PERIOD}) kiểu Wilder trên giá đóng cửa hàng ngày của chỉ số ngành, biểu diễn theo % so với giá đóng cửa gần nhất (để so sánh được giữa các ngành có mức điểm khác nhau) — số thật, không tốn thêm request (dùng chính lịch sử daily đã fetch cho RRG).",
         },
-        "sectors": [{"id": sym, "name": name} for sym, name in SECTORS],
+        "sectors": [
+            {"id": sym, "name": name, "atr14Pct": compute_atr14_pct(sector_daily[sym])}
+            for sym, name in SECTORS
+        ],
         "benchmark": {"id": BENCHMARK[0], "name": BENCHMARK[1]},
         "monthly": [],
         "quarterly": [],

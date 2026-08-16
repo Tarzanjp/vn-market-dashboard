@@ -132,6 +132,7 @@ def main() -> int:
         "match_current_room", "match_total_room",
         "bid_ask_bid_1_price", "bid_ask_bid_1_volume",
         "bid_ask_ask_1_price", "bid_ask_ask_1_volume",
+        "listing_listed_share",
     ):
         board[col] = num(board[col])
 
@@ -249,6 +250,35 @@ def main() -> int:
         for _, rr in room_board.head(8).iterrows()
     ]
 
+    # Mức độ cô đặc vốn hoá — quét TOÀN BỘ board đã fetch sẵn (0 request mới).
+    # market_cap = số CP niêm yết × giá (khớp lệnh gần nhất, hoặc giá tham
+    # chiếu nếu mã chưa khớp lệnh phiên này — tránh loại nhầm blue-chip ít
+    # thanh khoản khỏi bảng cô đặc). Công thức đã kiểm chứng khớp với
+    # company.trading_stats().market_cap của HPG trước khi đưa vào script.
+    cap_board = board.copy()
+    cap_board["price_for_cap"] = cap_board["match_match_price"].where(
+        cap_board["match_match_price"] > 0, cap_board["listing_ref_price"]
+    )
+    cap_board["market_cap_bn"] = cap_board["listing_listed_share"] * cap_board["price_for_cap"] / 1e9
+    cap_board = cap_board[cap_board["market_cap_bn"] > 0].sort_values("market_cap_bn", ascending=False)
+    total_cap_bn = cap_board["market_cap_bn"].sum()
+    top10_cap = cap_board.head(10)
+    top5_pct = round(cap_board.head(5)["market_cap_bn"].sum() / total_cap_bn * 100, 1) if total_cap_bn else None
+    top10_pct = round(top10_cap["market_cap_bn"].sum() / total_cap_bn * 100, 1) if total_cap_bn else None
+    market_concentration = {
+        "top5Pct": top5_pct,
+        "top10Pct": top10_pct,
+        "topStocks": [
+            {
+                "code": r["listing_symbol"],
+                "marketCapBn": round(r["market_cap_bn"], 1),
+                "weightPct": round(r["market_cap_bn"] / total_cap_bn * 100, 2) if total_cap_bn else None,
+            }
+            for _, r in top10_cap.iterrows()
+        ],
+    }
+    log(f"market cap concentration: top5={top5_pct}% top10={top10_pct}% (tổng vốn hoá ước tính {total_cap_bn:.0f} tỷ VND)")
+
     generated_at = pd.Timestamp.now(tz="Asia/Bangkok")
     today_ict = generated_at.date().isoformat()
     proprietary_net_bn, proprietary_quality = load_proprietary_from_live(today_ict)
@@ -266,6 +296,7 @@ def main() -> int:
             "tickerForeignFlow": "foreign_buy_value / foreign_sell_value thật của từng mã, KHÔNG phải ước tính toàn bộ lệnh mua/bán (không tách được lệnh của NĐT trong nước).",
             "foreignRoom": "current_room/total_room thật từ price_board (đơn vị cổ phiếu) — room % = current_room/total_room×100. Mã có total_room=0 (không giới hạn sở hữu nước ngoài hoặc thiếu dữ liệu) bị loại khỏi foreignRoomWatch.",
             "topOfBook": "Giá + khối lượng đặt mua/bán tốt nhất (mức 1) thật từ price_board tại thời điểm snapshot — KHÔNG phải toàn bộ sổ lệnh (chỉ 1 trong 3 mức API trả về). spread_pct = (ask1−bid1)/bid1×100.",
+            "marketConcentration": "market_cap = số CP niêm yết × giá khớp lệnh gần nhất (hoặc giá tham chiếu nếu chưa khớp lệnh phiên này) — số thật từ price_board, đã đối chiếu khớp với company.trading_stats().market_cap. top5Pct/top10Pct = % tổng vốn hoá toàn thị trường (theo mã có market_cap>0) do 5/10 mã lớn nhất nắm giữ — dùng đánh giá rủi ro tập trung khi phân bổ theo tỷ trọng vốn hoá.",
         },
         "quality": {
             "foreignNetBn": "live",
@@ -277,6 +308,7 @@ def main() -> int:
         "sectors": sectors_out,
         "tickers": tickers_out,
         "foreignRoomWatch": foreign_room_watch,
+        "marketConcentration": market_concentration,
     }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)

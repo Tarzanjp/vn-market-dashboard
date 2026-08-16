@@ -25,6 +25,8 @@ from __future__ import annotations
 import json
 import sys
 from datetime import datetime, timedelta, timezone
+import math
+import statistics
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -39,6 +41,7 @@ REGIME_OUT = DATA / "regime.json"
 ICT = timezone(timedelta(hours=7))
 MIN_HISTORY_FOR_PERCENTILE = 20  # phiên — dưới ngưỡng này percentile coi là chưa đáng tin
 MIN_HISTORY_FOR_5D_AVG = 5
+VOL_WINDOW = 20  # phiên — cửa sổ tính biến động thực hiện (realized volatility) VN-Index
 
 
 def now_ict() -> datetime:
@@ -58,6 +61,52 @@ def load_json(path: Path):
     except Exception as e:
         log(f"read fail {path}: {e!r}")
         return None
+
+
+def load_market_history_year(year: int) -> dict:
+    """Đọc public/data/history/<year>.jsonl (ghi bởi daily_update.py — KHÁC
+    file history/regime-<year>.jsonl của chính script này) — chỉ cần field
+    vnIndexPct, đã tích luỹ thật từ khi daily_update.py bắt đầu chạy hàng
+    ngày (không phải suy diễn/backfill)."""
+    path = HISTORY_DIR / f"{year}.jsonl"
+    rows: dict[str, dict] = {}
+    if not path.exists():
+        return rows
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            row = json.loads(line)
+            if row.get("date"):
+                rows[row["date"]] = row
+        except json.JSONDecodeError:
+            continue
+    return rows
+
+
+def compute_realized_vol(as_of_date: str) -> dict:
+    """Biến động thực hiện (realized volatility) VN-Index, annualized, từ
+    VOL_WINDOW phiên gần nhất (kể cả phiên as_of_date) có vnIndexPct thật
+    trong history/<year>.jsonl. Dùng %thay đổi có sẵn (không cần dựng lại
+    giá) — log_return ≈ ln(1 + pct/100). None nếu chưa đủ phiên."""
+    year = int(as_of_date[:4])
+    rows = load_market_history_year(year)
+    if year > 2000:
+        rows = {**load_market_history_year(year - 1), **rows}  # nối năm trước phòng đầu năm thiếu phiên
+
+    dated = sorted(d for d in rows if d <= as_of_date)
+    window = dated[-VOL_WINDOW:]
+    pct_values = [rows[d]["vnIndexPct"] for d in window if rows[d].get("vnIndexPct") is not None]
+    if len(pct_values) < MIN_HISTORY_FOR_5D_AVG:
+        return {"realizedVol20d": None, "n": len(pct_values),
+                "basis": f"cần ≥{MIN_HISTORY_FOR_5D_AVG} phiên vnIndexPct thật, hiện có {len(pct_values)}"}
+    log_returns = [math.log(1 + p / 100) for p in pct_values if p > -100]
+    if len(log_returns) < 2:
+        return {"realizedVol20d": None, "n": len(log_returns), "basis": "không đủ phiên hợp lệ"}
+    vol = statistics.stdev(log_returns) * math.sqrt(252) * 100
+    return {"realizedVol20d": round(vol, 1), "n": len(log_returns),
+            "basis": f"stdev log-return {len(log_returns)} phiên gần nhất (VN-Index thật) × √252, annualized"}
 
 
 def regime_history_path(year: int) -> Path:
@@ -335,8 +384,10 @@ def main() -> int:
             "momentum": "% số ngành ICB đang ở góc Dẫn dắt+Cải thiện trên bản đồ RRG (public/data/sector-flows.json).",
             "macro": "TB F&G Mỹ + xu hướng DXY 10 phiên gần nhất, quy đổi thô sang thang 0-100 (v1, chưa hiệu chỉnh bằng backtest).",
             "divergence": "Quy tắc thô so từng cặp điểm số có ý nghĩa thật (không phải so combinatorial toàn bộ) — xem compute_divergence() trong script.",
+            "marketStats": "Biến động thực hiện (realized volatility) VN-Index — không phải 1 trong 4 điểm số regime, chỉ là thống kê mô tả bổ sung để cân nhắc quy mô vị thế/rủi ro.",
         },
         "scores": scores,
+        "marketStats": compute_realized_vol(date),
         "verdict": verdict,
         "divergence": divergence,
         "dataQuality": {

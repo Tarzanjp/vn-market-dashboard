@@ -63,6 +63,7 @@ td.sf-cell:hover,td.sf-cell:focus-visible{outline:2px solid var(--text);outline-
 .sf-tile .sf-code{display:block;font-family:var(--mono);font-size:9.5px;color:var(--dim);margin-top:1px}
 .sf-tile .sf-val{font-family:var(--mono);font-size:16px;font-weight:600}
 .sf-tile .sf-delta{font-family:var(--mono);font-size:10.5px;margin-top:1px}
+.sf-tile .sf-atr{font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:2px}
 .sf-tile svg{display:block;width:100%;height:40px;margin-top:6px;overflow:visible}
 
 /* ---------- RRG ---------- */

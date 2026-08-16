@@ -281,6 +281,51 @@ export function initCashout(data, insight) {
     });
   }
 
+  /* ============ Mức độ cô đặc vốn hoá ============ */
+  function renderMarketConcentration() {
+    const statsEl = el("concentrationStats");
+    const tbody = el("concentrationTableBody");
+    if (!statsEl || !tbody) return;
+
+    const mc = isReal ? data.marketConcentration : null;
+    if (mc && (mc.top5Pct != null || mc.top10Pct != null)) {
+      statsEl.innerHTML = `
+        <div class="co-vn30-tile"><span class="k">Top 5 mã</span><span class="v num">${mc.top5Pct != null ? mc.top5Pct.toFixed(1) + "%" : "—"}</span></div>
+        <div class="co-vn30-tile"><span class="k">Top 10 mã</span><span class="v num">${mc.top10Pct != null ? mc.top10Pct.toFixed(1) + "%" : "—"}</span></div>
+      `;
+    } else {
+      statsEl.innerHTML = `<p style="color:var(--dim);font-size:12.5px;margin:0">— Chưa có dữ liệu.</p>`;
+    }
+
+    tbody.innerHTML = "";
+    const stocks = (mc && Array.isArray(mc.topStocks)) ? mc.topStocks : [];
+    if (!stocks.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 3;
+      td.style.textAlign = "center";
+      td.style.color = "var(--dim)";
+      td.textContent = "— Chưa có dữ liệu";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+    stocks.forEach((s) => {
+      const tr = document.createElement("tr");
+      const tdCode = document.createElement("td");
+      tdCode.textContent = s.code;
+      tdCode.style.fontWeight = "700";
+      const tdCap = document.createElement("td");
+      tdCap.className = "num";
+      tdCap.textContent = typeof s.marketCapBn === "number" ? s.marketCapBn.toLocaleString("en-US") : "—";
+      const tdWeight = document.createElement("td");
+      tdWeight.className = "num";
+      tdWeight.textContent = typeof s.weightPct === "number" ? s.weightPct.toFixed(2) + "%" : "—";
+      tr.appendChild(tdCode); tr.appendChild(tdCap); tr.appendChild(tdWeight);
+      tbody.appendChild(tr);
+    });
+  }
+
   /* ============ Tín hiệu tổ chức (VN30) ============ */
   function renderInsight() {
     const statsEl = el("vn30Stats");
@@ -343,6 +388,7 @@ export function initCashout(data, insight) {
   renderSectorTable();
   renderStocks();
   renderForeignRoomWatch();
+  renderMarketConcentration();
   renderInsight();
 
   /* ============ Trạng thái dữ liệu + ghi chú ============ */

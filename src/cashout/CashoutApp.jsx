@@ -172,7 +172,32 @@ export default function CashoutApp() {
           </div>
         </section>
 
-        {/* ⑤ Tín hiệu tổ chức (VN30) */}
+        {/* ⑤ Mức độ cô đặc vốn hoá */}
+        <section className="panel" style={{ marginTop: 16 }}>
+          <div className="p-hd">
+            <div>
+              <h2>📐 Mức độ cô đặc vốn hoá</h2>
+              <span className="sub">% tổng vốn hoá thị trường do 5/10 mã lớn nhất nắm giữ — rủi ro tương quan khi phân bổ danh mục theo tỷ trọng vốn hoá.</span>
+            </div>
+          </div>
+          <div className="p-body">
+            <div className="co-vn30-stats" id="concentrationStats" />
+            <div className="co-table-scroll">
+              <table className="co-table" id="concentrationTable">
+                <thead>
+                  <tr>
+                    <th>Mã</th>
+                    <th>Vốn hoá (tỷ)</th>
+                    <th>% Tổng vốn hoá</th>
+                  </tr>
+                </thead>
+                <tbody id="concentrationTableBody" />
+              </table>
+            </div>
+          </div>
+        </section>
+
+        {/* ⑥ Tín hiệu tổ chức (VN30) */}
         <section className="panel" style={{ marginTop: 16 }}>
           <div className="p-hd">
             <div>

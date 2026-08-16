@@ -226,6 +226,11 @@ export function initSectorFlows(data) {
       delta.textContent = d == null ? "—" : (d > 0 ? "▲ " : d < 0 ? "▼ " : "· ") + Math.abs(d).toFixed(1) + "đ so kỳ trước";
       tile.appendChild(delta);
 
+      const atr = document.createElement("div");
+      atr.className = "sf-atr num";
+      atr.textContent = "ATR(14): " + (s.atr14Pct != null ? s.atr14Pct.toFixed(2) + "%/phiên" : "—");
+      tile.appendChild(atr);
+
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       svg.setAttribute("viewBox", "0 0 200 40");
       svg.setAttribute("preserveAspectRatio", "none");

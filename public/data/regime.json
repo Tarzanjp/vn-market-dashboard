@@ -1,13 +1,14 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-16T09:10:13+07:00",
+  "generatedAtIct": "2026-08-16T14:26:18+07:00",
   "date": "2026-08-14",
   "method": {
     "liquidity": "Percentile của GTGD hôm nay trên lịch sử tích luỹ (rolling) — tự thích nghi theo thời gian, không phải ngưỡng cố định. Lịch sử ban đầu có thể gồm phiên ước tính backfill (volume VNINDEX × hệ số quy đổi hiệu chỉnh từ 1 phiên thật) trước khi đủ phiên snapshot thật — xem automation/vn_regime/backfill_liquidity.py và tỷ lệ thật/ước tính trong scores.liquidity.basis.",
     "positioning": "TB khối ngoại ròng tối đa 5 phiên gần nhất, quy đổi thô sang thang 0-100 (v1, chưa hiệu chỉnh bằng backtest). Không có nguồn lịch sử foreign flow miễn phí để backfill (đã kiểm tra hết vnstock) — khi chưa đủ 5 phiên, dùng tạm ít phiên hơn (kể cả 1 phiên real-time), công khai rõ n trong scores.positioning.basis. Margin debt đã lưu vào lịch sử nhưng chưa gộp vào công thức.",
     "momentum": "% số ngành ICB đang ở góc Dẫn dắt+Cải thiện trên bản đồ RRG (public/data/sector-flows.json).",
     "macro": "TB F&G Mỹ + xu hướng DXY 10 phiên gần nhất, quy đổi thô sang thang 0-100 (v1, chưa hiệu chỉnh bằng backtest).",
-    "divergence": "Quy tắc thô so từng cặp điểm số có ý nghĩa thật (không phải so combinatorial toàn bộ) — xem compute_divergence() trong script."
+    "divergence": "Quy tắc thô so từng cặp điểm số có ý nghĩa thật (không phải so combinatorial toàn bộ) — xem compute_divergence() trong script.",
+    "marketStats": "Biến động thực hiện (realized volatility) VN-Index — không phải 1 trong 4 điểm số regime, chỉ là thống kê mô tả bổ sung để cân nhắc quy mô vị thế/rủi ro."
   },
   "scores": {
     "liquidity": {
@@ -34,6 +35,11 @@
       "n": 1,
       "basis": "F&G Mỹ (chưa có đủ lịch sử DXY)"
     }
+  },
+  "marketStats": {
+    "realizedVol20d": 24.3,
+    "n": 20,
+    "basis": "stdev log-return 20 phiên gần nhất (VN-Index thật) × √252, annualized"
   },
   "verdict": {
     "cls": "warn",
