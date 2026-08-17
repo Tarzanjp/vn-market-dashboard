@@ -79,20 +79,20 @@ export function initCashout(data, insight) {
   function evalCashout(v) {
     if (v >= 20000) {
       return {
-        cls: "ok", icon: "🟢",
+        cls: "ok", icon: "mascots/confident-glow.png",
         title: "Healthy Rotation / Strong Market Liquidity",
         desc: "Dòng tiền vẫn ở lại thị trường. Sự luân chuyển giữa các nhóm ngành (sector rotation) là động lực chính của phiên.",
       };
     }
     if (v >= 12000) {
       return {
-        cls: "warn", icon: "🟡",
+        cls: "warn", icon: "mascots/sunburst-glow.png",
         title: "Caution: Liquidity Consolidating",
         desc: "Thanh khoản đang co lại. Dòng tiền có xu hướng thu hẹp về một số nhóm ngành/mã trụ thay vì lan toả toàn thị trường.",
       };
     }
     return {
-      cls: "danger", icon: "🔴",
+      cls: "danger", icon: "mascots/worried-handsup.png",
       title: "Danger: Market Cashout / Liquidity Crunch",
       desc: "Thanh khoản sụt giảm mạnh — dấu hiệu dòng tiền rút hẳn khỏi thị trường thay vì chỉ luân chuyển giữa các nhóm ngành.",
     };
@@ -101,7 +101,7 @@ export function initCashout(data, insight) {
   function renderCashout(v) {
     const r = evalCashout(v);
     banner.className = "co-banner " + r.cls;
-    cbIcon.textContent = r.icon;
+    cbIcon.src = r.icon;
     cbTitle.textContent = r.title;
     cbDesc.textContent = r.desc;
     cbVal.innerHTML = v.toLocaleString("en-US") + '<span class="u">VND Billion</span>';

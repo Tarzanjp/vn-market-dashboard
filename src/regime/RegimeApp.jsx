@@ -19,7 +19,12 @@ const BAND_LABEL = {
   insufficient_history: "Chưa đủ dữ liệu",
 };
 
-const VERDICT_ICON = { ok: "🟢", warn: "🟡", danger: "🔴", unknown: "⚪" };
+const VERDICT_MASCOT = {
+  ok: "mascots/confident-glow.png",
+  warn: "mascots/sunburst-glow.png",
+  danger: "mascots/worried-handsup.png",
+  unknown: "mascots/sleeping.png",
+};
 
 const DRILL_DOWN = [
   { href: "index.html", name: "Trong nước", desc: "VN-Index, lợi suất, margin, khối ngoại — dữ liệu lõi mỗi ngày." },
@@ -140,7 +145,7 @@ export default function RegimeApp() {
             <section className="panel" style={{ marginTop: 16 }}>
               <div className="p-body">
                 <div className={`rg-banner ${verdictCls}`}>
-                  <div className="rg-icon">{VERDICT_ICON[verdictCls] || "⚪"}</div>
+                  <img className="rg-icon" src={VERDICT_MASCOT[verdictCls] || VERDICT_MASCOT.unknown} alt="" />
                   <div className="rg-text">
                     <p className="rg-title">{regime.verdict?.label}</p>
                     <p className="rg-summary">{regime.verdict?.summary}</p>

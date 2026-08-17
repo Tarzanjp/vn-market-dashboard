@@ -15,6 +15,7 @@ export default function GuideApp() {
             <h2>Hướng dẫn đọc</h2>
             <p>Cách nhìn tổng thể để nhận ra khuynh hướng thị trường — đọc từng tầng dữ liệu như một cái phễu, từ rộng xuống hẹp.</p>
           </div>
+          <img className="page-mascot" src="mascots/wizard-hat.png" alt="" />
         </div>
 
         <section className="panel" style={{ marginTop: 16 }}>

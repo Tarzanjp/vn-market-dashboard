@@ -32,6 +32,7 @@ export default function CashoutApp() {
             <h2>Dòng tiền &amp; Cashout Monitor</h2>
             <p>Sector Shift &amp; Liquidity Risk Dashboard — GTGD toàn thị trường, khối ngoại, ma trận ngành, và 10 mã dẫn dắt.</p>
           </div>
+          <img className="page-mascot" src="mascots/dollar-wave.png" alt="" />
         </div>
 
         {/* ① Market Liquidity & Cashout Alert */}
@@ -55,7 +56,7 @@ export default function CashoutApp() {
             </div>
 
             <div className="co-banner ok" id="cashoutBanner">
-              <div className="cb-icon" id="cbIcon">🟢</div>
+              <img className="cb-icon" id="cbIcon" src="mascots/confident-glow.png" alt="" />
               <div className="cb-text">
                 <p className="cb-title" id="cbTitle">Healthy Rotation / Strong Market Liquidity</p>
                 <p className="cb-desc" id="cbDesc" />

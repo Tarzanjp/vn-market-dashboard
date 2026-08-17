@@ -27,3 +27,6 @@
 
 .g-summary { background: var(--fill); border-radius: var(--r-sm); padding: 16px 20px; font-size: 14px; line-height: 1.65 }
 .g-summary strong { color: var(--blue) }
+
+.page-mascot { width: 72px; height: 72px; object-fit: contain; flex: none }
+@media (max-width: 480px) { .page-mascot { display: none } }
