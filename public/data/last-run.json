@@ -1,7 +1,7 @@
 {
   "ok": true,
-  "generatedAtIct": "2026-08-15T19:44:57+07:00",
-  "asof": "2026-08-14",
+  "generatedAtIct": "2026-08-17T09:33:45+07:00",
+  "asof": "2026-08-17",
   "quality": {
     "usYields": "live",
     "fgUs": "live",
@@ -11,6 +11,7 @@
     "margin": "stale",
     "breadth": "stale",
     "usdVnd": "stale",
-    "foreign": "stale"
+    "foreign": "stale",
+    "proprietary": "missing"
   }
 }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-15T19:44:57+07:00",
-  "asof": "2026-08-14",
+  "generatedAtIct": "2026-08-17T09:33:45+07:00",
+  "asof": "2026-08-17",
   "quality": {
     "usYields": "live",
     "fgUs": "live",
@@ -11,15 +11,16 @@
     "margin": "stale",
     "breadth": "stale",
     "usdVnd": "stale",
-    "foreign": "stale"
+    "foreign": "stale",
+    "proprietary": "missing"
   },
   "usYields": [
     {
       "t": "1 năm",
       "y": 3.98,
       "d": 0.01,
-      "m": 0.0,
-      "yr": 0.0,
+      "m": null,
+      "yr": null,
       "x": 1,
       "est": true
     },
@@ -27,8 +28,8 @@
       "t": "3 năm",
       "y": 4.24,
       "d": 0.04,
-      "m": 0.0,
-      "yr": 0.0,
+      "m": null,
+      "yr": null,
       "x": 3,
       "est": false
     },
@@ -36,8 +37,8 @@
       "t": "5 năm",
       "y": 4.36,
       "d": 0.04,
-      "m": 0.0,
-      "yr": 0.0,
+      "m": null,
+      "yr": null,
       "x": 5,
       "est": false
     },
@@ -45,8 +46,8 @@
       "t": "10 năm",
       "y": 4.68,
       "d": 0.05,
-      "m": 0.0,
-      "yr": 0.0,
+      "m": null,
+      "yr": null,
       "x": 10,
       "est": false
     },
@@ -54,8 +55,8 @@
       "t": "30 năm",
       "y": 5.25,
       "d": 0.04,
-      "m": 0.0,
-      "yr": 0.0,
+      "m": null,
+      "yr": null,
       "x": 30,
       "est": false
     }
@@ -69,20 +70,20 @@
       "month": 41.1,
       "year": 63.3
     },
-    "asofEt": "2026-08-15"
+    "asofEt": "2026-08-17"
   },
-  "fgUsFetchedAt": "2026-08-15T19:44:57.756670+07:00",
+  "fgUsFetchedAt": "2026-08-17T09:33:45.400418+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
-    "price": 1729.08,
-    "prev": 1765.63,
-    "chg": -36.55,
-    "pct": -2.07,
-    "date": "2026-08-14"
+    "price": 1734.38,
+    "prev": 1729.08,
+    "chg": 5.3,
+    "pct": 0.31,
+    "date": "2026-08-17"
   },
-  "vnIndexFetchedAt": "2026-08-15T19:44:57.917821+07:00",
-  "dxy": 99.64,
-  "dxyFetchedAt": "2026-08-15T19:44:57.965061+07:00",
+  "vnIndexFetchedAt": "2026-08-17T09:33:45.455553+07:00",
+  "dxy": 99.51,
+  "dxyFetchedAt": "2026-08-17T09:33:45.506967+07:00",
   "vnYields": [
     {
       "t": "10 năm",
@@ -212,6 +213,7 @@
     "net": -59,
     "note": "Bán ròng ~59 tỷ VND trên HOSE phiên 7/8; toàn thị trường ~-76 tỷ (TBTCO). Mua ròng mạnh DMX ~682 tỷ (thỏa thuận); bán ròng VHM/TCB/VPB/VIC."
   },
+  "proprietary": null,
   "notes": [
     "Nguồn free: US Treasury CSV, Yahoo Finance (VN-Index/DXY), CNN Fear & Greed.",
     "Grok fill: public/data/grok-fill.json (proxy) — không ghi đè field quality=live."
