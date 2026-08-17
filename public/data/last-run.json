@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generatedAtIct": "2026-08-15T19:44:57+07:00",
+  "generatedAtIct": "2026-08-17T08:20:45+07:00",
   "asof": "2026-08-14",
   "quality": {
     "usYields": "live",
@@ -8,9 +8,10 @@
     "vnIndex": "live",
     "dxy": "live",
     "vnYields": "stale",
-    "margin": "stale",
+    "margin": "proxy",
     "breadth": "stale",
     "usdVnd": "stale",
-    "foreign": "stale"
+    "foreign": "stale",
+    "proprietary": "missing"
   }
 }
