@@ -1361,13 +1361,27 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA) {
   /* Ngày/giờ theo lịch công bố chính thức BLS/Fed (giờ ET quy đổi sang ICT,
      UTC-4 mùa DST) — đã đối chiếu với bls.gov & federalreserve.gov trước khi
      đưa vào, không phải suy đoán. time=null khi cơ quan công bố (GSO) chưa
-     có giờ cố định công khai. */
+     có giờ cố định công khai.
+
+     forecast/previous/actual: số liệu THẬT theo đúng đơn vị agent ghi trong
+     "unit" — để null nếu CHƯA có nguồn xác nhận (chưa công bố, hoặc chưa ai
+     nhập số vào đây), UI tự hiện "—", KHÔNG bao giờ suy đoán/nội suy số kinh
+     tế (xem CLAUDE.md §1.3/§1.5). goodDirection ("up"|"down"|null) = số CAO
+     hơn có phải tín hiệu tích cực cho VN-Index không (vd NFP cao = tốt →
+     "up"; CPI cao = xấu → "down") — chỉ tô màu actual khi field này VÀ cả
+     forecast lẫn actual đều có số thật, tránh tô màu sai hướng khi chưa chắc.
+     Nhập actual ngay khi có số công bố thật — đừng để trống mãi rồi quên. */
   const CAL = [
-    ["2026-08-12", "19:30", "CPI Mỹ tháng 7", "Dữ liệu quyết định cho cuộc họp tháng 9 · 8:30 ET"],
-    ["2026-08-28", "19:30", "PCE lõi tháng 7", "Thước đo lạm phát Fed ưu tiên · 8:30 ET"],
-    ["2026-09-04", "19:30", "Bảng lương phi nông nghiệp tháng 8", "Xác nhận xu hướng việc làm suy yếu · 8:30 ET"],
-    ["2026-09-17", "01:00", "Kết quả họp FOMC (15–16/9)", "Thị trường định giá khả năng tăng 25 bps · 14:00 ET ngày 16/9"],
-    ["2026-09-30", null, "GDP & CPI quý III Việt Nam", "Cơ sở cho điều hành tỷ giá quý IV · GSO chưa công bố giờ cụ thể"]
+    { date: "2026-08-12", time: "19:30", title: "CPI Mỹ tháng 7", note: "Dữ liệu quyết định cho cuộc họp tháng 9 · 8:30 ET",
+      unit: "% m/m", forecast: null, previous: null, actual: null, goodDirection: "down" },
+    { date: "2026-08-28", time: "19:30", title: "PCE lõi tháng 7", note: "Thước đo lạm phát Fed ưu tiên · 8:30 ET",
+      unit: "% m/m", forecast: null, previous: null, actual: null, goodDirection: "down" },
+    { date: "2026-09-04", time: "19:30", title: "Bảng lương phi nông nghiệp tháng 8", note: "Xác nhận xu hướng việc làm suy yếu · 8:30 ET",
+      unit: "K", forecast: null, previous: null, actual: null, goodDirection: "up" },
+    { date: "2026-09-17", time: "01:00", title: "Kết quả họp FOMC (15–16/9)", note: "Thị trường định giá khả năng tăng 25 bps · 14:00 ET ngày 16/9",
+      unit: "%", forecast: null, previous: null, actual: null, goodDirection: null },
+    { date: "2026-09-30", time: null, title: "GDP & CPI quý III Việt Nam", note: "Cơ sở cho điều hành tỷ giá quý IV · GSO chưa công bố giờ cụ thể",
+      unit: "%", forecast: null, previous: null, actual: null, goodDirection: null },
   ];
 
   (function news() {
@@ -1416,20 +1430,42 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA) {
         </div>
       </article>`;
 
-    /* 1. Lịch sự kiện kinh tế Mỹ — CAL tĩnh, đã đối chiếu bls.gov/federalreserve.gov */
+    /* 1. Lịch sự kiện kinh tế Mỹ — CAL tĩnh, đã đối chiếu bls.gov/federalreserve.gov.
+       Format Dự báo/Kỳ trước/Thực tế kiểu economic calendar chuyên nghiệp
+       (Investing.com/TradingEconomics) — số nào chưa có nguồn thật thì "—",
+       không suy đoán (xem ghi chú ngay trên khai báo CAL). */
+    const fmtVal = (v, unit) => (v == null ? "—" : `${v > 0 && unit !== "%" ? "+" : ""}${v}${unit}`);
     el("newsSchedule").innerHTML = `
       <article class="ncard">
         <div class="nc-in">
-          <table class="cal"><tbody>
-            ${CAL.map(([d, t, e, f]) => {
+          <div class="cal-scroll">
+          <table class="cal"><thead><tr>
+            <th>Ngày/Giờ</th><th>Sự kiện</th><th class="num">Dự báo</th><th class="num">Kỳ trước</th><th class="num">Thực tế</th>
+          </tr></thead><tbody>
+            ${CAL.map(row => {
+              const { date: d, time: t, title: e, note: f, unit, forecast, previous, actual, goodDirection } = row;
               const days = Math.round((new Date(d + "T00:00:00Z").getTime() - base) / DAY);
               const when = days < 0 ? `${Math.abs(days)} ngày trước`
                 : days === 0 ? "Hôm nay" : days === 1 ? "Ngày mai" : `Còn ${days} ngày`;
               const whenCls = days >= 0 && days <= 7 ? "soon" : "";
-              return `<tr><td class="dt">${dmyF(d)}${t ? `<br>${t} ICT` : ""}<span class="ef ${whenCls}">${when}</span></td><td class="ev">${e}<span class="ef">${f}</span></td></tr>`;
+              // Chỉ tô beat/miss khi có ĐỦ actual + forecast + goodDirection — thiếu 1 trong 3 thì hiện màu trung tính (không đoán hướng).
+              let actualCls = "flat";
+              if (actual != null && forecast != null && goodDirection) {
+                const beat = goodDirection === "up" ? actual > forecast : actual < forecast;
+                const miss = goodDirection === "up" ? actual < forecast : actual > forecast;
+                actualCls = beat ? "up" : miss ? "down" : "flat";
+              }
+              return `<tr>
+                <td class="dt">${dmyF(d)}${t ? `<br>${t} ICT` : ""}<span class="ef ${whenCls}">${when}</span></td>
+                <td class="ev">${e}<span class="ef">${f}</span></td>
+                <td class="num">${fmtVal(forecast, unit)}</td>
+                <td class="num">${fmtVal(previous, unit)}</td>
+                <td class="num ${actualCls}" style="font-weight:700">${fmtVal(actual, unit)}</td>
+              </tr>`;
             }).join("")}
           </tbody></table>
-          <div class="nsrc">Ngày/giờ đối chiếu lịch công bố chính thức BLS &amp; Fed (bls.gov, federalreserve.gov) — GDP/CPI Việt Nam theo lịch GSO, có thể xê dịch.</div>
+          </div>
+          <div class="nsrc">Ngày/giờ đối chiếu lịch công bố chính thức BLS &amp; Fed (bls.gov, federalreserve.gov) — GDP/CPI Việt Nam theo lịch GSO, có thể xê dịch. Dự báo/Kỳ trước/Thực tế: "—" nghĩa là chưa có nguồn xác nhận, không phải bằng 0.</div>
         </div>
       </article>`;
 
