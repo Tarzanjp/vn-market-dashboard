@@ -56,23 +56,69 @@ jobs:
       - name: Install dependencies (dùng chung cho cả 3 script — cùng vnstock+pandas)
         run: pip install -r automation/vn_cashout/requirements.txt
 
+      # Retry 3 lần, cách 30s — lỗi mạng VCI/vnstock tạm thời (đã xảy ra thật:
+      # run 2026-08-17 fail đúng bước này vì connect timeout) trước đây làm
+      # CẢ pipeline im lặng đứng yên nhiều ngày không ai biết, vì mọi bước
+      # sau đều `skipped` khi 1 bước fail và không có gì tự chạy lại. Thử lại
+      # tại chỗ vẫn không được thì fail thật (::error:: + exit 1) để Actions
+      # báo đỏ rõ ràng, không giả vờ thành công.
       - name: Fetch sector-flows snapshot (10 ngành ICB, tháng & quý)
-        run: python automation/sector_flows/fetch_sector_flows.py
+        run: |
+          n=0
+          until python automation/sector_flows/fetch_sector_flows.py; do
+            n=$((n+1))
+            if [ "$n" -ge 3 ]; then
+              echo "::error::fetch_sector_flows.py thất bại sau 3 lần thử"
+              exit 1
+            fi
+            echo "Lần $n thất bại, đợi 30s rồi thử lại..."
+            sleep 30
+          done
 
       - name: Cách quãng để tránh vượt rate limit vnstock (20 req/phút, tài khoản khách)
         run: sleep 12
 
       - name: Fetch cashout snapshot (tổng GTGD, khối ngoại, 5 ngành, 4 ticker, room ngoại)
-        run: python automation/vn_cashout/fetch_cashout_data.py
+        run: |
+          n=0
+          until python automation/vn_cashout/fetch_cashout_data.py; do
+            n=$((n+1))
+            if [ "$n" -ge 3 ]; then
+              echo "::error::fetch_cashout_data.py thất bại sau 3 lần thử"
+              exit 1
+            fi
+            echo "Lần $n thất bại, đợi 30s rồi thử lại..."
+            sleep 30
+          done
 
       - name: Cách quãng để tránh vượt rate limit vnstock (20 req/phút, tài khoản khách)
         run: sleep 12
 
       - name: Fetch tín hiệu tổ chức (VN30 futures basis + giao dịch cổ đông lớn/nội bộ, ~32 request)
-        run: python automation/vn_insight/fetch_market_insight.py
+        run: |
+          n=0
+          until python automation/vn_insight/fetch_market_insight.py; do
+            n=$((n+1))
+            if [ "$n" -ge 3 ]; then
+              echo "::error::fetch_market_insight.py thất bại sau 3 lần thử"
+              exit 1
+            fi
+            echo "Lần $n thất bại, đợi 30s rồi thử lại..."
+            sleep 30
+          done
 
       - name: Compute regime scores + tích luỹ lịch sử (stdlib-only)
-        run: python automation/vn_regime/compute_regime.py
+        run: |
+          n=0
+          until python automation/vn_regime/compute_regime.py; do
+            n=$((n+1))
+            if [ "$n" -ge 3 ]; then
+              echo "::error::compute_regime.py thất bại sau 3 lần thử"
+              exit 1
+            fi
+            echo "Lần $n thất bại, đợi 30s rồi thử lại..."
+            sleep 30
+          done
 
       - name: Commit & push snapshot
         id: autocommit
