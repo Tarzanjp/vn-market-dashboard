@@ -4,6 +4,7 @@ import TickerTape from "../components/layout/TickerTape.jsx";
 import { useLiveMarketData } from "../hooks/useLiveMarketData.js";
 import { useHistory } from "../hooks/useHistory.js";
 import { useNews } from "../hooks/useNews.js";
+import { useEconActuals } from "../hooks/useEconActuals.js";
 import { initMarketDashboard } from "./dashboardEngine.js";
 import "../styles/tokens.css";
 import "../styles/layout.css";
@@ -13,13 +14,14 @@ export default function MarketDashboardApp() {
   const { live, status } = useLiveMarketData();
   const { rows: history, status: historyStatus } = useHistory();
   const { items: newsItems, generatedAtIct: newsGeneratedAtIct, status: newsStatus } = useNews();
+  const { items: econActuals, status: econActualsStatus } = useEconActuals();
   const initedRef = useRef(false);
 
   useEffect(() => {
-    if (status !== "ready" || historyStatus !== "ready" || newsStatus !== "ready" || initedRef.current) return;
+    if (status !== "ready" || historyStatus !== "ready" || newsStatus !== "ready" || econActualsStatus !== "ready" || initedRef.current) return;
     initedRef.current = true;
-    initMarketDashboard(live, history, { items: newsItems, generatedAtIct: newsGeneratedAtIct });
-  }, [status, live, historyStatus, history, newsStatus, newsItems, newsGeneratedAtIct]);
+    initMarketDashboard(live, history, { items: newsItems, generatedAtIct: newsGeneratedAtIct }, econActuals);
+  }, [status, live, historyStatus, history, newsStatus, newsItems, newsGeneratedAtIct, econActualsStatus, econActuals]);
 
   return (
     <>

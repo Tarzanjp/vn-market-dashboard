@@ -102,9 +102,59 @@ to route around it, not depend on it).
    untouched and say so in your final reply — same anti-fabrication rule as
    Task 1, do not synthesize cards from memory/training data.
 
+## Task 3: fill `public/data/econ-actuals.json` when a raw item reports a real result
+
+The dashboard's "Lịch sự kiện kinh tế Mỹ" table (`CAL` array in
+`src/dashboard/dashboardEngine.js`) is a **hand-maintained schedule** —
+dates/times already checked against bls.gov/federalreserve.gov. It does
+**not** need WebSearch either: your only job here is to notice when a raw
+news item (from Task 2's inputs) is actually reporting the *result* of one
+of the events below, and — only if the raw title/description states the
+number explicitly — copy it into `public/data/econ-actuals.json`.
+
+**Pending events to watch for** (keep this list in sync by hand with `CAL`
+in `dashboardEngine.js` — if that array changes, update this list too):
+- `2026-08-12` — CPI Mỹ tháng 7 (% m/m)
+- `2026-08-28` — PCE lõi tháng 7 (% m/m)
+- `2026-09-04` — Bảng lương phi nông nghiệp tháng 8 (K, nghìn việc làm)
+- `2026-09-17` — Kết quả họp FOMC 15–16/9 (% lãi suất điều hành)
+- `2026-09-30` — GDP & CPI quý III Việt Nam (%)
+
+Steps:
+1. Read the current `public/data/econ-actuals.json` (may not exist yet —
+   treat as `{"generatedAtIct": null, "items": {}}` if so).
+2. For each raw item you already looked at in Task 2 (or scan
+   `news-raw.json` again), check if it clearly reports the *actual* result
+   for one of the dates above — e.g. "CPI Mỹ tháng 7 tăng 2,8% so với tháng
+   trước, thấp hơn dự báo 2,9%" gives you actual=2.8, forecast=2.9 for
+   `2026-08-12`.
+3. **Same anti-fabrication rule as Task 2, no exceptions**: only write a
+   number that's explicitly stated in the raw title/description. If the
+   item mentions `actual` but not `forecast`/`previous`, write `actual` and
+   leave the other two `null` — do not skip the whole entry, and do not
+   guess the missing ones. If nothing in the raw batch reports on any of
+   the 5 dates, leave the file untouched (don't write an empty no-op file).
+4. Write/update only the date key(s) you found — **upsert, do not remove or
+   touch other existing date keys** (same idempotent-by-date rule as
+   `automation/*.py`'s history files):
+   ```json
+   {
+     "generatedAtIct": "2026-08-18T16:10:00+07:00",
+     "items": {
+       "2026-08-12": {
+         "forecast": 2.9, "previous": 2.7, "actual": 2.8, "unit": "% m/m",
+         "source": "Tên nguồn", "sourceUrl": "https://..."
+       }
+     }
+   }
+   ```
+   `unit` must match the unit already implied by the CAL entry (`% m/m`,
+   `K`, or `%` per the list above).
+
 ## Output
 
-After writing the files, reply with one short line covering both tasks:
-`OK asof=YYYY-MM-DD fields=... news=N items` or `FAIL reason=...` (partial
-success is fine — e.g. grok-fill written but news skipped because
-news-raw.json was missing; say so explicitly).
+After writing the files, reply with one short line covering all three
+tasks: `OK asof=YYYY-MM-DD fields=... news=N items econActuals=M dates` or
+`FAIL reason=...` (partial success is fine — e.g. grok-fill and news
+written but econActuals skipped because nothing in the raw batch matched
+any pending date; say so explicitly).

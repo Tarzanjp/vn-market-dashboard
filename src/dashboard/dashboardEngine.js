@@ -8,7 +8,7 @@
    calls initMarketDashboard(LIVE) once after the shell is mounted
    and live data has been fetched.
    ============================================================ */
-export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA) {
+export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   let ASOF = (LIVE && LIVE.asof) ? LIVE.asof : "2026-08-07";
   const WINDOWS = [25, 15, 10, 6]; // các chu kỳ tính hệ số ADR (phiên)
 
@@ -1435,6 +1435,11 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA) {
        (Investing.com/TradingEconomics) — số nào chưa có nguồn thật thì "—",
        không suy đoán (xem ghi chú ngay trên khai báo CAL). */
     const fmtVal = (v, unit) => (v == null ? "—" : `${v > 0 && unit !== "%" ? "+" : ""}${v}${unit}`);
+    // Ghi đè forecast/previous/actual bằng số thật agent tìm được (Task 3,
+    // automation/agent_daily_prompt.md), key theo đúng date của dòng CAL —
+    // xem econ-actuals.json. Dòng nào agent chưa tìm ra thì vẫn giữ null từ
+    // CAL (hiện "—"), không suy đoán.
+    const econByDate = (ECON_ACTUALS && typeof ECON_ACTUALS === "object") ? ECON_ACTUALS : {};
     el("newsSchedule").innerHTML = `
       <article class="ncard">
         <div class="nc-in">
@@ -1443,7 +1448,9 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA) {
             <th>Ngày/Giờ</th><th>Sự kiện</th><th class="num">Dự báo</th><th class="num">Kỳ trước</th><th class="num">Thực tế</th>
           </tr></thead><tbody>
             ${CAL.map(row => {
-              const { date: d, time: t, title: e, note: f, unit, forecast, previous, actual, goodDirection } = row;
+              const found = econByDate[row.date];
+              const merged = found ? { ...row, ...found } : row;
+              const { date: d, time: t, title: e, note: f, unit, forecast, previous, actual, goodDirection } = merged;
               const days = Math.round((new Date(d + "T00:00:00Z").getTime() - base) / DAY);
               const when = days < 0 ? `${Math.abs(days)} ngày trước`
                 : days === 0 ? "Hôm nay" : days === 1 ? "Ngày mai" : `Còn ${days} ngày`;

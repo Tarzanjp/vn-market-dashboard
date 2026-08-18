@@ -258,6 +258,22 @@ WebSearch/WebFetch gap documented above:
    That's the whole point of splitting fetch from synthesis: it routes around
    the confirmed-broken WebSearch/WebFetch gap instead of depending on it.
 
+3. **Local agent → `public/data/econ-actuals.json`** (`agent_daily_prompt.md`'s
+   "Task 3"). Separate from `news.json` on purpose — the dashboard's "Lịch sự
+   kiện kinh tế Mỹ" table (`CAL` array in `src/dashboard/dashboardEngine.js`)
+   is a hand-maintained schedule of future BLS/Fed release dates; this task
+   only bridges it to real numbers *after* a release happens, by checking
+   whether a raw news item explicitly states the actual/forecast/previous
+   figure for one of the pending dates hardcoded in the prompt (kept in sync
+   by hand with `CAL` — if one changes, update the other). Same
+   Read-only-no-WebSearch constraint and anti-fabrication rule as Task 2:
+   only copies numbers the raw text states outright, `null` for anything it
+   doesn't, and upserts by date key rather than overwriting the whole file.
+   Consumed by `useEconActuals()`, merged into `CAL` at render time in
+   `dashboardEngine.js`. Like `grok-fill.json`, this file may also be edited
+   by hand the moment you see a real release — you don't have to wait for
+   the next agent run.
+
 `run_agent_daily.ps1` runs `daily_update.py --no-grok` **twice** — once
 *before* the agent (so `news-raw.json` is fresh for it to read) and once
 *after* (to merge whatever `grok-fill.json` the agent just wrote). `news.json`

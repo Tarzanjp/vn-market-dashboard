@@ -111,6 +111,9 @@ Hệ quả: **một con số sai tệ hơn một trang trắng.** Khi không ch�
   `cashout-vn.json`, `public/data/history/*.jsonl` bằng tay — đây là output do
   script sinh ra tự động, sửa tay sẽ bị ghi đè ở lần chạy sau và có thể phá vỡ
   tính idempotent. Sửa logic trong script, không sửa file kết quả.
+  (`grok-fill.json`, `grok-fill.example.json`, `events.json`,
+  `econ-actuals.json` — các file này *được* sửa tay theo thiết kế, xem
+  automation/README.md.)
 
 ---
 
@@ -224,4 +227,5 @@ Không có `make test`/`make lint` — xem §6 cho định nghĩa "xong" thật.
 - [ ] Không ghi đè/xoá dòng lịch sử của ngày khác trong `*.jsonl`
 - [ ] Không có secret trong git diff (`XAI_API_KEY` và tương tự chỉ qua env/secret)
 - [ ] Không sửa tay file trong `public/data/` (trừ `grok-fill.json`,
-      `grok-fill.example.json`, `events.json` — các file này *được* sửa tay theo thiết kế)
+      `grok-fill.example.json`, `events.json`, `econ-actuals.json` — các file
+      này *được* sửa tay theo thiết kế)
