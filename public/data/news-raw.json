@@ -1,116 +1,60 @@
 {
-  "generatedAtIct": "2026-08-18T16:31:01+07:00",
-  "count": 19,
+  "generatedAtIct": "2026-08-20T05:34:31+07:00",
+  "count": 11,
   "items": [
     {
-      "title": "HOSE cắt margin 3 cổ phiếu do lỗ quý 2/2026",
-      "link": "https://vneconomy.vn/hose-cat-margin-3-co-phieu-do-lo-quy-22026.htm",
-      "description": "HOSE đã đưa 3 mã chứng khoán MCP của CTCP In và Bao Bì Mỹ Châu, NHA của Tổng Công ty đầu tư Phát triển Nhà và Đô thị Nam Hà Nội; SMA của CTCP Thiết bị Phụ tùng Sài Gòn do cùng với cùng một lý do là lợi nhuận sau thuế trên BCTC soát xét bán niên 2026 là con số âm.",
-      "publishedAt": "2026-08-18T09:29:24+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
+      "title": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260819a.htm",
+      "description": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
+      "publishedAt": "2026-08-19T18:00:00+00:00",
+      "category": "fed",
+      "source": "Federal Reserve — Monetary Policy"
     },
     {
-      "title": "Blog chứng khoán: Cân bằng mong manh",
-      "link": "https://vneconomy.vn/blog-chung-khoan-can-bang-mong-manh.htm",
-      "description": "Thanh khoản thấp trong trạng thái thị trường hiện tại là bình thường. Mua bán đều chậm tạo sự cân bằng không đủ tin cậy. Việc nhìn điểm số không đảm bảo được diễn biến cổ phiếu.",
-      "publishedAt": "2026-08-18T09:23:11+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Nhà nước điều tiết, kiểm soát và quyết định giá đất theo Nghị quyết 21-NQ/TW",
-      "link": "https://vneconomy.vn/nha-nuoc-dieu-tiet-kiem-soat-va-quyet-dinh-gia-dat-theo-nghi-quyet-21-nqtw.htm",
-      "description": "Nghị quyết 21-NQ/TW khẳng định Nhà nước điều tiết, kiểm soát và quyết định giá đất trên cơ sở dữ liệu, phương pháp khoa học, công khai, minh bạch; không để bị thao túng giá, hình thành giá ảo. Đây là một trong những nội dung then chốt, cần được nhận thức đúng và thể chế hóa chặt chẽ khi sửa đổi Luật Đất đai.",
-      "publishedAt": "2026-08-18T08:53:24+00:00",
+      "title": "Bộ Tài chính đề xuất nhiều cơ chế hỗ trợ, phát triển hợp tác xã trong kỷ nguyên mới",
+      "link": "https://vneconomy.vn/bo-tai-chinh-de-xuat-nhieu-co-che-ho-tro-phat-trien-hop-tac-xa-trong-ky-nguyen-moi.htm",
+      "description": "Đến cuối năm 2025, khu vực kinh tế tập thể, hợp tác xã tiếp tục phát triển với hơn 35 nghìn hợp tác xã và gần 6 triệu thành viên. Tuy nhiên, việc liên kết chuỗi giá trị, ứng dụng công nghệ cao và hoàn thiện cơ chế, chính sách vẫn còn nhiều điểm nghẽn, đòi hỏi những giải pháp mới, đồng bộ và phù hợp hơn...",
+      "publishedAt": "2026-08-19T10:36:52+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Tiêu điểm"
     },
     {
-      "title": "Diễn đàn Pháp luật ASEAN 2026: Mở ra cơ hội hợp tác và phát triển trong khu vực",
-      "link": "https://vneconomy.vn/dien-dan-phap-luat-asean-2026-mo-ra-co-hoi-hop-tac-va-phat-trien-trong-khu-vuc.htm",
-      "description": "Diễn đàn Pháp luật ASEAN 2026 tập trung bàn thảo về ứng dụng trí tuệ nhân tạo trong xây dựng và thi hành pháp luật, mở ra cơ hội hợp tác và phát triển cho khu vực.",
-      "publishedAt": "2026-08-18T08:53:19+00:00",
+      "title": "Tích hợp 4 chương trình mục tiêu quốc gia: Giảm chồng chéo, đo hiệu quả bằng chất lượng sống người dân",
+      "link": "https://vneconomy.vn/tich-hop-4-chuong-trinh-muc-tieu-quoc-gia-giam-chong-cheo-do-hieu-qua-bang-chat-luong-song-nguoi-dan.htm",
+      "description": "Đồng tình với chủ trương tích hợp 4 chương trình mục tiêu quốc gia, nhiều đại biểu Quốc hội đề nghị giảm đầu mối, thủ tục trung gian, tăng phân cấp và chuyển mạnh sang đánh giá hiệu quả bằng kết quả thụ hưởng thực chất của người dân.",
+      "publishedAt": "2026-08-19T10:23:01+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Tiêu điểm"
     },
     {
-      "title": "Thanh khoản “khô kiệt”, phục hồi thất bại",
-      "link": "https://vneconomy.vn/thanh-khoan-kho-kiet-phuc-hoi-that-bai.htm",
-      "description": "Mặc dù VN-Index vẫn còn xanh ở những phút cuối, nhưng diễn biến chủ đạo trong phiên chiều là trượt giảm. Thêm nữa ngay cả khi một số trụ lớn vẫn neo giá thành công, độ rộng lại cho thấy hiện tượng suy yếu rõ rệt ở phần còn lại. So với phiên sáng có lúc chỉ số tăng 1,35%, đây là một thất bại.",
-      "publishedAt": "2026-08-18T08:29:14+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "HSBC: Tăng trưởng cao, tỷ giá và lãi suất tìm “điểm cân bằng” giai đoạn cuối 2026",
-      "link": "https://vneconomy.vn/hsbc-tang-truong-cao-ty-gia-va-lai-suat-tim-diem-can-bang-giai-doan-cuoi-2026.htm",
-      "description": "Tăng trưởng tích cực kéo theo nhu cầu vốn, nhập khẩu và ngoại tệ gia tăng, tạo thêm sức ép lên tỷ giá và lãi suất. Theo HSBC, dư địa điều hành cuối năm 2026 sẽ cần lưu ý vào khả năng phối hợp chính sách để giữ “điểm cân bằng” giữa tăng trưởng và ổn định vĩ mô, trong khi doanh nghiệp cũng cần chủ động hơn trong quản trị rủi ro tỷ giá...",
-      "publishedAt": "2026-08-18T07:19:02+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Đồng USD trượt giá xuống mức thấp nhất 2 tháng rưỡi",
-      "link": "https://vneconomy.vn/dong-usd-truot-gia-xuong-muc-thap-nhat-2-thang-ruoi.htm",
-      "description": "Trái lại, các đồng tiền của các nền kinh tế mới nổi đang trên đà tăng giá mạnh...",
-      "publishedAt": "2026-08-18T07:18:41+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Cổ phiếu dầu khí tăng bùng nổ, dòng tiền vẫn thận trọng tối đa",
-      "link": "https://vneconomy.vn/co-phieu-dau-khi-tang-bung-no-dong-tien-van-than-trong-toi-da.htm",
-      "description": "Thanh khoản thị trường sáng nay tiếp tục duy trì mức cực thấp dù độ rộng cho thấy trạng thái giao dịch khá tích cực. Duy nhất nhóm cổ phiếu dầu khí tăng giá và hút dòng tiền nổi bật.",
-      "publishedAt": "2026-08-18T05:07:12+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Mặt bằng định giá của thị trường chứng khoán Việt Nam đã quay trở lại vùng hấp dẫn",
-      "link": "https://vneconomy.vn/mat-bang-dinh-gia-cua-thi-truong-chung-khoan-viet-nam-da-quay-tro-lai-vung-hap-dan.htm",
-      "description": "Kết quả kinh doanh quý 2/2026 giúp mặt bằng định giá của thị trường chứng khoán Việt Nam đã quay trở lại vùng hấp dẫn, đặc biệt khi đặt trong tương quan với triển vọng tăng trưởng lợi nhuận tích cực của doanh nghiệp trong năm 2026.",
-      "publishedAt": "2026-08-18T03:44:01+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Vàng có thể đang lấy lại địa vị “hầm trú ẩn”",
-      "link": "https://vneconomy.vn/vang-co-the-dang-lay-lai-dia-vi-ham-tru-an.htm",
-      "description": "Với cuộc chiến tranh ở Vùng Vịnh chưa có dấu hiệu sẽ sớm kết thúc, vàng dường như đang phát huy vai trò một kênh đầu tư an toàn, sau một thời gian địa vị này bị “vùi dập” bởi nỗi lo lãi suất cao hơn lâu hơn...",
-      "publishedAt": "2026-08-18T03:32:41+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Dự thảo Luật Phát triển đô thị được bổ sung nhiều điểm mới",
-      "link": "https://vneconomy.vn/du-thao-luat-phat-trien-do-thi-duoc-bo-sung-nhieu-diem-moi.htm",
-      "description": "Về dự thảo Luật Phát triển đô thị, Phó Chủ tịch Quốc hội Nguyễn Khắc Định đề nghị Bộ Tư pháp và Ủy ban Pháp luật và Tư pháp tiếp tục phối hợp chặt chẽ, bảo đảm các quy định của Luật có tính khái quát, ổn định và áp dụng lâu dài…",
-      "publishedAt": "2026-08-17T11:06:14+00:00",
+      "title": "Tái định hình mô hình tăng trưởng: Từ “nhiều hơn” sang “tốt hơn”",
+      "link": "https://vneconomy.vn/tai-dinh-hinh-mo-hinh-tang-truong-tu-nhieu-hon-sang-tot-hon.htm",
+      "description": "Khi các động lực tăng trưởng truyền thống dần chạm giới hạn, Việt Nam cần chuyển trọng tâm sang nâng cao năng suất, trong đó TFP phải trở thành động lực then chốt để hiện thực hóa mục tiêu tăng trưởng trên 10%/năm...",
+      "publishedAt": "2026-08-19T04:45:19+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Tiêu điểm"
     },
     {
-      "title": "Hoàn thiện Nghị quyết, tạo cơ chế xử lý phù hợp để khuyến khích đổi mới sáng tạo",
-      "link": "https://vneconomy.vn/hoan-thien-nghi-quyet-tao-co-che-xu-ly-phu-hop-de-khuyen-khich-doi-moi-sang-tao.htm",
-      "description": "Dự thảo Nghị quyết về xử lý vi phạm pháp luật liên quan kinh tế nhà nước, kinh tế tư nhân và ứng dụng khoa học, công nghệ, đổi mới sáng tạo, chuyển đổi số được chỉnh lý theo hướng giữ nghiêm kỷ luật, kỷ cương, phòng, chống tham nhũng, lãng phí, tiêu cực. Đồng thời, tạo cơ chế xử lý phù hợp đối với trường hợp có sai sót, rủi ro nhưng không vụ lợi, vì lợi ích chung.",
-      "publishedAt": "2026-08-17T08:49:15+00:00",
+      "title": "Nâng năng suất, mở rộng dư địa tăng trưởng",
+      "link": "https://vneconomy.vn/nang-nang-suat-mo-rong-du-dia-tang-truong.htm",
+      "description": "Trong quá trình tái định hình mô hình tăng trưởng, năng suất số, tăng trưởng xanh và thể chế cùng tạo nền tảng nâng cao hiệu quả, sức cạnh tranh và chất lượng tăng trưởng của nền kinh tế...",
+      "publishedAt": "2026-08-19T04:40:48+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Tiêu điểm"
     },
     {
-      "title": "Định hướng xử lý các vấn đề về định giá, thu hồi và chuyển mục đích sử dụng đất theo Nghị quyết 21-NQ/TW",
-      "link": "https://vneconomy.vn/dinh-huong-xu-ly-cac-van-de-ve-dinh-gia-thu-hoi-va-chuyen-muc-dich-su-dung-dat-theo-nghi-quyet-21-nqtw.htm",
-      "description": "Nghị quyết 21-NQ/TW chỉ rõ nhiều cơ chế về giá đất, thu hồi đất, bồi thường và chuyển mục đích sử dụng đất vẫn còn bất cập. Việc làm rõ từng nhóm điểm nghẽn cùng định hướng xử lý tại Nghị quyết là cơ sở quan trọng để sửa đổi Luật Đất đai bảo đảm khả thi và đồng bộ.",
-      "publishedAt": "2026-08-17T08:44:08+00:00",
+      "title": "Ủy ban Thường vụ Quốc hội cho ý kiến về dự án Bộ luật Hình sự (sửa đổi)",
+      "link": "https://vneconomy.vn/uy-ban-thuong-vu-quoc-hoi-cho-y-kien-ve-du-an-bo-luat-hinh-su-sua-doi.htm",
+      "description": "Việc sửa đổi luật lần này tập trung vào các vấn đề lớn như đề xuất thu hẹp phạm vi áp dụng hình phạt tử hình đối với 6 tội danh; mở rộng phạm vi loại trừ trách nhiệm hình sự trong nghiên cứu, thử nghiệm, áp dụng công nghệ mới...",
+      "publishedAt": "2026-08-19T02:29:26+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Tiêu điểm"
     },
     {
-      "title": "Chuyến thăm Australia và New Zealand của Tổng Bí thư, Chủ tịch nước Tô Lâm: Từ củng cố quan hệ đến chủ động kiến tạo không gian phát triển",
-      "link": "https://vneconomy.vn/chuyen-tham-australia-va-new-zealand-cua-tong-bi-thu-chu-tich-nuoc-to-lam-tu-cung-co-quan-he-den-chu-dong-kien-tao-khong-gian-phat-trien.htm",
-      "description": "Chuyến thăm cấp Nhà nước tới Australia và New Zealand của Tổng Bí thư, Chủ tịch nước Tô Lâm từ ngày 9 đến 14/8/2026 không chỉ ghi nhận hàng loạt thỏa thuận hợp tác mà còn phản ánh tư duy chủ động mở rộng không gian phát triển chiến lược cho Việt Nam. Trong bối cảnh quốc tế biến động hiện nay, chuyến thăm trở thành một lát cắt quan trọng để nhìn nhận cách Việt Nam triển khai đối ngoại phục vụ phát triển trong giai đoạn mới.",
-      "publishedAt": "2026-08-16T08:12:12+00:00",
+      "title": "Thủ tướng yêu cầu hoàn thiện 12 dự án luật, tháo gỡ điểm nghẽn cho đầu tư, kinh doanh",
+      "link": "https://vneconomy.vn/thu-tuong-yeu-cau-hoan-thien-12-du-an-luat-thao-go-diem-nghen-cho-dau-tu-kinh-doanh.htm",
+      "description": "Tại phiên họp chuyên đề xây dựng pháp luật tháng 8/2026, Thủ tướng Chính phủ Lê Minh Hưng yêu cầu các bộ, ngành khẩn trương hoàn thiện 12 dự án luật, nghị quyết, bảo đảm đồng bộ, khả thi, không tạo thêm “điểm nghẽn” cho người dân, doanh nghiệp.",
+      "publishedAt": "2026-08-19T01:10:56+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Tiêu điểm"
     },
@@ -134,14 +78,6 @@
       "title": "Federal Reserve Board announces approval of the application by FS Bancorp, Inc.",
       "link": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804b.htm",
       "description": "Federal Reserve Board announces approval of the application by FS Bancorp, Inc.",
-      "publishedAt": "2026-08-04T20:30:00+00:00",
-      "category": "us-macro",
-      "source": "Federal Reserve — All Press Releases"
-    },
-    {
-      "title": "Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc.",
-      "link": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260804a.htm",
-      "description": "Federal Reserve Board announces approval of the application by Banco Santander, S.A. and Santander Holdings USA, Inc.",
       "publishedAt": "2026-08-04T20:30:00+00:00",
       "category": "us-macro",
       "source": "Federal Reserve — All Press Releases"
