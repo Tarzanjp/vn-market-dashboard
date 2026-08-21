@@ -1,21 +1,49 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-16T05:17:34+07:00",
+  "generatedAtIct": "2026-08-21T17:10:59+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — VN30F1M futures history + company events cho 30 mã cấu thành VN30",
   "method": {
     "vn30Basis": "VN30F1M (hợp đồng gần nhất, giá đóng cửa phiên gần nhất) trừ VN30 giao ngay — số thật. basis_pct = basis/spot×100. Có thể lệch ngày nếu 1 trong 2 chưa có phiên mới nhất.",
     "insiderTrades": "company.events() lọc category=MAJOR_SHAREHOLDER_TRADING, 30 ngày gần nhất, CHỈ 30 mã VN30 (không phải toàn thị trường, xem giới hạn API). Tiêu đề lấy nguyên văn từ công bố HOSE, không tự tách số lượng."
   },
   "vn30": {
-    "spot": 1876.81,
-    "futures": 1878.8,
+    "spot": 1927.79,
+    "futures": 1934.2,
     "contract": "VN30F1M",
-    "basis": 1.99,
-    "basis_pct": 0.11,
-    "asof": "2026-08-14",
+    "basis": 6.41,
+    "basis_pct": 0.33,
+    "asof": "2026-08-21",
     "quality": "live"
   },
   "insiderTrades": [
+    {
+      "ticker": "SSB",
+      "date": "2026-08-21",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Thị Thu Hương - Đăng kí Mua 2,357,000 SSB",
+      "title_en": "Nguyen Thi Thu Huong - Subscribe to Buy 2,357,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-20",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Tuấn Cường - Đăng kí Mua 2,357,000 SSB",
+      "title_en": "Nguyen Tuan Cuong - Subscribe to Buy 2,357,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-20",
+      "direction": "Buy",
+      "title_vi": "Vũ Đình Khoán - Đăng kí Mua 2,357,500 SSB",
+      "title_en": "Vu Dinh Khoan - Subscribe to Buy 2,357,500 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-20",
+      "direction": "Buy",
+      "title_vi": "Hoàng Mạnh Phú - Đăng kí Mua 2,357,000 SSB",
+      "title_en": "Hoang Manh Phu - Subscribe to Buy 2,357,000 SSB shares"
+    },
     {
       "ticker": "SSB",
       "date": "2026-08-11",
@@ -204,13 +232,6 @@
       "direction": "Buy",
       "title_vi": "Phạm Thị Gái - Đăng kí Mua 50,000 SSI",
       "title_en": "Pham Thi Gai - Subscribe to Buy 50,000 SSI shares"
-    },
-    {
-      "ticker": "LPB",
-      "date": "2026-07-21",
-      "direction": "Buy",
-      "title_vi": "Phạm Thu Hương - Đăng kí Mua LPB",
-      "title_en": "Pham Thu Huong - Subscribe to Buy LPB shares"
     }
   ]
 }

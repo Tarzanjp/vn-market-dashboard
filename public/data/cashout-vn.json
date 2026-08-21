@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-20T12:18:25+07:00",
+  "generatedAtIct": "2026-08-21T17:07:11+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — bulk price_board toàn bộ mã HOSE/HNX/UPCOM",
   "method": {
     "totalTurnoverBn": "Σ GTGD khớp lệnh tích luỹ toàn bộ mã (accumulated_value), đơn vị tỷ VND — số thật từ snapshot.",
@@ -20,23 +20,23 @@
     "foreignNetBn": "live",
     "proprietaryNetBn": "missing"
   },
-  "totalTurnoverBn": 3891.7,
-  "foreignNetBn": -300.8,
+  "totalTurnoverBn": 16522.5,
+  "foreignNetBn": 16.5,
   "proprietaryNetBn": null,
   "capacity": {
     "participationPct": 15.0,
     "tiers": [
       {
         "capitalBn": 500,
-        "days": 0.9
+        "days": 0.2
       },
       {
         "capitalBn": 2000,
-        "days": 3.4
+        "days": 0.8
       },
       {
         "capitalBn": 5000,
-        "days": 8.6
+        "days": 2.0
       }
     ]
   },
@@ -44,33 +44,33 @@
     {
       "en": "Banking",
       "vi": "Ngân hàng",
-      "chg": 0.17,
-      "value_bn": 806.6,
-      "vol_ratio": 0.56,
+      "chg": 2.28,
+      "value_bn": 3905.0,
+      "vol_ratio": 1.65,
       "vol_ratio_proxy_symbols": [
+        "SHB",
         "HDB",
-        "VCB",
         "VPB"
       ]
     },
     {
       "en": "Real Estate",
       "vi": "Bất động sản",
-      "chg": 0.47,
-      "value_bn": 838.6,
-      "vol_ratio": 0.27,
+      "chg": 3.54,
+      "value_bn": 2561.4,
+      "vol_ratio": 0.55,
       "vol_ratio_proxy_symbols": [
         "VIC",
         "VHM",
-        "VPI"
+        "NVL"
       ]
     },
     {
       "en": "Steel & Materials",
       "vi": "Thép/VLXD",
-      "chg": 0.22,
-      "value_bn": 125.0,
-      "vol_ratio": 0.25,
+      "chg": 2.57,
+      "value_bn": 611.0,
+      "vol_ratio": 1.36,
       "vol_ratio_proxy_symbols": [
         "HPG",
         "HSG",
@@ -80,325 +80,325 @@
     {
       "en": "Securities",
       "vi": "Chứng khoán",
-      "chg": 0.44,
-      "value_bn": 474.6,
-      "vol_ratio": 0.33,
+      "chg": 6.52,
+      "value_bn": 3533.6,
+      "vol_ratio": 2.16,
       "vol_ratio_proxy_symbols": [
-        "VIX",
         "SSI",
-        "VCI"
+        "VIX",
+        "SHS"
       ]
     },
     {
       "en": "F&B / Retail",
       "vi": "Bán lẻ/Thực phẩm",
-      "chg": 1.8,
-      "value_bn": 573.7,
-      "vol_ratio": 0.9,
+      "chg": 2.13,
+      "value_bn": 1719.0,
+      "vol_ratio": 1.65,
       "vol_ratio_proxy_symbols": [
-        "VNM",
-        "PNJ",
-        "MSN"
+        "MSN",
+        "MWG",
+        "VNM"
       ]
     }
   ],
   "tickers": [
     {
-      "code": "VIC",
-      "sector": "Bất động sản / Real Estate",
-      "foreign_buy_bn": 45.68,
-      "foreign_sell_bn": 53.79,
-      "foreign_room_pct": 93.4,
-      "bid1_price": 202100.0,
-      "bid1_vol": 3600.0,
-      "ask1_price": 202200.0,
-      "ask1_vol": 10700.0,
-      "spread_pct": 0.05,
-      "pe": 68.49,
-      "pb": 9.14,
-      "roe": 14.8,
-      "foreigner_pct": 3.1,
-      "state_pct": 0.0,
-      "free_float_pct": 30.0,
-      "capacity_days_500bn": 10.2
+      "code": "SHB",
+      "sector": "Ngân hàng / Banking",
+      "foreign_buy_bn": 141.97,
+      "foreign_sell_bn": 4.08,
+      "foreign_room_pct": 87.7,
+      "bid1_price": 11850.0,
+      "bid1_vol": 2622000.0,
+      "ask1_price": 11900.0,
+      "ask1_vol": 1073900.0,
+      "spread_pct": 0.42,
+      "pe": 4.5,
+      "pb": 0.73,
+      "roe": 17.2,
+      "foreigner_pct": 3.5,
+      "state_pct": 0.6,
+      "free_float_pct": 75.0,
+      "capacity_days_500bn": 4.1
     },
     {
-      "code": "VNM",
-      "sector": "Bán lẻ/Thực phẩm / F&B / Retail",
-      "foreign_buy_bn": 56.01,
-      "foreign_sell_bn": 37.69,
-      "foreign_room_pct": 50.2,
-      "bid1_price": 64000.0,
-      "bid1_vol": 20100.0,
-      "ask1_price": 64100.0,
-      "ask1_vol": 31200.0,
-      "spread_pct": 0.16,
-      "pe": 12.03,
-      "pb": 4.14,
-      "roe": 33.9,
-      "foreigner_pct": 49.7,
-      "state_pct": 36.0,
-      "free_float_pct": 40.0,
-      "capacity_days_500bn": 16.7
+      "code": "SSI",
+      "sector": "Chứng khoán / Securities",
+      "foreign_buy_bn": 124.41,
+      "foreign_sell_bn": 52.65,
+      "foreign_room_pct": 69.6,
+      "bid1_price": 20750.0,
+      "bid1_vol": 10716900.0,
+      "ask1_price": null,
+      "ask1_vol": null,
+      "spread_pct": -100.0,
+      "pe": 11.07,
+      "pb": 1.43,
+      "roe": 13.4,
+      "foreigner_pct": 30.1,
+      "state_pct": 0.0,
+      "free_float_pct": 70.0,
+      "capacity_days_500bn": 4.2
     },
     {
       "code": "VIX",
       "sector": "Chứng khoán / Securities",
-      "foreign_buy_bn": 1.94,
-      "foreign_sell_bn": 53.35,
-      "foreign_room_pct": 92.9,
-      "bid1_price": 12600.0,
-      "bid1_vol": 656700.0,
-      "ask1_price": 12650.0,
-      "ask1_vol": 106300.0,
-      "spread_pct": 0.4,
-      "pe": 5.67,
-      "pb": 0.98,
+      "foreign_buy_bn": 47.92,
+      "foreign_sell_bn": 32.75,
+      "foreign_room_pct": 92.8,
+      "bid1_price": 13500.0,
+      "bid1_vol": 7510800.0,
+      "ask1_price": null,
+      "ask1_vol": null,
+      "spread_pct": -100.0,
+      "pe": 5.87,
+      "pb": 1.0,
       "roe": 16.5,
-      "foreigner_pct": 7.1,
+      "foreigner_pct": 7.0,
       "state_pct": 0.0,
       "free_float_pct": 100.0,
-      "capacity_days_500bn": 19.2
+      "capacity_days_500bn": 4.9
     },
     {
-      "code": "FPT",
-      "sector": "Công nghệ và thông tin",
-      "foreign_buy_bn": 30.96,
-      "foreign_sell_bn": 12.46,
-      "foreign_room_pct": 44.2,
-      "bid1_price": 70000.0,
-      "bid1_vol": 24100.0,
-      "ask1_price": 70100.0,
-      "ask1_vol": 41000.0,
-      "spread_pct": 0.14,
-      "pe": 11.75,
-      "pb": 2.96,
-      "roe": 26.5,
-      "foreigner_pct": 27.3,
-      "state_pct": 5.6,
-      "free_float_pct": 85.0,
-      "capacity_days_500bn": 19.9
-    },
-    {
-      "code": "VHM",
+      "code": "VIC",
       "sector": "Bất động sản / Real Estate",
-      "foreign_buy_bn": 12.03,
-      "foreign_sell_bn": 36.79,
-      "foreign_room_pct": 86.9,
-      "bid1_price": 69500.0,
-      "bid1_vol": 100.0,
-      "ask1_price": 69700.0,
-      "ask1_vol": 3400.0,
-      "spread_pct": 0.29,
-      "pe": 7.11,
-      "pb": 2.19,
-      "roe": 32.7,
-      "foreigner_pct": 6.6,
+      "foreign_buy_bn": 93.85,
+      "foreign_sell_bn": 121.68,
+      "foreign_room_pct": 93.4,
+      "bid1_price": 205000.0,
+      "bid1_vol": 169000.0,
+      "ask1_price": 205100.0,
+      "ask1_vol": 3600.0,
+      "spread_pct": 0.05,
+      "pe": 69.18,
+      "pb": 9.23,
+      "roe": 14.8,
+      "foreigner_pct": 3.1,
       "state_pct": 0.0,
       "free_float_pct": 30.0,
-      "capacity_days_500bn": 21.1
-    },
-    {
-      "code": "PNJ",
-      "sector": "Bán lẻ/Thực phẩm / F&B / Retail",
-      "foreign_buy_bn": 34.27,
-      "foreign_sell_bn": 25.51,
-      "foreign_room_pct": 8.8,
-      "bid1_price": 37450.0,
-      "bid1_vol": 5200.0,
-      "ask1_price": 37500.0,
-      "ask1_vol": 20400.0,
-      "spread_pct": 0.13,
-      "pe": 6.29,
-      "pb": 1.31,
-      "roe": 21.6,
-      "foreigner_pct": 44.5,
-      "state_pct": 0.0,
-      "free_float_pct": 90.0,
-      "capacity_days_500bn": 26.2
-    },
-    {
-      "code": "HDB",
-      "sector": "Ngân hàng / Banking",
-      "foreign_buy_bn": 25.39,
-      "foreign_sell_bn": 7.2,
-      "foreign_room_pct": 19.9,
-      "bid1_price": 26800.0,
-      "bid1_vol": 20200.0,
-      "ask1_price": 26850.0,
-      "ask1_vol": 110600.0,
-      "spread_pct": 0.19,
-      "pe": 6.85,
-      "pb": 1.56,
-      "roe": 23.9,
-      "foreigner_pct": 21.6,
-      "state_pct": 2.8,
-      "free_float_pct": 80.0,
-      "capacity_days_500bn": 26.9
+      "capacity_days_500bn": 5.1
     },
     {
       "code": "HPG",
       "sector": "Thép/VLXD / Steel & Materials",
-      "foreign_buy_bn": 7.93,
-      "foreign_sell_bn": 27.61,
-      "foreign_room_pct": 55.8,
-      "bid1_price": 21200.0,
-      "bid1_vol": 337000.0,
-      "ask1_price": 21250.0,
-      "ask1_vol": 95500.0,
-      "spread_pct": 0.24,
-      "pe": 7.71,
+      "foreign_buy_bn": 41.01,
+      "foreign_sell_bn": 70.15,
+      "foreign_room_pct": 55.7,
+      "bid1_price": 21650.0,
+      "bid1_vol": 384500.0,
+      "ask1_price": 21700.0,
+      "ask1_vol": 466800.0,
+      "spread_pct": 0.23,
+      "pe": 7.69,
       "pb": 1.27,
       "roe": 17.4,
       "foreigner_pct": 21.7,
       "state_pct": 0.0,
       "free_float_pct": 60.0,
-      "capacity_days_500bn": 30.6
+      "capacity_days_500bn": 6.2
     },
     {
-      "code": "VJC",
-      "sector": "Vận tải - kho bãi",
-      "foreign_buy_bn": 1.72,
-      "foreign_sell_bn": 7.58,
-      "foreign_room_pct": 79.7,
-      "bid1_price": 122500.0,
-      "bid1_vol": 200.0,
-      "ask1_price": 122700.0,
-      "ask1_vol": 2600.0,
-      "spread_pct": 0.16,
-      "pe": 43.49,
-      "pb": 3.6,
-      "roe": 8.6,
-      "foreigner_pct": 6.1,
+      "code": "GEX",
+      "sector": "Thiết bị điện",
+      "foreign_buy_bn": 20.05,
+      "foreign_sell_bn": 38.49,
+      "foreign_room_pct": 86.7,
+      "bid1_price": 26250.0,
+      "bid1_vol": 3323300.0,
+      "ask1_price": null,
+      "ask1_vol": null,
+      "spread_pct": -100.0,
+      "pe": 23.42,
+      "pb": 1.62,
+      "roe": 7.5,
+      "foreigner_pct": 6.6,
       "state_pct": 0.0,
-      "free_float_pct": 35.0,
-      "capacity_days_500bn": 33.7
+      "free_float_pct": 70.0,
+      "capacity_days_500bn": 6.3
     },
     {
-      "code": "VCB",
-      "sector": "Ngân hàng / Banking",
-      "foreign_buy_bn": 6.93,
-      "foreign_sell_bn": 27.04,
-      "foreign_room_pct": 32.9,
-      "bid1_price": 57300.0,
-      "bid1_vol": 81500.0,
-      "ask1_price": 57400.0,
-      "ask1_vol": 41800.0,
-      "spread_pct": 0.17,
-      "pe": 11.52,
-      "pb": 1.93,
-      "roe": 17.9,
-      "foreigner_pct": 20.1,
-      "state_pct": 74.8,
-      "free_float_pct": 11.0,
-      "capacity_days_500bn": 39.1
+      "code": "MSN",
+      "sector": "Bán lẻ/Thực phẩm / F&B / Retail",
+      "foreign_buy_bn": 120.08,
+      "foreign_sell_bn": 69.32,
+      "foreign_room_pct": 75.8,
+      "bid1_price": 69800.0,
+      "bid1_vol": 17300.0,
+      "ask1_price": 69900.0,
+      "ask1_vol": 47700.0,
+      "spread_pct": 0.14,
+      "pe": 14.69,
+      "pb": 2.48,
+      "roe": 19.4,
+      "foreigner_pct": 24.1,
+      "state_pct": 0.0,
+      "free_float_pct": 60.0,
+      "capacity_days_500bn": 6.5
+    },
+    {
+      "code": "FPT",
+      "sector": "Công nghệ và thông tin",
+      "foreign_buy_bn": 75.45,
+      "foreign_sell_bn": 66.18,
+      "foreign_room_pct": 44.0,
+      "bid1_price": 71900.0,
+      "bid1_vol": 8400.0,
+      "ask1_price": 72000.0,
+      "ask1_vol": 43800.0,
+      "spread_pct": 0.14,
+      "pe": 11.9,
+      "pb": 2.99,
+      "roe": 26.5,
+      "foreigner_pct": 27.3,
+      "state_pct": 5.6,
+      "free_float_pct": 85.0,
+      "capacity_days_500bn": 6.7
+    },
+    {
+      "code": "MWG",
+      "sector": "Bán lẻ/Thực phẩm / F&B / Retail",
+      "foreign_buy_bn": 445.29,
+      "foreign_sell_bn": 445.41,
+      "foreign_room_pct": 0.0,
+      "bid1_price": 74700.0,
+      "bid1_vol": 17300.0,
+      "ask1_price": 75000.0,
+      "ask1_vol": 10200.0,
+      "spread_pct": 0.4,
+      "pe": 10.91,
+      "pb": 3.0,
+      "roe": 29.2,
+      "foreigner_pct": 49.0,
+      "state_pct": 0.0,
+      "free_float_pct": 75.0,
+      "capacity_days_500bn": 9.0
+    },
+    {
+      "code": "SHS",
+      "sector": "Chứng khoán / Securities",
+      "foreign_buy_bn": 0.02,
+      "foreign_sell_bn": 1.75,
+      "foreign_room_pct": 81.8,
+      "bid1_price": 15800.0,
+      "bid1_vol": 388100.0,
+      "ask1_price": 15900.0,
+      "ask1_vol": 1804800.0,
+      "spread_pct": 0.63,
+      "pe": 13.13,
+      "pb": 1.05,
+      "roe": 8.1,
+      "foreigner_pct": 8.9,
+      "state_pct": 0.0,
+      "free_float_pct": 95.0,
+      "capacity_days_500bn": 9.2
     }
   ],
   "leadersRollup": {
     "n": 10,
     "weightBasis": "GTGD phiên hôm nay của từng mã (turnover-weighted)",
-    "pe": 23.36,
-    "pb": 3.73,
-    "roe": 21.69,
-    "foreigner_pct": 19.62,
-    "state_pct": 9.46,
-    "free_float_pct": 55.05
+    "pe": 17.44,
+    "pb": 2.47,
+    "roe": 16.66,
+    "foreigner_pct": 16.68,
+    "state_pct": 0.57,
+    "free_float_pct": 71.08
   },
   "foreignRoomWatch": [
     {
+      "code": "REE",
+      "room_pct": 0.0,
+      "turnover_bn": 17.7
+    },
+    {
       "code": "MWG",
       "room_pct": 0.0,
-      "turnover_bn": 40.0
+      "turnover_bn": 369.3
+    },
+    {
+      "code": "TCM",
+      "room_pct": 4.0,
+      "turnover_bn": 13.1
     },
     {
       "code": "MBB",
-      "room_pct": 4.6,
-      "turnover_bn": 60.2
+      "room_pct": 4.5,
+      "turnover_bn": 321.9
+    },
+    {
+      "code": "CTD",
+      "room_pct": 4.5,
+      "turnover_bn": 24.2
     },
     {
       "code": "PNJ",
-      "room_pct": 8.8,
-      "turnover_bn": 127.1
+      "room_pct": 7.9,
+      "turnover_bn": 161.4
     },
     {
       "code": "TCB",
       "room_pct": 8.9,
-      "turnover_bn": 57.8
+      "turnover_bn": 305.9
     },
     {
       "code": "OCB",
       "room_pct": 11.2,
-      "turnover_bn": 7.0
-    },
-    {
-      "code": "CTG",
-      "room_pct": 17.6,
-      "turnover_bn": 41.6
-    },
-    {
-      "code": "GMD",
-      "room_pct": 18.6,
-      "turnover_bn": 41.5
-    },
-    {
-      "code": "HDB",
-      "room_pct": 19.9,
-      "turnover_bn": 123.7
+      "turnover_bn": 24.2
     }
   ],
   "marketConcentration": {
-    "top5Pct": 35.4,
-    "top10Pct": 47.1,
+    "top5Pct": 33.8,
+    "top10Pct": 45.3,
     "topStocks": [
       {
         "code": "VIC",
-        "marketCapBn": 1569514.1,
-        "weightPct": 19.6
+        "marketCapBn": 1591248.2,
+        "weightPct": 18.53
       },
       {
         "code": "VCB",
-        "marketCapBn": 478780.2,
-        "weightPct": 5.98
+        "marketCapBn": 493820.4,
+        "weightPct": 5.75
       },
       {
         "code": "VHM",
-        "marketCapBn": 286286.6,
-        "weightPct": 3.58
+        "marketCapBn": 294501.4,
+        "weightPct": 3.43
       },
       {
         "code": "BID",
-        "marketCapBn": 260990.3,
-        "weightPct": 3.26
+        "marketCapBn": 268634.4,
+        "weightPct": 3.13
       },
       {
         "code": "CTG",
-        "marketCapBn": 242328.7,
-        "weightPct": 3.03
+        "marketCapBn": 249707.3,
+        "weightPct": 2.91
       },
       {
         "code": "TCB",
-        "marketCapBn": 219319.1,
-        "weightPct": 2.74
+        "marketCapBn": 224279.5,
+        "weightPct": 2.61
       },
       {
         "code": "VPB",
-        "marketCapBn": 196761.3,
-        "weightPct": 2.46
+        "marketCapBn": 203901.8,
+        "weightPct": 2.37
+      },
+      {
+        "code": "GAS",
+        "marketCapBn": 201481.3,
+        "weightPct": 2.35
       },
       {
         "code": "HPG",
-        "marketCapBn": 179413.0,
-        "weightPct": 2.24
+        "marketCapBn": 183212.3,
+        "weightPct": 2.13
       },
       {
         "code": "MCH",
-        "marketCapBn": 179376.0,
-        "weightPct": 2.24
-      },
-      {
-        "code": "MBB",
-        "marketCapBn": 162308.2,
-        "weightPct": 2.03
+        "marketCapBn": 182383.0,
+        "weightPct": 2.12
       }
     ]
   }
