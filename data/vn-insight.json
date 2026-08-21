@@ -1,0 +1,237 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAtIct": "2026-08-21T17:10:59+07:00",
+  "source": "VCI (qua thư viện mã nguồn mở vnstock) — VN30F1M futures history + company events cho 30 mã cấu thành VN30",
+  "method": {
+    "vn30Basis": "VN30F1M (hợp đồng gần nhất, giá đóng cửa phiên gần nhất) trừ VN30 giao ngay — số thật. basis_pct = basis/spot×100. Có thể lệch ngày nếu 1 trong 2 chưa có phiên mới nhất.",
+    "insiderTrades": "company.events() lọc category=MAJOR_SHAREHOLDER_TRADING, 30 ngày gần nhất, CHỈ 30 mã VN30 (không phải toàn thị trường, xem giới hạn API). Tiêu đề lấy nguyên văn từ công bố HOSE, không tự tách số lượng."
+  },
+  "vn30": {
+    "spot": 1927.79,
+    "futures": 1934.2,
+    "contract": "VN30F1M",
+    "basis": 6.41,
+    "basis_pct": 0.33,
+    "asof": "2026-08-21",
+    "quality": "live"
+  },
+  "insiderTrades": [
+    {
+      "ticker": "SSB",
+      "date": "2026-08-21",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Thị Thu Hương - Đăng kí Mua 2,357,000 SSB",
+      "title_en": "Nguyen Thi Thu Huong - Subscribe to Buy 2,357,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-20",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Tuấn Cường - Đăng kí Mua 2,357,000 SSB",
+      "title_en": "Nguyen Tuan Cuong - Subscribe to Buy 2,357,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-20",
+      "direction": "Buy",
+      "title_vi": "Vũ Đình Khoán - Đăng kí Mua 2,357,500 SSB",
+      "title_en": "Vu Dinh Khoan - Subscribe to Buy 2,357,500 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-20",
+      "direction": "Buy",
+      "title_vi": "Hoàng Mạnh Phú - Đăng kí Mua 2,357,000 SSB",
+      "title_en": "Hoang Manh Phu - Subscribe to Buy 2,357,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-11",
+      "direction": "Buy",
+      "title_vi": "Hoàng Tuyết Mai - Đăng kí Mua 22,000 SSB",
+      "title_en": "Hoang Tuyet Mai - Subscribe to Buy 22,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-10",
+      "direction": "Buy",
+      "title_vi": "Hoàng Mạnh Phú - Đăng kí Mua 1,900,000 SSB",
+      "title_en": "Hoang Manh Phu - Subscribe to Buy 1,900,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-07",
+      "direction": "Buy",
+      "title_vi": "Vũ Quốc Tuấn - Đăng kí Mua 100,000 SSB",
+      "title_en": "Vu Quoc Tuan - Subscribe to Buy 100,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-06",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Tuấn Anh - Đăng kí Mua 300,000 SSB",
+      "title_en": "Nguyen Tuan Anh - Subscribe to Buy 300,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-06",
+      "direction": "Buy",
+      "title_vi": "Đặng Thu Trang - Đăng kí Mua 300,000 SSB",
+      "title_en": "Dang Thu Trang - Subscribe to Buy 300,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-06",
+      "direction": "Buy",
+      "title_vi": "Lê Quốc Long - Đăng kí Mua 500,000 SSB",
+      "title_en": "Le Quoc Long - Subscribe to Buy 500,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-05",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Thị Nga - Đăng kí Mua 3,500,000 SSB",
+      "title_en": "Nguyen Thi Nga - Subscribe to Buy 3,500,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-04",
+      "direction": "Buy",
+      "title_vi": "Vo Long Nhi (Andrew Vo) - Đăng kí Mua 300,000 SSB",
+      "title_en": "Vo Long Nhi (Andrew Vo) - Subscribe to Buy 300,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-04",
+      "direction": "Buy",
+      "title_vi": "Hoàng Mạnh Phú - Đăng kí Mua 200,000 SSB",
+      "title_en": "Hoang Manh Phu - Subscribe to Buy 200,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-04",
+      "direction": "Buy",
+      "title_vi": "Fergus Macdonald Clark - Đăng kí Mua 100,000 SSB",
+      "title_en": "Fergus Macdonald Clark - Subscribe to Buy 100,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-04",
+      "direction": "Buy",
+      "title_vi": "Matthew Sander Hosford - Đăng kí Mua 100,000 SSB",
+      "title_en": "Matthew Sander Hosford - Subscribe to Buy 100,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-03",
+      "direction": "Buy",
+      "title_vi": "Mathew Nevil Welch - Đăng kí Mua 100,000 SSB",
+      "title_en": "Mathew Nevil Welch - Subscribe to Buy 100,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-03",
+      "direction": "Buy",
+      "title_vi": "Khúc Thị Quỳnh Lâm - Đăng kí Mua 2,347,500 SSB",
+      "title_en": "Khuc Thi Quynh Lam - Subscribe to Buy 2,347,500 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-08-03",
+      "direction": "Buy",
+      "title_vi": "Vũ Thu Thủy - Đăng kí Mua 100,000 SSB",
+      "title_en": "Vu Thu Thuy - Subscribe to Buy 100,000 SSB shares"
+    },
+    {
+      "ticker": "MWG",
+      "date": "2026-07-31",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Đức Tài - Đăng kí Mua 1,000,000 MWG",
+      "title_en": "Nguyen Duc Tai - Subscribe to Buy 1,000,000 MWG shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-07-31",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Ngọc Quỳnh - Đăng kí Mua 3,500,000 SSB",
+      "title_en": "Nguyen Ngoc Quynh - Subscribe to Buy 3,500,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-07-31",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Thị Thu Hương - Đăng kí Mua 2,300,000 SSB",
+      "title_en": "Nguyen Thi Thu Huong - Subscribe to Buy 2,300,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-07-31",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Hồng Quang - Đăng kí Mua 500,000 SSB",
+      "title_en": "Nguyen Hong Quang - Subscribe to Buy 500,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-07-31",
+      "direction": "Buy",
+      "title_vi": "Lê Văn Tần - Đăng kí Mua 3,500,000 SSB",
+      "title_en": "LE VAN TAN - Subscribe to Buy 3,500,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-07-31",
+      "direction": "Buy",
+      "title_vi": "Lương Duy Đông - Đăng kí Mua 100,000 SSB",
+      "title_en": "Luong Duy Dong - Subscribe to Buy 100,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-07-31",
+      "direction": "Buy",
+      "title_vi": "Đào Minh Nguyệt - Đăng kí Mua 25,000 SSB",
+      "title_en": "Dao Minh Nguyet - Subscribe to Buy 25,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-07-31",
+      "direction": "Buy",
+      "title_vi": "Trần Thị Thanh Thủy - Đăng kí Mua 100,000 SSB",
+      "title_en": "Tran Thi Thanh Thuy - Subscribe to Buy 100,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-07-31",
+      "direction": "Buy",
+      "title_vi": "Vũ Đình Khoán - Đăng kí Mua 2,300,000 SSB",
+      "title_en": "Vu Dinh Khoan - Subscribe to Buy 2,300,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-07-31",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Tuấn Cường - Đăng kí Mua 2,000,000 SSB",
+      "title_en": "Nguyen Tuan Cuong - Subscribe to Buy 2,000,000 SSB shares"
+    },
+    {
+      "ticker": "MBB",
+      "date": "2026-07-28",
+      "direction": "Sell",
+      "title_vi": "Trần Trọng Hương - Đăng kí Bán 240,000 MBB",
+      "title_en": "Tran Trong Huong - Subscribe to Sell 240,000 MBB shares"
+    },
+    {
+      "ticker": "MCH",
+      "date": "2026-07-28",
+      "direction": "Buy",
+      "title_vi": "Trương Công Thắng - Đăng kí Mua 2,700,000 MCH",
+      "title_en": "Truong Cong Thang - Subscribe to Buy 2,700,000 MCH shares"
+    },
+    {
+      "ticker": "SSI",
+      "date": "2026-07-24",
+      "direction": "Buy",
+      "title_vi": "Phạm Thị Gái - Đăng kí Mua 50,000 SSI",
+      "title_en": "Pham Thi Gai - Subscribe to Buy 50,000 SSI shares"
+    }
+  ]
+}

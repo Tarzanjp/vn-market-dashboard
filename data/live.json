@@ -1,0 +1,221 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAtIct": "2026-08-21T16:34:29+07:00",
+  "asof": "2026-08-21",
+  "quality": {
+    "usYields": "live",
+    "fgUs": "live",
+    "vnIndex": "live",
+    "dxy": "live",
+    "vnYields": "stale",
+    "margin": "stale",
+    "breadth": "stale",
+    "usdVnd": "stale",
+    "foreign": "stale",
+    "proprietary": "missing"
+  },
+  "usYields": [
+    {
+      "t": "1 năm",
+      "y": 3.99,
+      "d": -0.01,
+      "m": null,
+      "yr": null,
+      "x": 1,
+      "est": true
+    },
+    {
+      "t": "3 năm",
+      "y": 4.26,
+      "d": 0.01,
+      "m": null,
+      "yr": null,
+      "x": 3,
+      "est": false
+    },
+    {
+      "t": "5 năm",
+      "y": 4.39,
+      "d": 0.04,
+      "m": null,
+      "yr": null,
+      "x": 5,
+      "est": false
+    },
+    {
+      "t": "10 năm",
+      "y": 4.69,
+      "d": 0.04,
+      "m": null,
+      "yr": null,
+      "x": 10,
+      "est": false
+    },
+    {
+      "t": "30 năm",
+      "y": 5.23,
+      "d": 0.04,
+      "m": null,
+      "yr": null,
+      "x": 30,
+      "est": false
+    }
+  ],
+  "usYieldsAsof": "2026-08-20",
+  "fgUs": {
+    "score": 52.1,
+    "hist": {
+      "prev": 52.5,
+      "week": 64.0,
+      "month": 43.4,
+      "year": 52.6
+    },
+    "asofEt": "2026-08-21"
+  },
+  "fgUsFetchedAt": "2026-08-21T16:34:29.317959+07:00",
+  "vnIndex": {
+    "symbol": "^VNINDEX.VN",
+    "price": 1768.12,
+    "prev": 1734.24,
+    "chg": 33.88,
+    "pct": 1.95,
+    "date": "2026-08-21"
+  },
+  "vnIndexFetchedAt": "2026-08-21T16:34:29.452319+07:00",
+  "dxy": 98.61,
+  "dxyFetchedAt": "2026-08-21T16:34:29.552854+07:00",
+  "vnYields": [
+    {
+      "t": "10 năm",
+      "y": 4.538,
+      "d": 0.009,
+      "m": 0,
+      "yr": 1.05,
+      "x": 10,
+      "est": false
+    }
+  ],
+  "margin": {
+    "asof": "2026-06-30",
+    "freq": "monthly",
+    "note": "Cuối T6/2026: dư nợ margin toàn TT >446.000 tỷ VND tại 80/85 CTCK (VnEconomy/FiinTrade); riêng cấu phần margin thuần (không tính cho vay theo deal riêng) ~435.000 tỷ theo Investing.com/CafeF. Top 10 CTCK theo dư nợ margin Q2/2026 (Tin nhanh chứng khoán, CafeF) — tỷ trọng tính trên tổng 435.000 tỷ. Không có nguồn công khai cho room còn lại (cần vốn chủ sở hữu từng CTCK) nên để trống. Tần suất thật: theo quý (BCTC), không phải hàng ngày.",
+    "days": [
+      {
+        "date": "2026-06-30",
+        "debt": 446000,
+        "net": 0
+      }
+    ],
+    "brokers": [
+      {
+        "code": "TCBS",
+        "name": "Techcom Securities",
+        "debt": 51522,
+        "d": 6772,
+        "share": 11.8,
+        "room": null
+      },
+      {
+        "code": "SSI",
+        "name": "SSI",
+        "debt": 40500,
+        "d": null,
+        "share": 9.3,
+        "room": null
+      },
+      {
+        "code": "VPBankS",
+        "name": "VPBank Securities",
+        "debt": 40000,
+        "d": null,
+        "share": 9.2,
+        "room": null
+      },
+      {
+        "code": "VPS",
+        "name": "VPS",
+        "debt": 37000,
+        "d": null,
+        "share": 8.5,
+        "room": null
+      },
+      {
+        "code": "HSC",
+        "name": "HSC",
+        "debt": 36000,
+        "d": null,
+        "share": 8.3,
+        "room": null
+      },
+      {
+        "code": "VND",
+        "name": "VNDirect",
+        "debt": 29000,
+        "d": null,
+        "share": 6.7,
+        "room": null
+      },
+      {
+        "code": "MBS",
+        "name": "MB Securities",
+        "debt": 28000,
+        "d": null,
+        "share": 6.4,
+        "room": null
+      },
+      {
+        "code": "VDSC",
+        "name": "Rồng Việt Securities",
+        "debt": 21000,
+        "d": null,
+        "share": 4.8,
+        "room": null
+      },
+      {
+        "code": "BSI",
+        "name": "BIDV Securities",
+        "debt": 15000,
+        "d": null,
+        "share": 3.4,
+        "room": null
+      },
+      {
+        "code": "SHS",
+        "name": "Saigon-Hanoi Securities",
+        "debt": 11722,
+        "d": null,
+        "share": 2.7,
+        "room": null
+      }
+    ]
+  },
+  "breadth": {
+    "date": "2026-08-07",
+    "gtgd": 18141,
+    "all": {
+      "a": 164,
+      "d": 139,
+      "u": 62,
+      "total": 365
+    },
+    "vn30": {
+      "a": 18,
+      "d": 10,
+      "u": 2,
+      "total": 30
+    }
+  },
+  "usdVnd": {
+    "central": 25463,
+    "note": "NHNN tỷ giá trung tâm: 25.463 VND/USD (ban hành 7/8/2026, áp dụng 8/8/2026; TB 327/TB-NHNN)"
+  },
+  "foreign": {
+    "net": -59,
+    "note": "Bán ròng ~59 tỷ VND trên HOSE phiên 7/8; toàn thị trường ~-76 tỷ (TBTCO). Mua ròng mạnh DMX ~682 tỷ (thỏa thuận); bán ròng VHM/TCB/VPB/VIC."
+  },
+  "proprietary": null,
+  "notes": [
+    "Nguồn free: US Treasury CSV, Yahoo Finance (VN-Index/DXY), CNN Fear & Greed.",
+    "Grok fill: public/data/grok-fill.json (proxy) — không ghi đè field quality=live."
+  ]
+}

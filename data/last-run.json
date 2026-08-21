@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "generatedAtIct": "2026-08-21T16:34:29+07:00",
+  "asof": "2026-08-21",
+  "quality": {
+    "usYields": "live",
+    "fgUs": "live",
+    "vnIndex": "live",
+    "dxy": "live",
+    "vnYields": "stale",
+    "margin": "stale",
+    "breadth": "stale",
+    "usdVnd": "stale",
+    "foreign": "stale",
+    "proprietary": "missing"
+  }
+}
