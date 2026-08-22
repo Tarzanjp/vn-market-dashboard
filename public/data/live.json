@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-21T08:20:43+07:00",
-  "asof": "2026-08-20",
+  "generatedAtIct": "2026-08-22T08:21:04+07:00",
+  "asof": "2026-08-21",
   "quality": {
     "usYields": "live",
     "fgUs": "live",
@@ -17,8 +17,8 @@
   "usYields": [
     {
       "t": "1 năm",
-      "y": 3.99,
-      "d": -0.01,
+      "y": 4.03,
+      "d": 0.04,
       "m": null,
       "yr": null,
       "x": 1,
@@ -26,8 +26,8 @@
     },
     {
       "t": "3 năm",
-      "y": 4.26,
-      "d": 0.01,
+      "y": 4.31,
+      "d": 0.05,
       "m": null,
       "yr": null,
       "x": 3,
@@ -35,7 +35,7 @@
     },
     {
       "t": "5 năm",
-      "y": 4.39,
+      "y": 4.43,
       "d": 0.04,
       "m": null,
       "yr": null,
@@ -44,8 +44,8 @@
     },
     {
       "t": "10 năm",
-      "y": 4.69,
-      "d": 0.04,
+      "y": 4.74,
+      "d": 0.05,
       "m": null,
       "yr": null,
       "x": 10,
@@ -53,7 +53,7 @@
     },
     {
       "t": "30 năm",
-      "y": 5.23,
+      "y": 5.27,
       "d": 0.04,
       "m": null,
       "yr": null,
@@ -61,29 +61,29 @@
       "est": false
     }
   ],
-  "usYieldsAsof": "2026-08-20",
+  "usYieldsAsof": "2026-08-21",
   "fgUs": {
-    "score": 52.5,
+    "score": 55.2,
     "hist": {
-      "prev": 56.3,
-      "week": 66.6,
-      "month": 37.9,
-      "year": 55.9
+      "prev": 52.5,
+      "week": 64.0,
+      "month": 43.4,
+      "year": 52.6
     },
-    "asofEt": "2026-08-21"
+    "asofEt": "2026-08-22"
   },
-  "fgUsFetchedAt": "2026-08-21T08:20:42.921361+07:00",
+  "fgUsFetchedAt": "2026-08-22T08:21:03.840358+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
-    "price": 1734.24,
-    "prev": 1726.69,
-    "chg": 7.55,
-    "pct": 0.44,
-    "date": "2026-08-20"
+    "price": 1768.12,
+    "prev": 1734.24,
+    "chg": 33.88,
+    "pct": 1.95,
+    "date": "2026-08-21"
   },
-  "vnIndexFetchedAt": "2026-08-21T08:20:43.052889+07:00",
-  "dxy": 98.82,
-  "dxyFetchedAt": "2026-08-21T08:20:43.210192+07:00",
+  "vnIndexFetchedAt": "2026-08-22T08:21:04.055744+07:00",
+  "dxy": 98.84,
+  "dxyFetchedAt": "2026-08-22T08:21:04.200141+07:00",
   "vnYields": null,
   "margin": null,
   "breadth": null,
