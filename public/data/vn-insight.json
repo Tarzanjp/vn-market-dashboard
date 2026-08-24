@@ -1,21 +1,35 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-21T17:10:59+07:00",
+  "generatedAtIct": "2026-08-24T17:20:06+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — VN30F1M futures history + company events cho 30 mã cấu thành VN30",
   "method": {
     "vn30Basis": "VN30F1M (hợp đồng gần nhất, giá đóng cửa phiên gần nhất) trừ VN30 giao ngay — số thật. basis_pct = basis/spot×100. Có thể lệch ngày nếu 1 trong 2 chưa có phiên mới nhất.",
     "insiderTrades": "company.events() lọc category=MAJOR_SHAREHOLDER_TRADING, 30 ngày gần nhất, CHỈ 30 mã VN30 (không phải toàn thị trường, xem giới hạn API). Tiêu đề lấy nguyên văn từ công bố HOSE, không tự tách số lượng."
   },
   "vn30": {
-    "spot": 1927.79,
-    "futures": 1934.2,
+    "spot": 1942.0,
+    "futures": 1943.0,
     "contract": "VN30F1M",
-    "basis": 6.41,
-    "basis_pct": 0.33,
-    "asof": "2026-08-21",
+    "basis": 1.0,
+    "basis_pct": 0.05,
+    "asof": "2026-08-24",
     "quality": "live"
   },
   "insiderTrades": [
+    {
+      "ticker": "MBB",
+      "date": "2026-08-25",
+      "direction": "Buy",
+      "title_vi": "Tập đoàn Công nghiệp - Viễn thông Quân đội - Đăng kí Mua 118,424,946 MBB",
+      "title_en": "VIETTEL Group - Subscribe to Buy 118,424,946 MBB shares"
+    },
+    {
+      "ticker": "SSI",
+      "date": "2026-08-25",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Hồng Nam - Đăng kí Mua 5,000,000 SSI",
+      "title_en": "Nguyen Hong Nam - Subscribe to Buy 5,000,000 SSI shares"
+    },
     {
       "ticker": "SSB",
       "date": "2026-08-21",
@@ -225,13 +239,6 @@
       "direction": "Buy",
       "title_vi": "Trương Công Thắng - Đăng kí Mua 2,700,000 MCH",
       "title_en": "Truong Cong Thang - Subscribe to Buy 2,700,000 MCH shares"
-    },
-    {
-      "ticker": "SSI",
-      "date": "2026-07-24",
-      "direction": "Buy",
-      "title_vi": "Phạm Thị Gái - Đăng kí Mua 50,000 SSI",
-      "title_en": "Pham Thi Gai - Subscribe to Buy 50,000 SSI shares"
     }
   ]
 }
