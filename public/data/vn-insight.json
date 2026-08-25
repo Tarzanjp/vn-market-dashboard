@@ -1,21 +1,42 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-24T17:20:06+07:00",
+  "generatedAtIct": "2026-08-25T17:10:19+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — VN30F1M futures history + company events cho 30 mã cấu thành VN30",
   "method": {
     "vn30Basis": "VN30F1M (hợp đồng gần nhất, giá đóng cửa phiên gần nhất) trừ VN30 giao ngay — số thật. basis_pct = basis/spot×100. Có thể lệch ngày nếu 1 trong 2 chưa có phiên mới nhất.",
     "insiderTrades": "company.events() lọc category=MAJOR_SHAREHOLDER_TRADING, 30 ngày gần nhất, CHỈ 30 mã VN30 (không phải toàn thị trường, xem giới hạn API). Tiêu đề lấy nguyên văn từ công bố HOSE, không tự tách số lượng."
   },
   "vn30": {
-    "spot": 1942.0,
-    "futures": 1943.0,
+    "spot": 1936.15,
+    "futures": 1939.9,
     "contract": "VN30F1M",
-    "basis": 1.0,
-    "basis_pct": 0.05,
-    "asof": "2026-08-24",
+    "basis": 3.75,
+    "basis_pct": 0.19,
+    "asof": "2026-08-25",
     "quality": "live"
   },
   "insiderTrades": [
+    {
+      "ticker": "MBB",
+      "date": "2026-08-28",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Hữu Doanh - Đăng kí Mua 12,253 MBB",
+      "title_en": "Nguyen Huu Doanh - Subscribe to Buy 12,253 MBB shares"
+    },
+    {
+      "ticker": "MBB",
+      "date": "2026-08-28",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Thị Ngọc - Đăng kí Mua 228,388 MBB",
+      "title_en": "Nguyen Thi Ngoc - Subscribe to Buy 228,388 MBB shares"
+    },
+    {
+      "ticker": "MBB",
+      "date": "2026-08-28",
+      "direction": "Buy",
+      "title_vi": "Đỗ Thị Ngọc Bảo - Đăng kí Mua 31,332 MBB",
+      "title_en": "Do Thi Ngoc Bao - Subscribe to Buy 31,332 MBB shares"
+    },
     {
       "ticker": "MBB",
       "date": "2026-08-25",
