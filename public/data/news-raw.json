@@ -1,52 +1,108 @@
 {
-  "generatedAtIct": "2026-08-25T16:33:32+07:00",
-  "count": 19,
+  "generatedAtIct": "2026-08-26T09:38:44+07:00",
+  "count": 20,
   "items": [
+    {
+      "title": "Chứng khoán Mỹ tăng điểm nhờ lợi suất trái phiếu chính phủ giảm, giá dầu sụt mạnh",
+      "link": "https://vneconomy.vn/chung-khoan-my-tang-diem-nho-loi-suat-trai-phieu-chinh-phu-giam-gia-dau-sut-manh.htm",
+      "description": "Thị trường chứng khoán Mỹ tăng điểm trong phiên giao dịch ngày thứ Ba (25/8) nhờ lợi suất trái phiếu kho bạc Mỹ có phiên giảm thứ hai liên tiếp, giải tỏa sức ép đối với cổ phiếu công nghệ...",
+      "publishedAt": "2026-08-26T01:03:31+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Tổng Bí thư, Chủ tịch nước Tô Lâm: Ý chí mở đường năm xưa cần được tiếp nối bằng tinh thần đổi mới",
+      "link": "https://vneconomy.vn/tong-bi-thu-chu-tich-nuoc-to-lam-y-chi-mo-duong-nam-xua-can-duoc-tiep-noi-bang-tinh-than-doi-moi.htm",
+      "description": "Chiều tối 25/8, tại Hà Nội, Tổng Bí thư, Chủ tịch nước Tô Lâm gặp mặt đại biểu tiêu biểu dự Đại hội đại biểu toàn quốc Hội Cựu thanh niên xung phong Việt Nam lần thứ V, nhiệm kỳ 2026-2031...",
+      "publishedAt": "2026-08-26T00:58:03+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
+    },
+    {
+      "title": "Giá vàng tăng chậm lại trước thềm báo cáo lạm phát Mỹ, SPDR Gold Trust bán ròng",
+      "link": "https://vneconomy.vn/gia-vang-tang-cham-lai-truoc-them-bao-cao-lam-phat-my-spdr-gold-trust-ban-rong.htm",
+      "description": "Giá vàng thế giới tiếp tục tăng trong phiên giao dịch ngày thứ Ba (25/8), nhưng “dè dặt” trước ngưỡng chủ chốt 4.700 USD/oz do tâm lý thận trọng của nhà đầu tư trước khi Mỹ công bố báo cáo lạm phát vào ngày thứ Tư...",
+      "publishedAt": "2026-08-26T00:40:57+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm",
+      "description": "Minutes of the Board&#39;s discount rate meetings on July 20 and July 29, 2026",
+      "publishedAt": "2026-08-25T18:00:00+00:00",
+      "category": "fed",
+      "source": "Federal Reserve — Monetary Policy"
+    },
+    {
+      "title": "VN-Index tăng nhẹ nhưng áp lực bán chốt lời mạnh lên",
+      "link": "https://vneconomy.vn/vn-index-tang-nhe-nhung-ap-luc-ban-chot-loi-manh-len.htm",
+      "description": "VnEconomy giới thiệu nhận định và khuyến nghị đầu tư của một số công ty chứng khoán về diễn biến thị trường ngày 26/8/2026.",
+      "publishedAt": "2026-08-25T15:24:11+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Nhà đầu tư cá nhân thoát hàng trước nghỉ lễ, bán ròng hơn 950 tỷ",
+      "link": "https://vneconomy.vn/nha-dau-tu-ca-nhan-thoat-hang-truoc-nghi-le-ban-rong-hon-950-ty.htm",
+      "description": "Nhà đầu tư cá nhân hôm nay bán ròng 954,1 tỷ đồng, trong đó họ bán ròng khớp lệnh 628,9 tỷ đồng.",
+      "publishedAt": "2026-08-25T14:47:45+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Việt Nam - Singapore hướng tới trở thành đối tác công nghệ chiến lược hàng đầu Đông Nam Á",
+      "link": "https://vneconomy.vn/viet-nam-singapore-huong-toi-tro-thanh-doi-tac-cong-nghe-chien-luoc-hang-dau-dong-nam-a.htm",
+      "description": "Việt Nam và Singapore nhất trí làm sâu sắc hợp tác khoa học, công nghệ, đổi mới sáng tạo, AI và kinh tế số; đồng thời nghiên cứu hợp tác trong các lĩnh vực bán dẫn, công nghệ sinh học, công nghệ lượng tử và các công nghệ mới nổi.",
+      "publishedAt": "2026-08-25T14:16:40+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
+    },
+    {
+      "title": "Việt Nam - Singapore đưa phát triển nguồn nhân lực, kết nối công nghệ thành trụ cột hợp tác mới",
+      "link": "https://vneconomy.vn/viet-nam-singapore-dua-phat-trien-nguon-nhan-luc-ket-noi-cong-nghe-thanh-tru-cot-hop-tac-moi.htm",
+      "description": "Đối thoại Chiến lược Việt Nam - Singapore lần thứ nhất thống nhất thúc đẩy hợp tác phát triển nguồn nhân lực, đào tạo cán bộ và kết nối công nghệ, hướng tới cùng nghiên cứu, cùng phát triển và từng bước làm chủ công nghệ.",
+      "publishedAt": "2026-08-25T13:51:09+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
+    },
+    {
+      "title": "Việt Nam - Singapore thúc đẩy hợp tác AI, bán dẫn, tài chính xanh",
+      "link": "https://vneconomy.vn/viet-nam-singapore-thuc-day-hop-tac-ai-ban-dan-tai-chinh-xanh.htm",
+      "description": "Trong khuôn khổ chuyến thăm chính thức Singapore, Thường trực Ban Bí thư Trần Cẩm Tú đã hội kiến các nhà lãnh đạo Singapore. Hai bên nhất trí đưa Đối tác Chiến lược Toàn diện đi vào chiều sâu, tạo đột phá trong AI, bán dẫn, kinh tế số, tài chính xanh và đào tạo nhân lực chất lượng cao.",
+      "publishedAt": "2026-08-25T13:50:08+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
+    },
+    {
+      "title": "Bitcoin vượt 80.000 USD sau những tín hiệu tích cực về tiền mã hoá từ Nhà Trắng",
+      "link": "https://vneconomy.vn/bitcoin-vuot-80000-usd-sau-nhung-tin-hieu-tich-cuc-ve-tien-ma-hoa-tu-nha-trang.htm",
+      "description": "Nỗ lực mua lại trái phiếu chính phủ Mỹ cùng những tín hiệu ủng hộ tiền mã hoá từ Washington được xem là động lực quan trọng giúp Bitcoin lấy lại giá 80.000 USD kể từ tháng 5…",
+      "publishedAt": "2026-08-25T12:42:00+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Tranh luận về uy tín của Fed trước bài phát biểu của Chủ tịch Kevin Warsh ở Jackson Hole",
+      "link": "https://vneconomy.vn/tranh-luan-ve-uy-tin-cua-fed-truoc-bai-phat-bieu-cua-chu-tich-kevin-warsh-o-jackson-hole.htm",
+      "description": "Vào ngày thứ Sáu (28/8), Chủ tịch Cục Dự trữ Liên bang Mỹ (Fed) Kevin Warsh sẽ có bài phát biểu được thị trường tài chính toàn cầu dõi theo tại hội nghị thường niên của Fed ở Jackson Hole...",
+      "publishedAt": "2026-08-25T12:41:43+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Khối nợ công 40 nghìn tỷ USD của Mỹ lớn như thế nào?",
+      "link": "https://vneconomy.vn/khoi-no-cong-40-nghin-ty-usd-cua-my-lon-nhu-the-nao.htm",
+      "description": "Tuần vừa rồi, nợ công của Mỹ đã lần đầu tiên vượt mốc 40 nghìn tỷ USD, đánh dấu một cột mốc đáng lo ngại trong lịch sử tài chính của nền kinh tế lớn nhất thế giới...",
+      "publishedAt": "2026-08-25T12:41:33+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
     {
       "title": "\"Dòng vốn chủ động đã tìm kiếm cơ hội tại Việt Nam ngay cả trước nâng hạng, nhưng thiếu hàng tốt\"",
       "link": "https://vneconomy.vn/dong-von-chu-dong-da-tim-kiem-co-hoi-tai-viet-nam-ngay-ca-truoc-nang-hang-nhung-thieu-hang-tot.htm",
       "description": "Nếu không có thêm những doanh nghiệp chất lượng và có khả năng tăng trưởng bền vững, việc nâng hạng tự thân sẽ khó tạo ra sự gia tăng mạnh mẽ của dòng vốn chủ động.",
       "publishedAt": "2026-08-25T09:27:20+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Hiệu suất trung bình của các quỹ trong 10 năm đạt 8,2%/năm có hấp dẫn nhà đầu tư?",
-      "link": "https://vneconomy.vn/hieu-suat-trung-binh-cua-cac-quy-trong-10-nam-dat-82nam-co-hap-dan-nha-dau-tu.htm",
-      "description": "Một nhà đầu tư thực sự không chỉ là người sở hữu tài khoản hay thường xuyên giao dịch. Nhà đầu tư cần tập trung vào các sản phẩm đầu tư dài hạn như quỹ, hiểu rõ mục tiêu đầu tư của mình, nắm được các lớp tài sản và cách phân bổ tài sản...",
-      "publishedAt": "2026-08-25T09:20:50+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "95% nhà đầu tư thua lỗ và rời bỏ thị trường chứng khoán sau 2 năm",
-      "link": "https://vneconomy.vn/95-nha-dau-tu-thua-lo-va-roi-bo-thi-truong-chung-khoan-sau-2-nam.htm",
-      "description": "Đây là con số được bà Nguyễn Ngọc Linh, Tổng giám đốc Công ty CP Chứng khoán DNSE đưa ra tại Hội nghị về ngành quỹ diễn ra sáng 25/8...",
-      "publishedAt": "2026-08-25T09:15:21+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Blog chứng khoán: Phản ứng ngược",
-      "link": "https://vneconomy.vn/blog-chung-khoan-phan-ung-nguoc.htm",
-      "description": "Sự thiếu đồng thuận ở nhóm cổ phiếu dẫn dắt khiến VNI “tuột” cơ hội chinh phục ngưỡng 1800 điểm, dù mức cao nhất hôm nay đã lên 1812,18 điểm. VIC là trụ duy nhất còn tăng mạnh dù cũng đã bị ép xuống đáng kể. Loạt blue-chips khác thì tạo gánh nặng rõ ràng.",
-      "publishedAt": "2026-08-25T09:14:29+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Doanh nghiệp siêu nhỏ và hoạt động trong lĩnh vực bất động sản có tỷ lệ đóng cửa cao nhất",
-      "link": "https://vneconomy.vn/doanh-nghiep-sieu-nho-va-hoat-dong-trong-linh-vuc-bat-dong-san-co-ty-le-dong-cua-cao-nhat.htm",
-      "description": "Trong năm 2025, ghi nhận tỷ lệ đóng cửa, theo thống kê FiinGroup, tăng ở cả ba nhóm quy mô. Doanh nghiệp siêu nhỏ có tỷ lệ đóng cửa cao nhất, khoảng 22,7%, tiếp theo là doanh nghiệp vừa và nhỏ với 12,7% và doanh nghiệp lớn với 4,9%.",
-      "publishedAt": "2026-08-25T08:26:32+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Trụ “còng lưng” đỡ điểm, cổ phiếu vẫn giảm la liệt",
-      "link": "https://vneconomy.vn/tru-cong-lung-do-diem-co-phieu-van-giam-la-liet.htm",
-      "description": "Cả VIC lẫn VHM đều suy yếu trong phiên chiều khiến VN-Index đánh mất gần hết thành quả tăng điểm buổi sáng. Tệ hơn là tâm lý kém ổn định khiến nhà đầu tư bán ra nhiều hơn, đẩy giá cổ phiếu giảm trên diện rộng.",
-      "publishedAt": "2026-08-25T08:26:09+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Chứng khoán"
     },
@@ -67,54 +123,6 @@
       "source": "VnEconomy — Tiêu điểm"
     },
     {
-      "title": "Quy mô ngành quỹ Việt Nam chỉ khoảng 6% GDP, bằng 1/5 so với Thái Lan",
-      "link": "https://vneconomy.vn/quy-mo-nganh-quy-viet-nam-chi-khoang-6-gdp-bang-15-so-voi-thai-lan.htm",
-      "description": "Khoảng cách này cho thấy tiềm năng phát triển của ngành quản lý quỹ tại Việt Nam vẫn còn rất lớn. Dư địa tăng trưởng có thể lên tới 20-30 lần trong 10 năm tới...",
-      "publishedAt": "2026-08-25T07:42:07+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Việt Nam - Chile thúc đẩy kết nối chuỗi cung ứng, mở rộng thương mại và đầu tư",
-      "link": "https://vneconomy.vn/viet-nam-chile-thuc-day-ket-noi-chuoi-cung-ung-mo-rong-thuong-mai-va-dau-tu.htm",
-      "description": "Thủ tướng Chính phủ Lê Minh Hưng đề nghị Việt Nam và Chile tăng cường kết nối vận tải, logistics và chuỗi cung ứng, phát huy vai trò cửa ngõ kết nối Đông Nam Á với Mỹ Latinh, đồng thời mở rộng hợp tác thương mại, đầu tư, khoa học - công nghệ và năng lượng...",
-      "publishedAt": "2026-08-25T07:26:29+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Làn sóng cổ đông gây sức ép lên doanh nghiệp toàn cầu",
-      "link": "https://vneconomy.vn/lan-song-co-dong-gay-suc-ep-len-doanh-nghiep-toan-cau.htm",
-      "description": "Từ Mỹ, châu Âu đến châu Á, các cổ đông đang gia tăng sức ép buộc doanh nghiệp cải thiện hiệu quả hoạt động, thay đổi chiến lược kinh doanh và gia tăng lợi ích dành cho nhà đầu tư…",
-      "publishedAt": "2026-08-25T07:03:27+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Quốc hội thông qua Luật Đầu tư sửa đổi, chuyển mạnh từ \"tiền kiểm\" sang \"hậu kiểm\", loại bỏ rào cản",
-      "link": "https://vneconomy.vn/quoc-hoi-thong-qua-luat-dau-tu-sua-doi-chuyen-manh-tu-tien-kiem-sang-hau-kiem-loai-bo-rao-can.htm",
-      "description": "Với 474/476 đại biểu tán thành, Luật Đầu tư sửa đổi tiếp tục đẩy mạnh chuyển từ tiền kiểm sang hậu kiểm, đồng thời tăng kiểm soát đối với các lĩnh vực liên quan đến sức khỏe cộng đồng và an ninh quốc gia...",
-      "publishedAt": "2026-08-25T03:45:15+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Luật Báo chí đặt hoạt động báo chí trên không gian mạng vào khuôn khổ pháp lý và đạo đức nghề nghiệp",
-      "link": "https://vneconomy.vn/luat-bao-chi-dat-hoat-dong-bao-chi-tren-khong-gian-mang-vao-khuon-kho-phap-ly-va-dao-duc-nghe-nghiep.htm",
-      "description": "Luật báo chí đã đặt hoạt động báo chí trên không gian mạng vào khuôn khổ pháp lý> Ngoài việc tuân thủ pháp luật, đạo đức nghề nghiệp là công cụ giúp người làm báo tự nhận diện và phòng ngừa rủi ro...",
-      "publishedAt": "2026-08-25T03:29:42+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Việt Nam - Bờ Biển Ngà thúc đẩy thương mại, đầu tư và mở rộng kết nối với Tây Phi",
-      "link": "https://vneconomy.vn/viet-nam-bo-bien-nga-thuc-day-thuong-mai-dau-tu-va-mo-rong-ket-noi-voi-tay-phi.htm",
-      "description": "Việt Nam và Bờ Biển Ngà nhất trí thúc đẩy hợp tác kinh tế, thương mại, đầu tư, đa dạng hóa hàng hóa xuất nhập khẩu và tạo thuận lợi để doanh nghiệp Việt Nam mở rộng đầu tư, tiếp cận thị trường Tây Phi…",
-      "publishedAt": "2026-08-25T01:09:01+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
       "title": "Federal Reserve Board announces approval of application by National Westminster Bank Plc",
       "link": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260820a.htm",
       "description": "Federal Reserve Board announces approval of application by National Westminster Bank Plc",
@@ -123,17 +131,17 @@
       "source": "Federal Reserve — All Press Releases"
     },
     {
-      "title": "Federal Reserve Board issues enforcement action with SouthPoint Bancshares, Inc. and announces termination of enforcement action with Deutsche Bank AG, DB USA Corporation, and Deutsche Bank AG New York Branch",
-      "link": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260820b.htm",
-      "description": "Federal Reserve Board issues enforcement action with SouthPoint Bancshares, Inc. and announces termination of enforcement action with Deutsche Bank AG, DB USA Corporation, and Deutsche Bank AG New York Branch",
+      "title": "Federal Reserve Board issues enforcement actions with former employee of Regions Bank and former employee of United Community Bank",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260820a.htm",
+      "description": "Federal Reserve Board issues enforcement actions with former employee of Regions Bank and former employee of United Community Bank",
       "publishedAt": "2026-08-20T15:00:00+00:00",
       "category": "us-macro",
       "source": "Federal Reserve — All Press Releases"
     },
     {
-      "title": "Federal Reserve Board issues enforcement actions with former employee of Regions Bank and former employee of United Community Bank",
-      "link": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260820a.htm",
-      "description": "Federal Reserve Board issues enforcement actions with former employee of Regions Bank and former employee of United Community Bank",
+      "title": "Federal Reserve Board issues enforcement action with SouthPoint Bancshares, Inc. and announces termination of enforcement action with Deutsche Bank AG, DB USA Corporation, and Deutsche Bank AG New York Branch",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260820b.htm",
+      "description": "Federal Reserve Board issues enforcement action with SouthPoint Bancshares, Inc. and announces termination of enforcement action with Deutsche Bank AG, DB USA Corporation, and Deutsche Bank AG New York Branch",
       "publishedAt": "2026-08-20T15:00:00+00:00",
       "category": "us-macro",
       "source": "Federal Reserve — All Press Releases"
