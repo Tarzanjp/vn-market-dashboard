@@ -1,21 +1,35 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-28T03:04:09+07:00",
+  "generatedAtIct": "2026-08-29T04:06:01+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — VN30F1M futures history + company events cho 30 mã cấu thành VN30",
   "method": {
     "vn30Basis": "VN30F1M (hợp đồng gần nhất, giá đóng cửa phiên gần nhất) trừ VN30 giao ngay — số thật. basis_pct = basis/spot×100. Có thể lệch ngày nếu 1 trong 2 chưa có phiên mới nhất.",
     "insiderTrades": "company.events() lọc category=MAJOR_SHAREHOLDER_TRADING, 30 ngày gần nhất, CHỈ 30 mã VN30 (không phải toàn thị trường, xem giới hạn API). Tiêu đề lấy nguyên văn từ công bố HOSE, không tự tách số lượng."
   },
   "vn30": {
-    "spot": 1979.23,
-    "futures": 1980.8,
+    "spot": 1982.96,
+    "futures": 1981.5,
     "contract": "VN30F1M",
-    "basis": 1.57,
-    "basis_pct": 0.08,
-    "asof": "2026-08-27",
+    "basis": -1.46,
+    "basis_pct": -0.07,
+    "asof": "2026-08-28",
     "quality": "live"
   },
   "insiderTrades": [
+    {
+      "ticker": "MBB",
+      "date": "2026-09-04",
+      "direction": "Buy",
+      "title_vi": "Công ty TNHH Nhà Nước MTV Thương Mại Và Xuất Nhập Khẩu Viettel - Đăng kí Mua 34,640,774 MBB",
+      "title_en": "Viettel Commerce And Import – Export Limited Company - Subscribe to Buy 34,640,774 MBB shares"
+    },
+    {
+      "ticker": "MBB",
+      "date": "2026-09-04",
+      "direction": "Buy",
+      "title_vi": "Tổng Công ty Trực thăng Việt Nam - Công ty TNHH - Đăng kí Mua 64,842,834 MBB",
+      "title_en": "Vietnam Helicopter Corporation - Subscribe to Buy 64,842,834 MBB shares"
+    },
     {
       "ticker": "MBB",
       "date": "2026-09-03",
