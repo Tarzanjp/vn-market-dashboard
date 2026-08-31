@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-08-29T04:06:01+07:00",
+  "generatedAtIct": "2026-09-01T00:21:08+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — VN30F1M futures history + company events cho 30 mã cấu thành VN30",
   "method": {
     "vn30Basis": "VN30F1M (hợp đồng gần nhất, giá đóng cửa phiên gần nhất) trừ VN30 giao ngay — số thật. basis_pct = basis/spot×100. Có thể lệch ngày nếu 1 trong 2 chưa có phiên mới nhất.",
@@ -16,6 +16,27 @@
     "quality": "live"
   },
   "insiderTrades": [
+    {
+      "ticker": "MWG",
+      "date": "2026-09-07",
+      "direction": "Sell",
+      "title_vi": "Đoàn Văn Hiểu Em - Đăng kí Bán 1,000,000 MWG",
+      "title_en": "Doan Van Hieu Em - Subscribe to Sell 1,000,000 MWG shares"
+    },
+    {
+      "ticker": "VIB",
+      "date": "2026-09-07",
+      "direction": "Sell",
+      "title_vi": "Đỗ Xuân Thụ - Đăng kí Bán 327,690 VIB",
+      "title_en": "Do Xuan Thu - Subscribe to Sell 327,690 VIB shares"
+    },
+    {
+      "ticker": "HDB",
+      "date": "2026-09-04",
+      "direction": "Buy",
+      "title_vi": "Quỹ Đầu tư Cổ phiếu Ngân hàng và Tài chính HD - Đăng kí Mua 1,000,000 HDB",
+      "title_en": "HD Banking and Finance Equity Fund - Subscribe to Buy 1,000,000 HDB shares"
+    },
     {
       "ticker": "MBB",
       "date": "2026-09-04",
@@ -512,76 +533,6 @@
       "direction": "Buy",
       "title_vi": "Vũ Thu Thủy - Đăng kí Mua 100,000 SSB",
       "title_en": "Vu Thu Thuy - Subscribe to Buy 100,000 SSB shares"
-    },
-    {
-      "ticker": "MWG",
-      "date": "2026-07-31",
-      "direction": "Buy",
-      "title_vi": "Nguyễn Đức Tài - Đăng kí Mua 1,000,000 MWG",
-      "title_en": "Nguyen Duc Tai - Subscribe to Buy 1,000,000 MWG shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-07-31",
-      "direction": "Buy",
-      "title_vi": "Nguyễn Ngọc Quỳnh - Đăng kí Mua 3,500,000 SSB",
-      "title_en": "Nguyen Ngoc Quynh - Subscribe to Buy 3,500,000 SSB shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-07-31",
-      "direction": "Buy",
-      "title_vi": "Nguyễn Thị Thu Hương - Đăng kí Mua 2,300,000 SSB",
-      "title_en": "Nguyen Thi Thu Huong - Subscribe to Buy 2,300,000 SSB shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-07-31",
-      "direction": "Buy",
-      "title_vi": "Nguyễn Hồng Quang - Đăng kí Mua 500,000 SSB",
-      "title_en": "Nguyen Hong Quang - Subscribe to Buy 500,000 SSB shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-07-31",
-      "direction": "Buy",
-      "title_vi": "Lê Văn Tần - Đăng kí Mua 3,500,000 SSB",
-      "title_en": "LE VAN TAN - Subscribe to Buy 3,500,000 SSB shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-07-31",
-      "direction": "Buy",
-      "title_vi": "Lương Duy Đông - Đăng kí Mua 100,000 SSB",
-      "title_en": "Luong Duy Dong - Subscribe to Buy 100,000 SSB shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-07-31",
-      "direction": "Buy",
-      "title_vi": "Đào Minh Nguyệt - Đăng kí Mua 25,000 SSB",
-      "title_en": "Dao Minh Nguyet - Subscribe to Buy 25,000 SSB shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-07-31",
-      "direction": "Buy",
-      "title_vi": "Trần Thị Thanh Thủy - Đăng kí Mua 100,000 SSB",
-      "title_en": "Tran Thi Thanh Thuy - Subscribe to Buy 100,000 SSB shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-07-31",
-      "direction": "Buy",
-      "title_vi": "Vũ Đình Khoán - Đăng kí Mua 2,300,000 SSB",
-      "title_en": "Vu Dinh Khoan - Subscribe to Buy 2,300,000 SSB shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-07-31",
-      "direction": "Buy",
-      "title_vi": "Nguyễn Tuấn Cường - Đăng kí Mua 2,000,000 SSB",
-      "title_en": "Nguyen Tuan Cuong - Subscribe to Buy 2,000,000 SSB shares"
     }
   ]
 }
