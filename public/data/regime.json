@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-01T00:21:08+07:00",
+  "generatedAtIct": "2026-09-01T21:23:25+07:00",
   "date": "2026-08-28",
   "method": {
     "liquidity": "Percentile của GTGD hôm nay trên lịch sử tích luỹ (rolling) — tự thích nghi theo thời gian, không phải ngưỡng cố định. Lịch sử ban đầu có thể gồm phiên ước tính backfill (volume VNINDEX × hệ số quy đổi hiệu chỉnh từ 1 phiên thật) trước khi đủ phiên snapshot thật — xem automation/vn_regime/backfill_liquidity.py và tỷ lệ thật/ước tính trong scores.liquidity.basis.",
@@ -30,7 +30,7 @@
       "basis": "4/10 ngành ở góc Dẫn dắt+Cải thiện (kỳ 2026-08)"
     },
     "macro": {
-      "value": 51.1,
+      "value": 47.9,
       "band": "caution",
       "n": 2,
       "basis": "F&G Mỹ + xu hướng DXY 10 phiên"
@@ -44,7 +44,7 @@
   "verdict": {
     "cls": "warn",
     "label": "Trung tính",
-    "summary": "4 điểm số trung tính, trung bình 49/100."
+    "summary": "4 điểm số trung tính, trung bình 48/100."
   },
   "divergence": [],
   "dataQuality": {
@@ -57,9 +57,9 @@
     "turnoverQuality": "live",
     "foreignNetBn": 304.3,
     "marginBn": 446000,
-    "dxy": 99.42,
-    "us10y": 4.73,
-    "fgUs": 50.0,
+    "dxy": 99.56,
+    "us10y": 4.75,
+    "fgUs": 45.0,
     "sectorRRG": {
       "leading": 2,
       "weakening": 3,
