@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-01T21:23:25+07:00",
+  "generatedAtIct": "2026-09-02T20:56:56+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — VN30F1M futures history + company events cho 30 mã cấu thành VN30",
   "method": {
     "vn30Basis": "VN30F1M (hợp đồng gần nhất, giá đóng cửa phiên gần nhất) trừ VN30 giao ngay — số thật. basis_pct = basis/spot×100. Có thể lệch ngày nếu 1 trong 2 chưa có phiên mới nhất.",
@@ -512,27 +512,6 @@
       "direction": "Buy",
       "title_vi": "Matthew Sander Hosford - Đăng kí Mua 100,000 SSB",
       "title_en": "Matthew Sander Hosford - Subscribe to Buy 100,000 SSB shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-08-03",
-      "direction": "Buy",
-      "title_vi": "Mathew Nevil Welch - Đăng kí Mua 100,000 SSB",
-      "title_en": "Mathew Nevil Welch - Subscribe to Buy 100,000 SSB shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-08-03",
-      "direction": "Buy",
-      "title_vi": "Khúc Thị Quỳnh Lâm - Đăng kí Mua 2,347,500 SSB",
-      "title_en": "Khuc Thi Quynh Lam - Subscribe to Buy 2,347,500 SSB shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-08-03",
-      "direction": "Buy",
-      "title_vi": "Vũ Thu Thủy - Đăng kí Mua 100,000 SSB",
-      "title_en": "Vu Thu Thuy - Subscribe to Buy 100,000 SSB shares"
     }
   ]
 }
