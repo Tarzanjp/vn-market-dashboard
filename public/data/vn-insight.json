@@ -1,18 +1,18 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-03T20:57:06+07:00",
+  "generatedAtIct": "2026-09-04T20:51:46+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — VN30F1M futures history + company events cho 30 mã cấu thành VN30",
   "method": {
     "vn30Basis": "VN30F1M (hợp đồng gần nhất, giá đóng cửa phiên gần nhất) trừ VN30 giao ngay — số thật. basis_pct = basis/spot×100. Có thể lệch ngày nếu 1 trong 2 chưa có phiên mới nhất.",
     "insiderTrades": "company.events() lọc category=MAJOR_SHAREHOLDER_TRADING, 30 ngày gần nhất, CHỈ 30 mã VN30 (không phải toàn thị trường, xem giới hạn API). Tiêu đề lấy nguyên văn từ công bố HOSE, không tự tách số lượng."
   },
   "vn30": {
-    "spot": 1961.57,
-    "futures": 1955.5,
+    "spot": 1984.89,
+    "futures": 1985.6,
     "contract": "VN30F1M",
-    "basis": -6.07,
-    "basis_pct": -0.31,
-    "asof": "2026-09-03",
+    "basis": 0.71,
+    "basis_pct": 0.04,
+    "asof": "2026-09-04",
     "quality": "live"
   },
   "insiderTrades": [
@@ -477,13 +477,6 @@
       "direction": "Buy",
       "title_vi": "Lê Quốc Long - Đăng kí Mua 500,000 SSB",
       "title_en": "Le Quoc Long - Subscribe to Buy 500,000 SSB shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-08-05",
-      "direction": "Buy",
-      "title_vi": "Nguyễn Thị Nga - Đăng kí Mua 3,500,000 SSB",
-      "title_en": "Nguyen Thi Nga - Subscribe to Buy 3,500,000 SSB shares"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-03T20:48:24+07:00",
+  "generatedAtIct": "2026-09-04T20:43:06+07:00",
   "source": "VCI (qua thư viện vnstock) — 10 chỉ số ngành ICB cấp 1 do HOSE tự tính, benchmark VN-Index",
   "method": {
     "turnover_bn": "Ước tính = Σ(volume × close) mỗi ngày trong kỳ / 1e9 — KHÔNG phải GTGD khớp lệnh thật do HOSE công bố, chỉ dùng so sánh tương đối giữa ngành/kỳ.",
@@ -13,52 +13,52 @@
     {
       "id": "VNREAL",
       "name": "Bất động sản",
-      "atr14Pct": 2.85
+      "atr14Pct": 2.87
     },
     {
       "id": "VNCONS",
       "name": "Xây dựng",
-      "atr14Pct": 1.36
+      "atr14Pct": 1.3
     },
     {
       "id": "VNMAT",
       "name": "Vật liệu",
-      "atr14Pct": 1.77
+      "atr14Pct": 1.71
     },
     {
       "id": "VNENE",
       "name": "Năng lượng",
-      "atr14Pct": 2.79
+      "atr14Pct": 2.71
     },
     {
       "id": "VNFIN",
       "name": "Tài chính (NH+CK+BH)",
-      "atr14Pct": 1.6
+      "atr14Pct": 1.54
     },
     {
       "id": "VNHEAL",
       "name": "Y tế",
-      "atr14Pct": 1.71
+      "atr14Pct": 1.67
     },
     {
       "id": "VNIND",
       "name": "Công nghiệp",
-      "atr14Pct": 1.53
+      "atr14Pct": 1.49
     },
     {
       "id": "VNIT",
       "name": "Công nghệ thông tin",
-      "atr14Pct": 2.13
+      "atr14Pct": 2.04
     },
     {
       "id": "VNUTI",
       "name": "Tiện ích",
-      "atr14Pct": 1.88
+      "atr14Pct": 1.86
     },
     {
       "id": "VNCOND",
       "name": "Hàng tiêu dùng",
-      "atr14Pct": 2.14
+      "atr14Pct": 2.07
     }
   ],
   "benchmark": {
@@ -72,8 +72,8 @@
       "sector": "VNREAL",
       "close": 1873.85,
       "return_pct": null,
-      "turnover_bn": 4407.4,
-      "turnover_share_pct": 26.28,
+      "turnover_bn": 4194.0,
+      "turnover_share_pct": 26.42,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -83,8 +83,8 @@
       "sector": "VNCONS",
       "close": 931.6,
       "return_pct": null,
-      "turnover_bn": 527.4,
-      "turnover_share_pct": 3.15,
+      "turnover_bn": 491.2,
+      "turnover_share_pct": 3.09,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -94,8 +94,8 @@
       "sector": "VNMAT",
       "close": 3131.31,
       "return_pct": null,
-      "turnover_bn": 5522.8,
-      "turnover_share_pct": 32.93,
+      "turnover_bn": 5203.6,
+      "turnover_share_pct": 32.78,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -105,8 +105,8 @@
       "sector": "VNENE",
       "close": 691.72,
       "return_pct": null,
-      "turnover_bn": 233.0,
-      "turnover_share_pct": 1.39,
+      "turnover_bn": 215.8,
+      "turnover_share_pct": 1.36,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -116,8 +116,8 @@
       "sector": "VNFIN",
       "close": 1518.26,
       "return_pct": null,
-      "turnover_bn": 3031.7,
-      "turnover_share_pct": 18.08,
+      "turnover_bn": 2893.4,
+      "turnover_share_pct": 18.22,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -127,7 +127,7 @@
       "sector": "VNHEAL",
       "close": 1670.15,
       "return_pct": null,
-      "turnover_bn": 16.4,
+      "turnover_bn": 15.9,
       "turnover_share_pct": 0.1,
       "rs_ratio": 100.0,
       "rs_momentum": null
@@ -138,8 +138,8 @@
       "sector": "VNIND",
       "close": 926.63,
       "return_pct": null,
-      "turnover_bn": 2070.7,
-      "turnover_share_pct": 12.35,
+      "turnover_bn": 1955.3,
+      "turnover_share_pct": 12.32,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -149,7 +149,7 @@
       "sector": "VNIT",
       "close": 2609.58,
       "return_pct": null,
-      "turnover_bn": 180.9,
+      "turnover_bn": 172.1,
       "turnover_share_pct": 1.08,
       "rs_ratio": 100.0,
       "rs_momentum": null
@@ -160,8 +160,8 @@
       "sector": "VNUTI",
       "close": 966.33,
       "return_pct": null,
-      "turnover_bn": 380.4,
-      "turnover_share_pct": 2.27,
+      "turnover_bn": 355.8,
+      "turnover_share_pct": 2.24,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -171,8 +171,8 @@
       "sector": "VNCOND",
       "close": 1915.4,
       "return_pct": null,
-      "turnover_bn": 399.4,
-      "turnover_share_pct": 2.38,
+      "turnover_bn": 379.6,
+      "turnover_share_pct": 2.39,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -6560,111 +6560,111 @@
       "period": "2026-09",
       "date": "2026-09-30",
       "sector": "VNREAL",
-      "close": 3395.67,
-      "return_pct": 2.3,
-      "turnover_bn": 270.2,
-      "turnover_share_pct": 21.15,
-      "rs_ratio": 103.27,
-      "rs_momentum": 100.58
+      "close": 3513.03,
+      "return_pct": 5.84,
+      "turnover_bn": 611.0,
+      "turnover_share_pct": 23.77,
+      "rs_ratio": 104.82,
+      "rs_momentum": 102.14
     },
     {
       "period": "2026-09",
       "date": "2026-09-30",
       "sector": "VNCONS",
-      "close": 657.93,
-      "return_pct": -1.2,
-      "turnover_bn": 18.3,
-      "turnover_share_pct": 1.43,
-      "rs_ratio": 99.6,
-      "rs_momentum": 99.27
+      "close": 659.73,
+      "return_pct": -0.93,
+      "turnover_bn": 32.6,
+      "turnover_share_pct": 1.27,
+      "rs_ratio": 98.78,
+      "rs_momentum": 98.45
     },
     {
       "period": "2026-09",
       "date": "2026-09-30",
       "sector": "VNMAT",
-      "close": 1955.03,
-      "return_pct": -1.41,
-      "turnover_bn": 117.5,
-      "turnover_share_pct": 9.19,
-      "rs_ratio": 97.46,
-      "rs_momentum": 100.85
+      "close": 1958.15,
+      "return_pct": -1.25,
+      "turnover_bn": 181.6,
+      "turnover_share_pct": 7.07,
+      "rs_ratio": 96.56,
+      "rs_momentum": 99.95
     },
     {
       "period": "2026-09",
       "date": "2026-09-30",
       "sector": "VNENE",
-      "close": 778.25,
-      "return_pct": 0.83,
-      "turnover_bn": 20.3,
-      "turnover_share_pct": 1.59,
-      "rs_ratio": 102.18,
-      "rs_momentum": 101.46
+      "close": 772.76,
+      "return_pct": 0.12,
+      "turnover_bn": 30.3,
+      "turnover_share_pct": 1.18,
+      "rs_ratio": 100.6,
+      "rs_momentum": 99.89
     },
     {
       "period": "2026-09",
       "date": "2026-09-30",
       "sector": "VNFIN",
-      "close": 2183.6,
-      "return_pct": -1.83,
-      "turnover_bn": 706.8,
-      "turnover_share_pct": 55.31,
-      "rs_ratio": 98.69,
-      "rs_momentum": 98.46
+      "close": 2200.83,
+      "return_pct": -1.06,
+      "turnover_bn": 1421.2,
+      "turnover_share_pct": 55.29,
+      "rs_ratio": 98.25,
+      "rs_momentum": 98.02
     },
     {
       "period": "2026-09",
       "date": "2026-09-30",
       "sector": "VNHEAL",
-      "close": 1646.98,
-      "return_pct": -0.54,
-      "turnover_bn": 1.4,
+      "close": 1642.85,
+      "return_pct": -0.79,
+      "turnover_bn": 2.7,
       "turnover_share_pct": 0.11,
-      "rs_ratio": 96.21,
-      "rs_momentum": 102.88
+      "rs_ratio": 95.03,
+      "rs_momentum": 101.7
     },
     {
       "period": "2026-09",
       "date": "2026-09-30",
       "sector": "VNIND",
-      "close": 827.27,
-      "return_pct": -1.13,
-      "turnover_bn": 47.1,
-      "turnover_share_pct": 3.68,
-      "rs_ratio": 97.14,
-      "rs_momentum": 101.14
+      "close": 823.79,
+      "return_pct": -1.55,
+      "turnover_bn": 112.3,
+      "turnover_share_pct": 4.37,
+      "rs_ratio": 95.82,
+      "rs_momentum": 99.82
     },
     {
       "period": "2026-09",
       "date": "2026-09-30",
       "sector": "VNIT",
-      "close": 3412.42,
-      "return_pct": -1.44,
-      "turnover_bn": 38.3,
-      "turnover_share_pct": 2.99,
-      "rs_ratio": 101.2,
-      "rs_momentum": 98.16
+      "close": 3435.0,
+      "return_pct": -0.78,
+      "turnover_bn": 77.6,
+      "turnover_share_pct": 3.02,
+      "rs_ratio": 100.66,
+      "rs_momentum": 97.62
     },
     {
       "period": "2026-09",
       "date": "2026-09-30",
       "sector": "VNUTI",
-      "close": 987.9,
-      "return_pct": -0.83,
-      "turnover_bn": 14.9,
-      "turnover_share_pct": 1.16,
-      "rs_ratio": 99.33,
-      "rs_momentum": 100.12
+      "close": 985.95,
+      "return_pct": -1.02,
+      "turnover_bn": 26.0,
+      "turnover_share_pct": 1.01,
+      "rs_ratio": 98.16,
+      "rs_momentum": 98.95
     },
     {
       "period": "2026-09",
       "date": "2026-09-30",
       "sector": "VNCOND",
-      "close": 1973.22,
-      "return_pct": -2.44,
-      "turnover_bn": 43.1,
-      "turnover_share_pct": 3.38,
-      "rs_ratio": 97.02,
-      "rs_momentum": 100.51
+      "close": 1975.89,
+      "return_pct": -2.31,
+      "turnover_bn": 75.3,
+      "turnover_share_pct": 2.93,
+      "rs_ratio": 96.11,
+      "rs_momentum": 99.6
     }
   ],
   "quarterly": [
@@ -6674,8 +6674,8 @@
       "sector": "VNREAL",
       "close": 1974.7,
       "return_pct": null,
-      "turnover_bn": 18958.7,
-      "turnover_share_pct": 25.61,
+      "turnover_bn": 18745.2,
+      "turnover_share_pct": 25.63,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -6685,7 +6685,7 @@
       "sector": "VNCONS",
       "close": 979.63,
       "return_pct": null,
-      "turnover_bn": 2742.4,
+      "turnover_bn": 2706.1,
       "turnover_share_pct": 3.7,
       "rs_ratio": 100.0,
       "rs_momentum": null
@@ -6696,8 +6696,8 @@
       "sector": "VNMAT",
       "close": 2694.32,
       "return_pct": null,
-      "turnover_bn": 19455.1,
-      "turnover_share_pct": 26.28,
+      "turnover_bn": 19135.9,
+      "turnover_share_pct": 26.16,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -6707,8 +6707,8 @@
       "sector": "VNENE",
       "close": 689.84,
       "return_pct": null,
-      "turnover_bn": 735.4,
-      "turnover_share_pct": 0.99,
+      "turnover_bn": 718.1,
+      "turnover_share_pct": 0.98,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -6718,8 +6718,8 @@
       "sector": "VNFIN",
       "close": 1652.68,
       "return_pct": null,
-      "turnover_bn": 15267.8,
-      "turnover_share_pct": 20.62,
+      "turnover_bn": 15129.5,
+      "turnover_share_pct": 20.69,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -6729,7 +6729,7 @@
       "sector": "VNHEAL",
       "close": 1745.91,
       "return_pct": null,
-      "turnover_bn": 81.4,
+      "turnover_bn": 80.9,
       "turnover_share_pct": 0.11,
       "rs_ratio": 100.0,
       "rs_momentum": null
@@ -6740,8 +6740,8 @@
       "sector": "VNIND",
       "close": 1165.98,
       "return_pct": null,
-      "turnover_bn": 12757.9,
-      "turnover_share_pct": 17.23,
+      "turnover_bn": 12642.4,
+      "turnover_share_pct": 17.29,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -6751,7 +6751,7 @@
       "sector": "VNIT",
       "close": 2528.04,
       "return_pct": null,
-      "turnover_bn": 540.0,
+      "turnover_bn": 531.2,
       "turnover_share_pct": 0.73,
       "rs_ratio": 100.0,
       "rs_momentum": null
@@ -6762,8 +6762,8 @@
       "sector": "VNUTI",
       "close": 969.93,
       "return_pct": null,
-      "turnover_bn": 1885.7,
-      "turnover_share_pct": 2.55,
+      "turnover_bn": 1861.0,
+      "turnover_share_pct": 2.54,
       "rs_ratio": 100.0,
       "rs_momentum": null
     },
@@ -6773,7 +6773,7 @@
       "sector": "VNCOND",
       "close": 1959.09,
       "return_pct": null,
-      "turnover_bn": 1605.4,
+      "turnover_bn": 1585.5,
       "turnover_share_pct": 2.17,
       "rs_ratio": 100.0,
       "rs_momentum": null
@@ -8762,224 +8762,114 @@
       "period": "2026-Q3",
       "date": "2026-09-30",
       "sector": "VNREAL",
-      "close": 3395.67,
-      "return_pct": 5.07,
-      "turnover_bn": 11297.2,
-      "turnover_share_pct": 19.56,
-      "rs_ratio": 114.47,
-      "rs_momentum": 94.51
+      "close": 3513.03,
+      "return_pct": 8.7,
+      "turnover_bn": 11638.0,
+      "turnover_share_pct": 19.71,
+      "rs_ratio": 116.13,
+      "rs_momentum": 96.17
     },
     {
       "period": "2026-Q3",
       "date": "2026-09-30",
       "sector": "VNCONS",
-      "close": 657.93,
-      "return_pct": 0.28,
-      "turnover_bn": 698.6,
+      "close": 659.73,
+      "return_pct": 0.56,
+      "turnover_bn": 712.9,
       "turnover_share_pct": 1.21,
-      "rs_ratio": 94.54,
-      "rs_momentum": 105.97
+      "rs_ratio": 93.75,
+      "rs_momentum": 105.17
     },
     {
       "period": "2026-Q3",
       "date": "2026-09-30",
       "sector": "VNMAT",
-      "close": 1955.03,
-      "return_pct": -6.26,
-      "turnover_bn": 3783.3,
-      "turnover_share_pct": 6.55,
-      "rs_ratio": 90.2,
-      "rs_momentum": 102.61
+      "close": 1958.15,
+      "return_pct": -6.11,
+      "turnover_bn": 3847.5,
+      "turnover_share_pct": 6.51,
+      "rs_ratio": 89.35,
+      "rs_momentum": 101.77
     },
     {
       "period": "2026-Q3",
       "date": "2026-09-30",
       "sector": "VNENE",
-      "close": 778.25,
-      "return_pct": 3.75,
-      "turnover_bn": 848.2,
-      "turnover_share_pct": 1.47,
-      "rs_ratio": 102.32,
-      "rs_momentum": 100.05
+      "close": 772.76,
+      "return_pct": 3.01,
+      "turnover_bn": 858.1,
+      "turnover_share_pct": 1.45,
+      "rs_ratio": 100.74,
+      "rs_momentum": 98.47
     },
     {
       "period": "2026-Q3",
       "date": "2026-09-30",
       "sector": "VNFIN",
-      "close": 2183.6,
-      "return_pct": -4.1,
-      "turnover_bn": 34042.6,
-      "turnover_share_pct": 58.93,
-      "rs_ratio": 96.71,
-      "rs_momentum": 102.25
+      "close": 2200.83,
+      "return_pct": -3.34,
+      "turnover_bn": 34756.9,
+      "turnover_share_pct": 58.85,
+      "rs_ratio": 96.28,
+      "rs_momentum": 101.82
     },
     {
       "period": "2026-Q3",
       "date": "2026-09-30",
       "sector": "VNHEAL",
-      "close": 1646.98,
-      "return_pct": -9.21,
-      "turnover_bn": 93.6,
+      "close": 1642.85,
+      "return_pct": -9.44,
+      "turnover_bn": 94.9,
       "turnover_share_pct": 0.16,
-      "rs_ratio": 82.83,
-      "rs_momentum": 100.42
+      "rs_ratio": 81.76,
+      "rs_momentum": 99.36
     },
     {
       "period": "2026-Q3",
       "date": "2026-09-30",
       "sector": "VNIND",
-      "close": 827.27,
-      "return_pct": -10.01,
-      "turnover_bn": 3137.8,
-      "turnover_share_pct": 5.43,
-      "rs_ratio": 87.46,
-      "rs_momentum": 98.24
+      "close": 823.79,
+      "return_pct": -10.39,
+      "turnover_bn": 3203.0,
+      "turnover_share_pct": 5.42,
+      "rs_ratio": 86.24,
+      "rs_momentum": 97.02
     },
     {
       "period": "2026-Q3",
       "date": "2026-09-30",
       "sector": "VNIT",
-      "close": 3412.42,
-      "return_pct": 2.27,
-      "turnover_bn": 1440.9,
-      "turnover_share_pct": 2.49,
-      "rs_ratio": 89.99,
-      "rs_momentum": 110.81
+      "close": 3435.0,
+      "return_pct": 2.95,
+      "turnover_bn": 1480.3,
+      "turnover_share_pct": 2.51,
+      "rs_ratio": 89.49,
+      "rs_momentum": 110.31
     },
     {
       "period": "2026-Q3",
       "date": "2026-09-30",
       "sector": "VNUTI",
-      "close": 987.9,
-      "return_pct": -3.7,
-      "turnover_bn": 689.2,
+      "close": 985.95,
+      "return_pct": -3.89,
+      "turnover_bn": 700.3,
       "turnover_share_pct": 1.19,
-      "rs_ratio": 96.89,
-      "rs_momentum": 97.77
+      "rs_ratio": 95.74,
+      "rs_momentum": 96.62
     },
     {
       "period": "2026-Q3",
       "date": "2026-09-30",
       "sector": "VNCOND",
-      "close": 1973.22,
-      "return_pct": -11.43,
-      "turnover_bn": 1734.2,
-      "turnover_share_pct": 3.0,
-      "rs_ratio": 85.49,
-      "rs_momentum": 94.72
+      "close": 1975.89,
+      "return_pct": -11.31,
+      "turnover_bn": 1766.3,
+      "turnover_share_pct": 2.99,
+      "rs_ratio": 84.65,
+      "rs_momentum": 93.89
     }
   ],
   "daily": [
-    {
-      "period": "2026-07-30",
-      "date": "2026-07-30",
-      "sector": "VNREAL",
-      "close": 3161.35,
-      "return_pct": 1.65,
-      "turnover_bn": 302.8,
-      "turnover_share_pct": 18.62,
-      "rs_ratio": 102.5,
-      "rs_momentum": 99.06
-    },
-    {
-      "period": "2026-07-30",
-      "date": "2026-07-30",
-      "sector": "VNCONS",
-      "close": 649.8,
-      "return_pct": 2.02,
-      "turnover_bn": 16.2,
-      "turnover_share_pct": 0.99,
-      "rs_ratio": 103.09,
-      "rs_momentum": 99.39
-    },
-    {
-      "period": "2026-07-30",
-      "date": "2026-07-30",
-      "sector": "VNMAT",
-      "close": 1949.48,
-      "return_pct": 1.19,
-      "turnover_bn": 101.7,
-      "turnover_share_pct": 6.26,
-      "rs_ratio": 100.51,
-      "rs_momentum": 98.87
-    },
-    {
-      "period": "2026-07-30",
-      "date": "2026-07-30",
-      "sector": "VNENE",
-      "close": 735.66,
-      "return_pct": 3.62,
-      "turnover_bn": 11.7,
-      "turnover_share_pct": 0.72,
-      "rs_ratio": 102.18,
-      "rs_momentum": 101.08
-    },
-    {
-      "period": "2026-07-30",
-      "date": "2026-07-30",
-      "sector": "VNFIN",
-      "close": 2116.98,
-      "return_pct": 1.93,
-      "turnover_bn": 991.6,
-      "turnover_share_pct": 60.99,
-      "rs_ratio": 98.52,
-      "rs_momentum": 99.65
-    },
-    {
-      "period": "2026-07-30",
-      "date": "2026-07-30",
-      "sector": "VNHEAL",
-      "close": 1695.71,
-      "return_pct": 1.35,
-      "turnover_bn": 1.4,
-      "turnover_share_pct": 0.08,
-      "rs_ratio": 98.78,
-      "rs_momentum": 99.06
-    },
-    {
-      "period": "2026-07-30",
-      "date": "2026-07-30",
-      "sector": "VNIND",
-      "close": 795.85,
-      "return_pct": 2.37,
-      "turnover_bn": 101.3,
-      "turnover_share_pct": 6.23,
-      "rs_ratio": 96.19,
-      "rs_momentum": 100.39
-    },
-    {
-      "period": "2026-07-30",
-      "date": "2026-07-30",
-      "sector": "VNIT",
-      "close": 3169.26,
-      "return_pct": 2.86,
-      "turnover_bn": 40.8,
-      "turnover_share_pct": 2.51,
-      "rs_ratio": 100.02,
-      "rs_momentum": 100.57
-    },
-    {
-      "period": "2026-07-30",
-      "date": "2026-07-30",
-      "sector": "VNUTI",
-      "close": 941.03,
-      "return_pct": 1.12,
-      "turnover_bn": 12.7,
-      "turnover_share_pct": 0.78,
-      "rs_ratio": 98.36,
-      "rs_momentum": 98.92
-    },
-    {
-      "period": "2026-07-30",
-      "date": "2026-07-30",
-      "sector": "VNCOND",
-      "close": 1853.44,
-      "return_pct": 3.91,
-      "turnover_bn": 45.7,
-      "turnover_share_pct": 2.81,
-      "rs_ratio": 95.3,
-      "rs_momentum": 102.03
-    },
     {
       "period": "2026-07-31",
       "date": "2026-07-31",
@@ -11399,6 +11289,116 @@
       "turnover_share_pct": 3.38,
       "rs_ratio": 97.37,
       "rs_momentum": 97.86
+    },
+    {
+      "period": "2026-09-04",
+      "date": "2026-09-04",
+      "sector": "VNREAL",
+      "close": 3513.03,
+      "return_pct": 3.46,
+      "turnover_bn": 340.8,
+      "turnover_share_pct": 26.36,
+      "rs_ratio": 107.73,
+      "rs_momentum": 101.83
+    },
+    {
+      "period": "2026-09-04",
+      "date": "2026-09-04",
+      "sector": "VNCONS",
+      "close": 659.73,
+      "return_pct": 0.27,
+      "turnover_bn": 14.4,
+      "turnover_share_pct": 1.11,
+      "rs_ratio": 96.76,
+      "rs_momentum": 99.02
+    },
+    {
+      "period": "2026-09-04",
+      "date": "2026-09-04",
+      "sector": "VNMAT",
+      "close": 1958.15,
+      "return_pct": 0.16,
+      "turnover_bn": 64.2,
+      "turnover_share_pct": 4.96,
+      "rs_ratio": 96.12,
+      "rs_momentum": 99.06
+    },
+    {
+      "period": "2026-09-04",
+      "date": "2026-09-04",
+      "sector": "VNENE",
+      "close": 772.76,
+      "return_pct": -0.71,
+      "turnover_bn": 10.0,
+      "turnover_share_pct": 0.77,
+      "rs_ratio": 97.38,
+      "rs_momentum": 97.82
+    },
+    {
+      "period": "2026-09-04",
+      "date": "2026-09-04",
+      "sector": "VNFIN",
+      "close": 2200.83,
+      "return_pct": 0.79,
+      "turnover_bn": 714.4,
+      "turnover_share_pct": 55.26,
+      "rs_ratio": 97.3,
+      "rs_momentum": 99.56
+    },
+    {
+      "period": "2026-09-04",
+      "date": "2026-09-04",
+      "sector": "VNHEAL",
+      "close": 1642.85,
+      "return_pct": -0.25,
+      "turnover_bn": 1.3,
+      "turnover_share_pct": 0.1,
+      "rs_ratio": 93.65,
+      "rs_momentum": 98.83
+    },
+    {
+      "period": "2026-09-04",
+      "date": "2026-09-04",
+      "sector": "VNIND",
+      "close": 823.79,
+      "return_pct": -0.42,
+      "turnover_bn": 65.2,
+      "turnover_share_pct": 5.04,
+      "rs_ratio": 95.55,
+      "rs_momentum": 98.46
+    },
+    {
+      "period": "2026-09-04",
+      "date": "2026-09-04",
+      "sector": "VNIT",
+      "close": 3435.0,
+      "return_pct": 0.66,
+      "turnover_bn": 39.4,
+      "turnover_share_pct": 3.04,
+      "rs_ratio": 98.23,
+      "rs_momentum": 99.42
+    },
+    {
+      "period": "2026-09-04",
+      "date": "2026-09-04",
+      "sector": "VNUTI",
+      "close": 985.95,
+      "return_pct": -0.2,
+      "turnover_bn": 11.2,
+      "turnover_share_pct": 0.86,
+      "rs_ratio": 95.62,
+      "rs_momentum": 98.53
+    },
+    {
+      "period": "2026-09-04",
+      "date": "2026-09-04",
+      "sector": "VNCOND",
+      "close": 1975.89,
+      "return_pct": 0.14,
+      "turnover_bn": 32.1,
+      "turnover_share_pct": 2.48,
+      "rs_ratio": 96.27,
+      "rs_momentum": 98.9
     }
   ]
 }
