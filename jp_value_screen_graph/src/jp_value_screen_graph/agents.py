@@ -14,13 +14,28 @@ from crewai import Agent
 from crewai_tools import ScrapeWebsiteTool
 
 from jp_value_screen_graph.tools.duckduckgo_search_tool import DuckDuckGoSearchTool
+from jp_value_screen_graph.tools.market_data import MarketQuoteTool
 from jp_value_screen_graph.tools.obsidian_wiki_tool import (
     ObsidianWikiIndexTool,
     ObsidianWikiLookupTool,
 )
 
-_CONFIG_PATH = Path(__file__).parent / "config" / "agents.yaml"
-_AGENTS_CONFIG = yaml.safe_load(_CONFIG_PATH.read_text(encoding="utf-8"))
+_CONFIG_DIR = Path(__file__).parent / "config"
+_AGENTS_CONFIG = yaml.safe_load((_CONFIG_DIR / "agents.yaml").read_text(encoding="utf-8"))
+# Per-market data sources. The method in agents.yaml stays identical across
+# markets; only this file changes per market — same split the vault uses.
+_MARKETS = yaml.safe_load((_CONFIG_DIR / "markets.yaml").read_text(encoding="utf-8"))
+
+# which markets.yaml source list each agent should be handed
+_SOURCE_KEY = {
+    "benchmark_agent": "sources_benchmark",
+    "intelligent_data_agent": "sources_general",
+    "quantitative_screener": "sources_general",
+    "eps_quality_analyst": "sources_fundamentals",
+    "balance_sheet_quality_agent": "sources_fundamentals",
+    "catalyst_re_rating_agent": "sources_catalyst",
+    "risk_liquidity_agent": "sources_market_data",
+}
 
 # LiteLLM-style model string. Default targets Claude via ANTHROPIC_API_KEY
 # (already present in this environment) — override with JP_SCREEN_LLM to use
@@ -31,10 +46,14 @@ DEFAULT_LLM = os.environ.get("JP_SCREEN_LLM", "anthropic/claude-sonnet-5")
 MAX_ITER = int(os.environ.get("JP_SCREEN_MAX_ITER", "10"))
 
 
-def _tools(*, wiki: bool = False):
+def _tools(*, wiki: bool = False, quotes: bool = False):
     # Fresh instances per agent: crewai tools are cheap to construct and this
     # avoids any shared-state surprises between concurrently running agents.
     tools = [DuckDuckGoSearchTool(), ScrapeWebsiteTool()]
+    if quotes and MarketQuoteTool is not None:
+        # Prices come from a free keyless endpoint — never make the model hunt
+        # for a number a plain HTTP GET can answer exactly.
+        tools = [MarketQuoteTool()] + tools
     if wiki:
         # Persistent memory layer: the llm-wiki Obsidian vault. Checking it first
         # is what keeps repeat runs cheap — see tools/obsidian_wiki_tool.py.
@@ -45,6 +64,13 @@ def _tools(*, wiki: bool = False):
 # Agents that research individual tickers benefit from the vault; the ones that
 # only reason over data handed to them by earlier stages don't (giving them the
 # tool would just invite extra calls).
+# Agents that need live prices/volumes rather than narrative
+QUOTE_ENABLED = {
+    "intelligent_data_agent",
+    "quantitative_screener",
+    "risk_liquidity_agent",
+}
+
 WIKI_ENABLED = {
     "intelligent_data_agent",
     "eps_quality_analyst",
@@ -59,14 +85,33 @@ WIKI_ENABLED = {
 # instead — durable, free, and already human-readable.
 
 
-def build_agent(key: str, *, llm: str | None = None) -> Agent:
+def market_brief(market: str, key: str | None = None) -> str:
+    """The per-market block appended to an agent's backstory."""
+    m = _MARKETS[market]
+    lines = [
+        f"### 対象市場: {m['label']}",
+        f"- ティッカー形式: {m['ticker_shape']}",
+        f"- 通貨・単位: {m['currency']}",
+        f"- 会計年度: {m['fiscal_year']}",
+    ]
+    sk = _SOURCE_KEY.get(key or "")
+    if sk and m.get(sk):
+        lines.append("- 優先データソース:\n  " + m[sk].strip())
+    lines.append(
+        "手法(判定基準・計算式・fact-only の縛り)は市場によらず同一。"
+        "変わるのは上記のデータの取得元と単位だけ。"
+    )
+    return "\n".join(lines)
+
+
+def build_agent(key: str, *, market: str = "jp", llm: str | None = None) -> Agent:
     """Construct one of the 8 named specialist agents from agents.yaml."""
     cfg = _AGENTS_CONFIG[key]
     return Agent(
         role=cfg["role"],
         goal=cfg["goal"],
-        backstory=cfg["backstory"],
-        tools=_tools(wiki=key in WIKI_ENABLED),
+        backstory=cfg["backstory"] + "\n\n" + market_brief(market, key),
+        tools=_tools(wiki=key in WIKI_ENABLED, quotes=key in QUOTE_ENABLED),
         llm=llm or DEFAULT_LLM,
         max_iter=MAX_ITER,
         verbose=True,

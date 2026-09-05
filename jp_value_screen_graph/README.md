@@ -54,6 +54,32 @@ uv run plot
 出力: `output/jp-value-screen-<timestamp>.md`(実行したAgent一覧・最終ランキング・
 各ステージの詳細・手法上の限界の開示を含む)。
 
+## APIキー無しで最新データを取る
+
+`ANTHROPIC_API_KEY` が要るのは **LLM に判断させる部分だけ**。「今いくらか」は
+判断ではないので、キー無しの公開エンドポイントで取る。
+
+```bash
+# JP / VN / US、キー不要・LLM不要。Claude Code からも直接叩ける
+uv run python -m jp_value_screen_graph.tools.market_data 6758 7203 --market jp
+uv run python -m jp_value_screen_graph.tools.market_data VNM HPG --market vn
+uv run python -m jp_value_screen_graph.tools.market_data AAPL --market us --json
+```
+
+`tools/market_data.py` は stdlib のみ(crewai が無くても動く)。Yahoo Finance の
+公開 chart エンドポイントを叩き、株価・前日比・通貨・取引所・**取得時刻**を返す。
+取れなかった銘柄は `FAILED` として返り、値を推測しない。
+User-Agent は必須(無いと `Edit: Too Many Requests` が返る)。
+
+engine 内では `market_quote` tool として、値段を要する3つのAgent
+(intelligent_data / quantitative_screener / risk_liquidity)に渡している —
+モデルに検索させて値段を探させるより速く、正確で、無料。
+
+**判断まで含めてキー無しで回したい場合**は、この engine ではなく
+`.claude/skills/jp-value-screen` の **経路A(会話内 subagent orchestrator)**を使う。
+そちらは Claude Code のサブスクリプションで動くので `ANTHROPIC_API_KEY` を消費しない。
+engine(経路B)は API 従量課金で、残高切れだと HTTP 400 で即座に止まる。
+
 ## メモリ連携(Obsidian llm-wiki)
 
 再調査がこのワークフロー最大のコスト。それを消すために vault を引く。

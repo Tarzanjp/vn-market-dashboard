@@ -19,6 +19,17 @@ Dynamic Scoring)に、実行系が2つある。**どちらを使うかを先に�
 | vault連携 | 手動(agent-memory skill) | tool として組込み済み |
 | 向く場面 | 対話しながら調整したい / 少数銘柄 | 決まった手順を安く回す / 反復実行 |
 
+**`ANTHROPIC_API_KEY` の残高が無いときは A を使う** — A はこのセッション
+(サブスク)で動くので API キーを消費しない。B は従量課金で、残高切れなら
+HTTP 400 で即死する。
+
+株価・前日比だけが欲しい場合は、どちらの経路も使わずキー無しで取れる:
+
+```bash
+cd jp_value_screen_graph && uv run python -m jp_value_screen_graph.tools.market_data \
+  6758 7203 --market jp          # --market jp|vn|us、LLM を一切使わない
+```
+
 判断に迷う要素(コスト負担先・銘柄数)があれば AskUserQuestion で確認する。
 
 ## 共通の前段(どちらでも必須)
@@ -27,9 +38,21 @@ Dynamic Scoring)に、実行系が2つある。**どちらを使うかを先に�
    勝手に広げない。無指定なら AskUserQuestion:
    - 対象範囲: 業種横断サンプル / 特定セクター / 特定銘柄リスト
    - 時価総額・流動性フィルタ: なし(Risk & Liquidity が個別評価) / 中大型のみ
-2. **vault 先読み** — `agent-memory` skill の手順で、対象コードが
-   `llm-wiki/wiki/entities/jp/` に既にあるか確認する(銘柄は市場別フォルダ)。分析済みなら再調査させない
-   (これが一番効くコスト削減)。
+2. **vault 先読み**(この session で実行する。**Agent 側は Bash を持たず vault に
+   アクセスできない**ので、ここで引いて渡すのが唯一の経路):
+
+   ```bash
+   cd <llm-wiki> && export PYTHONUTF8=1
+   python scripts/obsidian_client.py list entities/jp          # 既知コード一覧
+   python scripts/obsidian_client.py get entities/jp/<code>.md # 該当分だけ
+   ```
+
+   frontmatter の `bias` が埋まっていれば Kiyohara+DCF 分析済み、空なら thin stub。
+   分析済みの銘柄は **frontmatter + Key Metrics の表だけ**を抜き出して(全文は
+   1銘柄1万字超で逆にトークンを食う)、A なら orchestrator プロンプトに
+   `### vault 既知データ` 節として貼る(orchestrator.md の Stage 0.5 が受け取る)。
+   B は engine 内の tool が自分で引くのでこの手順は不要。
+   Obsidian 未起動で引けなければ、その旨を明記して普通に進める(捏造しない)。
 
 ## A: subagent orchestrator
 
