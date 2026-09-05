@@ -63,8 +63,13 @@ uv run plot
   (`agents.py: WIKI_ENABLED`)。lookup の既定は **digest**(frontmatter + 主要指標)
   で全文の約1/6のトークン量 — 根拠や出典が要るときだけ `full=true`。
   read-only。書き込みは llm-wiki 側の `scripts/obsidian_client.py` が唯一の経路。
-- **書き**: 実行終了時に run 全体を `llm-wiki/sources/<date>-jp-screen-graph-run.md`
-  へ自動ステージする(不変・上書きしない。既存なら `-2`, `-3` と採番)。
+- **書き**: **品質ゲートを通った run だけ** `llm-wiki/sources/<date>-jp-screen-graph-run.md`
+  へステージする(不変・上書きしない。既存なら `-2`, `-3` と採番)。
+  ゲート(`flow.py: _quality_gate()`)は既定で拒否し、run が条件を満たしたときだけ
+  通す — 全ステージに実体がある / 最終ランキングに銘柄コードがある /
+  取得不可・評価不能だらけでない / Agent が9つとも起動した。落ちた場合は理由を
+  列挙して vault を一切触らず、ローカル出力だけ残す。
+  半端な結果を入れると、後で「事実」として読み返されて間違いが定着するため。
   vault への昇格は llm-wiki 側で `/wiki-ingest` を実行して curate してから
   — bot が `wiki/` に直接書くことはしない(fact-only/出典明記の品質基準を守るため)。
 - **crewAI 内蔵 memory は意図的に無効**: embedding provider(既定 OpenAI)が必要で

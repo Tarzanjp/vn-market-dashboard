@@ -23,6 +23,7 @@ pipeline.
 """
 
 import os
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -67,6 +68,7 @@ class ScreeningState(BaseModel):
     agent_call_log: list[str] = Field(default_factory=list)
     report_path: str = ""
     wiki_source_path: str = ""
+    quality_failures: list[str] = Field(default_factory=list)
 
 
 class JPValueScreenFlow(Flow[ScreeningState]):
@@ -263,12 +265,67 @@ class JPValueScreenFlow(Flow[ScreeningState]):
         print(f"[Stage5] report saved to {path}")
         self._stage_into_wiki_sources(report)
 
+    def _quality_gate(self) -> list[str]:
+        """Reasons this run must NOT touch the vault. Empty list = good result.
+
+        The vault is long-lived memory: anything that lands there is read back
+        as fact by later runs and by the user. A run that half-failed is worse
+        than no run at all, because the failure becomes invisible once it is
+        sitting in the wiki looking like every other page. So the gate defaults
+        to refusing, and the run has to earn its way in.
+        """
+        fails = []
+        stages = {
+            "universe": self.state.universe_notes,
+            "benchmark": self.state.benchmark_report,
+            "data": self.state.data_report,
+            "screener": self.state.screener_shortlist,
+            "eps": self.state.eps_report,
+            "balance_sheet": self.state.balance_sheet_report,
+            "catalyst": self.state.catalyst_report,
+            "risk": self.state.risk_report,
+            "scoring": self.state.final_ranking,
+        }
+        for name, text in stages.items():
+            if len(text.strip()) < 200:
+                fails.append(f"stage '{name}' はほぼ空 ({len(text.strip())} 文字)")
+
+        ranking = self.state.final_ranking
+        if ranking and not re.search(r"\b[0-9][0-9A-Z]{3}\b", ranking):
+            fails.append("最終ランキングに銘柄コードが1つも無い")
+
+        # An agent that gave up on everything produces text, so length alone
+        # doesn't catch it — look for the wording the prompts tell it to use.
+        for name, text in (("data", self.state.data_report), ("scoring", ranking)):
+            hits = text.count("取得不可") + text.count("評価不能")
+            if hits >= 10:
+                fails.append(f"stage '{name}' が取得不可/評価不能だらけ ({hits}件)")
+
+        expected = 9  # scout + 8 specialists
+        if len(self.state.agent_call_log) < expected:
+            fails.append(
+                f"起動したAgentが {len(self.state.agent_call_log)}/{expected} — 途中で落ちた可能性"
+            )
+        return fails
+
     def _stage_into_wiki_sources(self, report: str) -> None:
         """Drop the run into llm-wiki/sources/ so `/wiki-ingest` can promote it.
 
-        Best-effort: if that repo isn't on this machine, the run still succeeds —
-        the local report is the primary output, this is the memory loop's inbox.
+        Only when the run passed `_quality_gate()`. A failed run stays local:
+        the user still gets output/*.md to inspect, but nothing enters the
+        memory loop, because bad memory is more expensive than no memory.
         """
+        fails = self._quality_gate()
+        self.state.quality_failures = fails
+        if fails:
+            print("[Stage5] quality gate FAILED — vault untouched:")
+            for f in fails:
+                print(f"          - {f}")
+            print(f"[Stage5] レポートはローカルのみ: {self.state.report_path}")
+            print("[Stage5] 内容を確認して問題なければ、手動で llm-wiki/sources/ に置き "
+                  "`/wiki-ingest` を実行すること")
+            return
+        print("[Stage5] quality gate passed")
         if not WIKI_SOURCES_DIR.is_dir():
             print(f"[Stage5] wiki sources dir not found ({WIKI_SOURCES_DIR}) — skipped staging")
             return
