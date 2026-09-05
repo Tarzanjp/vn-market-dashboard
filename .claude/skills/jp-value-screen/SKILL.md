@@ -16,7 +16,7 @@ Dynamic Scoring)に、実行系が2つある。**どちらを使うかを先に�
 | 実行 | この会話の中(Agent tool) | 別プロセス(`uv run`) |
 | 課金 | このセッションのトークン | `ANTHROPIC_API_KEY` 従量 |
 | 並列 | Agent tool 任せ | asyncio で実測並列 |
-| vault連携 | 手動(agent-memory skill) | tool として組込み済み |
+| vault連携 | MCP tool(読み取りのみ、orchestrator+調査5Agentに付与) | engine内 tool として組込み済み |
 | 向く場面 | 対話しながら調整したい / 少数銘柄 | 決まった手順を安く回す / 反復実行 |
 
 **`ANTHROPIC_API_KEY` の残高が無いときは A を使う** — A はこのセッション
@@ -38,8 +38,10 @@ cd jp_value_screen_graph && uv run python -m jp_value_screen_graph.tools.market_
    勝手に広げない。無指定なら AskUserQuestion:
    - 対象範囲: 業種横断サンプル / 特定セクター / 特定銘柄リスト
    - 時価総額・流動性フィルタ: なし(Risk & Liquidity が個別評価) / 中大型のみ
-2. **vault 先読み**(この session で実行する。**Agent 側は Bash を持たず vault に
-   アクセスできない**ので、ここで引いて渡すのが唯一の経路):
+2. **vault 先読み** — A は orchestrator 自身が MCP ツール
+   (`vault_list`/`vault_read`/`search_simple`、読み取り専用)で引くので、
+   ここで代行する必要はない。B は engine 内の tool が引く。
+   この session から直接確認したいときだけ以下を使う:
 
    ```bash
    cd <llm-wiki> && export PYTHONUTF8=1
@@ -48,11 +50,8 @@ cd jp_value_screen_graph && uv run python -m jp_value_screen_graph.tools.market_
    ```
 
    frontmatter の `bias` が埋まっていれば Kiyohara+DCF 分析済み、空なら thin stub。
-   分析済みの銘柄は **frontmatter + Key Metrics の表だけ**を抜き出して(全文は
-   1銘柄1万字超で逆にトークンを食う)、A なら orchestrator プロンプトに
-   `### vault 既知データ` 節として貼る(orchestrator.md の Stage 0.5 が受け取る)。
-   B は engine 内の tool が自分で引くのでこの手順は不要。
-   Obsidian 未起動で引けなければ、その旨を明記して普通に進める(捏造しない)。
+   Obsidian 未起動なら MCP も CLI も繋がらない。その場合は「vault 参照なし」と
+   明記して普通に進める(捏造しない)。
 
 ## A: subagent orchestrator
 

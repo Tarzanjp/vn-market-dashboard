@@ -16,6 +16,20 @@ description: 3層メモリ(Claude Code memory / Obsidian llm-wiki vault / CrewAI
 層1は「どこを見ればいいか」だけを持つ。中身は層2にある。この分離を崩さない
 (memory に数値を書くと必ず腐る)。
 
+## 2つの接続経路
+
+| | 経路 | 使えるのは | 権限 |
+|---|---|---|---|
+| MCP | `obsidian-vault` サーバ (user scope, `http://127.0.0.1:27123/mcp`) | メインセッション + tools に許可した subagent | **読み取りのみ**を付与 |
+| CLI | `scripts/obsidian_client.py` | Bash が使える場所(= メインセッションのみ) | 読み書き両方 |
+
+subagent は Bash を持たないので CLI は使えない。REST API は Authorization
+ヘッダ必須で WebFetch では通らない(クエリパラメータ認証は401)。だから
+subagent が vault を読む唯一の道が MCP ツール。書き込み系ツールは subagent に
+**渡していない** — vault へ入れるのは人が確認した後だけ、という規律のため。
+
+MCPサーバ/agentのtools変更は**新しいセッションから**有効。
+
 ## vault の読み書き(このリポジトリから)
 
 vault は別リポジトリ `…/Private/HocTap/AI/llm-wiki/` にある。
