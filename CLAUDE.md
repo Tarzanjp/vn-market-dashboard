@@ -104,7 +104,12 @@ Hệ quả: **một con số sai tệ hơn một trang trắng.** Khi không ch�
   cùng chỗ hiển thị (xem `cashoutEngine.js: PRESET_*` + pill "Dữ liệu mẫu
   (preset)" làm chuẩn) — không vẽ ra thứ trông như biểu đồ/số liệu thật mà
   không có nhãn (bug thật đã xảy ra: `worldEngine.js` từng có sparkline giả
-  sinh bằng PRNG seed theo mã thị trường, đã bị gỡ).
+  sinh bằng PRNG seed theo mã thị trường, đã bị gỡ). Bug thứ hai cùng loại:
+  `dashboardEngine.js: loadBreadth()` từng âm thầm dùng lại dữ liệu mẫu PRNG
+  seed cố định cho cột tăng/giảm/ADR khi `quality.breadth` stale nhiều ngày
+  liền — vì seed cố định + mảng ngày neo theo "hôm nay", tỷ lệ ADR mấy phiên
+  gần nhất bị đứng yên ở đúng một số suốt cả tháng (đã fix 2026-09-05: khi
+  breadth không phải `live`/`proxy`, hiển thị `—`, không dùng số mẫu nữa).
 - Cấm sinh nội dung khuyến nghị mua/bán ("nên mua", "giá mục tiêu"). Hệ thống
   mô tả dữ liệu, không tư vấn.
 - Cấm sửa `public/data/live.json`, `regime.json`, `sector-flows.json`,

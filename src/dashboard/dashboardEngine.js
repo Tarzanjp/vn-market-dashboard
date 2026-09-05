@@ -279,24 +279,45 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
         L.vn100 = { a, d, u: Math.max(0, tot - a - d), total: 100 };
       }
     }
-    if (!L.all) L.all = { a: 164, d: 139, u: 62, ceil: 9, floor: 4, total: 365 };
-    if (L.all.ceil == null) L.all.ceil = 0;
-    if (L.all.floor == null) L.all.floor = 0;
-    if (!L.vn100) L.vn100 = { a: 44, d: 38, u: 18, total: 100 };
-    if (!L.vn30) L.vn30 = { a: 18, d: 10, u: 2, total: 30 };
+    // Không tự bịa số khi thiếu breadth thật (cấm theo CLAUDE.md §1.4/1.5) —
+    // để null thay vì một bộ số "trông hợp lý" như trước đây.
+    if (!L.all) L.all = { a: null, d: null, u: null, ceil: null, floor: null, total: null };
+    else { if (L.all.ceil == null) L.all.ceil = 0; if (L.all.floor == null) L.all.floor = 0; }
+    if (!L.vn100) L.vn100 = { a: null, d: null, u: null, total: null };
+    if (!L.vn30) L.vn30 = { a: null, d: null, u: null, total: null };
     if (!L.gtgd) L.gtgd = 18100;
     if (L.close == null || Number.isNaN(+L.close)) L.close = 1768.06;
     if (L.pct == null || Number.isNaN(+L.pct)) L.pct = 0;
     if (L.chg == null || Number.isNaN(+L.chg)) L.chg = 0;
+
+    /* Mọi phiên có giá thật (real:true) nhưng breadth không phải live/proxy
+       (breadthReal:false) không được phép giữ lại bộ số mẫu (PRNG seed cố
+       định ở trên) — vì seed cố định + mảng ngày luôn neo theo "hôm nay" khiến
+       vài phiên gần nhất luôn ra đúng cùng một con số mỗi ngày (bug thật đã
+       xảy ra: tỷ lệ ADR 6 phiên luôn = 148,3). Chỉ phiên "thuần mẫu" trước khi
+       hệ thống ghi nhận (real:false, đã gắn nhãn "Mẫu" ở UI) mới được giữ số
+       PRNG. */
+    const hasBreadthData = row => !row.real || row.breadthReal;
+    for (const row of rows) {
+      if (!hasBreadthData(row)) {
+        row.all = { a: null, d: null, u: null, ceil: null, floor: null, total: null };
+        row.vn100 = { a: null, d: null, u: null, total: null };
+        row.vn30 = { a: null, d: null, u: null, total: null };
+      }
+    }
 
     for (let i = 0; i < N; i++) {
       for (const k of ["vn30", "vn100", "all"]) {
         const o = {};
         for (const W of WINDOWS) {
           if (i < W - 1) { o[W] = null; continue; }
-          let A = 0, D = 0;
-          for (let j = i - W + 1; j <= i; j++) { A += rows[j][k].a; D += rows[j][k].d; }
-          o[W] = D > 0 ? A / D * 100 : 200;
+          let A = 0, D = 0, ok = true;
+          for (let j = i - W + 1; j <= i; j++) {
+            const rj = rows[j][k];
+            if (rj.a == null || rj.d == null) { ok = false; break; }
+            A += rj.a; D += rj.d;
+          }
+          o[W] = ok ? (D > 0 ? A / D * 100 : 200) : null;
         }
         rows[i][k].r = o;
         rows[i][k].ratio = o[25];
@@ -375,8 +396,8 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     const items = [
       { k: "VN-INDEX", v: nf(LAST.close), c: sgn(LAST.pct) + "%", cl: cls(LAST.pct) },
       { k: "GTGD HOSE", v: nf(LAST.gtgd, 0) + " tỷ", c: "", cl: "flat" },
-      { k: "ADR 25 VN100", v: nf(LAST.vn100.ratio, 1), c: LAST.vn100.ratio > 120 ? "quá mua" : LAST.vn100.ratio < 80 ? "quá bán" : "cân bằng", cl: LAST.vn100.ratio > 120 ? "down" : LAST.vn100.ratio < 80 ? "up" : "flat" },
-      { k: "ADR 25 VN30", v: nf(LAST.vn30.ratio, 1), c: "", cl: LAST.vn30.ratio > 120 ? "down" : LAST.vn30.ratio < 80 ? "up" : "flat" },
+      { k: "ADR 25 VN100", v: nf(LAST.vn100.ratio, 1), c: LAST.vn100.ratio == null ? "chưa có dữ liệu thật" : LAST.vn100.ratio > 120 ? "quá mua" : LAST.vn100.ratio < 80 ? "quá bán" : "cân bằng", cl: LAST.vn100.ratio == null ? "flat" : LAST.vn100.ratio > 120 ? "down" : LAST.vn100.ratio < 80 ? "up" : "flat" },
+      { k: "ADR 25 VN30", v: nf(LAST.vn30.ratio, 1), c: "", cl: LAST.vn30.ratio == null ? "flat" : LAST.vn30.ratio > 120 ? "down" : LAST.vn30.ratio < 80 ? "up" : "flat" },
       { k: "DƯ NỢ MARGIN", v: nf(MG_LAST.debt / 1000, 1) + " nghìn tỷ", c: sgn(MG_LAST.net, 0) + " tỷ · mẫu", cl: cls(MG_LAST.net) },
       { k: "RR ĐÒN BẨY", v: mbr == null ? "—" : String(Math.round(mbr)), c: (mbrZ || "") + " · proxy", cl: mbr == null ? "flat" : mbr >= 70 ? "down" : mbr < 40 ? "up" : "flat" },
       { k: "KHỐI NGOẠI", v: "—", c: "chờ API", cl: "flat" },
@@ -533,33 +554,46 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
      8. BẢNG ĐIỆN PHIÊN GẦN NHẤT
      ============================================================ */
   (function board() {
-    const a = LAST.all || { a: 0, d: 0, u: 0, ceil: 0, floor: 0, total: 0 };
-    const ceil = +a.ceil || 0, floor = +a.floor || 0, aa = +a.a || 0, dd = +a.d || 0, uu = +a.u || 0;
-    const segs = [
-      { n: "Trần", v: ceil, c: "var(--tran)" },
-      { n: "Tăng", v: Math.max(0, aa - ceil), c: "var(--tang)" },
-      { n: "TC", v: uu, c: "var(--tc)" },
-      { n: "Giảm", v: Math.max(0, dd - floor), c: "var(--giam)" },
-      { n: "Sàn", v: floor, c: "var(--san)" }
-    ];
-    el("boardBar").innerHTML = segs.map(s =>
-      `<div style="flex:${Math.max(0.001, s.v)};background:${s.c}" title="${s.n}: ${s.v} mã">${s.v >= 14 ? s.v : ""}</div>`).join("");
+    const breadthOk = LAST.breadthReal;
+    const a = breadthOk ? LAST.all : null;
+    const ceil = a ? (+a.ceil || 0) : null, floor = a ? (+a.floor || 0) : null,
+      aa = a ? (+a.a || 0) : null, dd = a ? (+a.d || 0) : null, uu = a ? (+a.u || 0) : null;
+
+    if (!breadthOk) {
+      el("boardBar").innerHTML = `<div style="flex:1;background:var(--line)" title="Chưa có dữ liệu tăng/giảm thật cho phiên này">Chưa có dữ liệu tăng/giảm thật</div>`;
+    } else {
+      const segs = [
+        { n: "Trần", v: ceil, c: "var(--tran)" },
+        { n: "Tăng", v: Math.max(0, aa - ceil), c: "var(--tang)" },
+        { n: "TC", v: uu, c: "var(--tc)" },
+        { n: "Giảm", v: Math.max(0, dd - floor), c: "var(--giam)" },
+        { n: "Sàn", v: floor, c: "var(--san)" }
+      ];
+      el("boardBar").innerHTML = segs.map(s =>
+        `<div style="flex:${Math.max(0.001, s.v)};background:${s.c}" title="${s.n}: ${s.v} mã">${s.v >= 14 ? s.v : ""}</div>`).join("");
+    }
 
     el("boardStats").innerHTML = `
       <div class="stat"><div class="k">VN-Index</div><div class="v ${cls(LAST.pct)}">${nf(LAST.close)}</div><div class="m ${cls(LAST.pct)}">${sgn(LAST.chg)} (${sgn(LAST.pct)}%)</div></div>
-      <div class="stat"><div class="k">Mã tăng / giảm</div><div class="v"><span class="up">${aa}</span><span style="color:var(--dim)">/</span><span class="down">${dd}</span></div><div class="m">${uu} mã tham chiếu</div></div>
-      <div class="stat"><div class="k">Mã trần / sàn</div><div class="v"><span class="ceil">${ceil}</span><span style="color:var(--dim)">/</span><span class="floorc">${floor}</span></div><div class="m">biên độ dao động HOSE ±7%</div></div>
+      <div class="stat"><div class="k">Mã tăng / giảm</div><div class="v">${breadthOk ? `<span class="up">${aa}</span><span style="color:var(--dim)">/</span><span class="down">${dd}</span>` : "—"}</div><div class="m">${breadthOk ? uu + " mã tham chiếu" : "chưa có dữ liệu thật"}</div></div>
+      <div class="stat"><div class="k">Mã trần / sàn</div><div class="v">${breadthOk ? `<span class="ceil">${ceil}</span><span style="color:var(--dim)">/</span><span class="floorc">${floor}</span>` : "—"}</div><div class="m">biên độ dao động HOSE ±7%</div></div>
       <div class="stat"><div class="k">GTGD khớp lệnh</div><div class="v">${nf(LAST.gtgd, 0)}</div><div class="m">tỷ đồng</div></div>
       <div class="stat"><div class="k">ADR 25 · rổ VN100</div><div class="v">${nf(LAST.vn100.ratio, 1)}</div><div class="m">Rổ VN30: ${nf(LAST.vn30.ratio, 1)}</div></div>`;
 
     const r = LAST.vn100.r[25];
-    const pos = Math.max(0, Math.min(100, (r - 40) / 140 * 100));
-    const gm = el("gaugeMark"); gm.style.left = pos + "%"; gm.dataset.v = nf(r, 1);
-    const verdict = r > 120 ? `<b class="down">Vùng quá mua (&gt;120).</b> Bên cầu áp đảo trong 25 phiên gần nhất, xác suất rung lắc ngắn hạn tăng lên.`
-      : r < 70 ? `<b class="up">Vùng quá bán sâu (&lt;70).</b> Áp lực cung lan rộng mạnh — hiếm hơn ngưỡng 80; thường sau đợt xả.`
-      : r < 80 ? `<b class="up">Vùng quá bán (&lt;80).</b> Ngưỡng chuẩn; độ tin cậy thường cao hơn quá mua khi canh giải ngân ngược xu hướng.`
-      : `<b class="flat">Vùng cân bằng (80–120).</b> Cung cầu chưa lệch hẳn về phía nào đủ để phát tín hiệu.`;
-    el("gaugeNote").innerHTML = verdict + ` ADR 25 phiên <b>rổ VN100</b> = <b>${nf(r, 1)}</b>; rổ VN30 = <b>${nf(LAST.vn30.r[25], 1)}</b>. Lệch hai rổ cho biết dòng tiền đang co về vốn hoá lớn hay lan toả. <span class="dtag dtag-sample">Mẫu</span>`;
+    const gm = el("gaugeMark");
+    if (r == null) {
+      gm.style.left = "50%"; delete gm.dataset.v;
+      el("gaugeNote").innerHTML = `<b class="flat">Chưa đủ 25 phiên liên tục có dữ liệu tăng/giảm thật</b> để tính ADR 25 phiên — nguồn breadth đang <b>stale</b>, xem bảng 90 phiên bên dưới để biết từ phiên nào.`;
+    } else {
+      const pos = Math.max(0, Math.min(100, (r - 40) / 140 * 100));
+      gm.style.left = pos + "%"; gm.dataset.v = nf(r, 1);
+      const verdict = r > 120 ? `<b class="down">Vùng quá mua (&gt;120).</b> Bên cầu áp đảo trong 25 phiên gần nhất, xác suất rung lắc ngắn hạn tăng lên.`
+        : r < 70 ? `<b class="up">Vùng quá bán sâu (&lt;70).</b> Áp lực cung lan rộng mạnh — hiếm hơn ngưỡng 80; thường sau đợt xả.`
+        : r < 80 ? `<b class="up">Vùng quá bán (&lt;80).</b> Ngưỡng chuẩn; độ tin cậy thường cao hơn quá mua khi canh giải ngân ngược xu hướng.`
+        : `<b class="flat">Vùng cân bằng (80–120).</b> Cung cầu chưa lệch hẳn về phía nào đủ để phát tín hiệu.`;
+      el("gaugeNote").innerHTML = verdict + ` ADR 25 phiên <b>rổ VN100</b> = <b>${nf(r, 1)}</b>; rổ VN30 = <b>${nf(LAST.vn30.r[25], 1)}</b>. Lệch hai rổ cho biết dòng tiền đang co về vốn hoá lớn hay lan toả. <span class="dtag dtag-sample">Mẫu</span>`;
+    }
   })();
 
   /* ============================================================
@@ -1148,7 +1182,7 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
         <div class="r"><span>VN-Index</span><span class="${cls(d.pct)}">${nf(d.close)} · ${sgn(d.pct)}%</span></div>
         <div class="r"><span>ADR ${rW} · VN100</span><span style="color:var(--tc)">${nf(d.vn100.r[rW], 1)}</span></div>
         <div class="r"><span>ADR ${rW} · VN30</span><span style="color:var(--tran)">${nf(d.vn30.r[rW], 1)}</span></div>
-        <div class="r"><span>Mã tăng / giảm</span><span><span class="up">${d.all.a}</span> / <span class="down">${d.all.d}</span></span></div>
+        <div class="r"><span>Mã tăng / giảm</span><span><span class="up">${nf(d.all.a, 0)}</span> / <span class="down">${nf(d.all.d, 0)}</span></span></div>
         <div class="r"><span>GTGD</span><span>${nf(d.gtgd, 0)} tỷ</span></div>`;
       tip.style.opacity = "1";
       const left = cx / ratioGeom.W * b.width;
@@ -1220,26 +1254,31 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
         <td colspan="12" style="color:var(--dim);font-style:italic">Cuối tuần — không giao dịch</td>
       </tr>`;
       }
-      const s = d[scope], tot = s.a + s.d + s.u || 1;
+      const s = d[scope];
+      const hasBreadth = s.a != null && s.d != null && s.u != null;
+      const tot = hasBreadth ? (s.a + s.d + s.u || 1) : 1;
       const cells = WINDOWS.map((w, i) =>
         `<td class="num rt ${hl(s.r[w])}${i === 0 ? ' grp-l' : ''}">${nf(s.r[w], 1)}</td>`).join("");
       const dotTitle = !d.real ? "" : d.breadthReal
         ? "Giá đóng cửa và cơ cấu tăng/giảm đều là dữ liệu thật"
-        : "Giá đóng cửa là dữ liệu thật · cơ cấu tăng/giảm vẫn là ước tính mẫu (chưa có nguồn HOSE breadth miễn phí)";
+        : "Giá đóng cửa là dữ liệu thật · cơ cấu tăng/giảm chưa có (chưa có nguồn HOSE breadth miễn phí) — hiển thị —, không bịa số";
+      const bb = hasBreadth
+        ? `<div class="bb" title="${s.a} mã tăng · ${s.u} mã tham chiếu · ${s.d} mã giảm">
+          <i style="width:${(s.a / tot * 100).toFixed(1)}%;background:var(--tang)"></i>
+          <i style="width:${(s.u / tot * 100).toFixed(1)}%;background:var(--tc)"></i>
+          <i style="width:${(s.d / tot * 100).toFixed(1)}%;background:var(--giam)"></i>
+        </div>`
+        : `<div class="bb" title="Chưa có dữ liệu tăng/giảm thật"><i style="width:100%;background:var(--line)"></i></div>`;
       return `<tr${d.real ? "" : ' class="smp"'}>
         <td class="num" style="color:var(--muted)">${d.real ? `<i class="dot live" title="${esc(dotTitle)}" style="margin-right:5px"></i>` : ''}${dmyF(d.date)}</td>
         <td class="num" style="font-weight:600">${nf(d.close)}</td>
         <td class="num ${cls(d.pct)}">${sgn(d.chg)}</td>
         <td class="num ${cls(d.pct)}">${sgn(d.pct)}%</td>
         <td class="num" style="color:var(--muted)">${nf(d.gtgd, 0)}</td>
-        <td class="num up">${s.a}</td>
-        <td class="num down">${s.d}</td>
-        <td class="num flat">${s.u}</td>
-        <td><div class="bb" title="${s.a} mã tăng · ${s.u} mã tham chiếu · ${s.d} mã giảm">
-          <i style="width:${(s.a / tot * 100).toFixed(1)}%;background:var(--tang)"></i>
-          <i style="width:${(s.u / tot * 100).toFixed(1)}%;background:var(--tc)"></i>
-          <i style="width:${(s.d / tot * 100).toFixed(1)}%;background:var(--giam)"></i>
-        </div></td>
+        <td class="num up">${hasBreadth ? s.a : "—"}</td>
+        <td class="num down">${hasBreadth ? s.d : "—"}</td>
+        <td class="num flat">${hasBreadth ? s.u : "—"}</td>
+        <td>${bb}</td>
         ${cells}
       </tr>`;
     }).join("");
@@ -1251,10 +1290,17 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   const SUMS = {};
   WINDOWS.forEach(w => {
     const win = ROWS.slice(-w).map(r => r.vn100);
-    SUMS[w] = { A: win.reduce((s, r) => s + r.a, 0), D: win.reduce((s, r) => s + r.d, 0), o: win[0] };
+    // Chỉ tính khi cả w phiên trong cửa sổ đều có breadth thật — thiếu 1 phiên
+    // cũng đủ làm sai lệch tổng, không được coi thiếu là 0 (JS coerce null->0).
+    const complete = win.every(r => r.a != null && r.d != null);
+    SUMS[w] = complete
+      ? { A: win.reduce((s, r) => s + r.a, 0), D: win.reduce((s, r) => s + r.d, 0), o: win[0] }
+      : null;
   });
   const projRatio = (a, d, w) => {
-    const s = SUMS[w], A = s.A - s.o.a + a, D = s.D - s.o.d + d;
+    const s = SUMS[w];
+    if (!s) return null;
+    const A = s.A - s.o.a + a, D = s.D - s.o.d + d;
     return D > 0 ? A / D * 100 : 200;
   };
   function updateProj() {
@@ -1266,7 +1312,8 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     const A = +el("pUp").value, D = +el("pDown").value;
     el("pUpV").textContent = A; el("pDownV").textContent = D;
     el("projStats").innerHTML = WINDOWS.map(w => {
-      const now = LAST.vn100.r[w], next = projRatio(A, D, w), dd = next - now;
+      const now = LAST.vn100.r[w], next = projRatio(A, D, w);
+      const dd = (now == null || next == null) ? null : next - now;
       return `<div class="stat">
         <div class="k">${w} phiên</div>
         <div class="v"><span class="chip ${hl(next)}">${nf(next, 1)}</span></div>
@@ -1287,8 +1334,9 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     const host = el("winChart"), W = Math.max(300, host.clientWidth), H = 250;
     const m = { t: 16, r: 14, b: 32, l: 40 };
     const iw = W - m.l - m.r, ih = H - m.t - m.b;
-    const lo = Math.min(60, ...WINDOWS.flatMap(w => [LAST.vn100.r[w], LAST.vn30.r[w]])) - 8;
-    const hi = Math.max(140, ...WINDOWS.flatMap(w => [LAST.vn100.r[w], LAST.vn30.r[w]])) + 8;
+    const vals = WINDOWS.flatMap(w => [LAST.vn100.r[w], LAST.vn30.r[w]]).filter(v => v != null);
+    const lo = Math.min(60, ...vals) - 8;
+    const hi = Math.max(140, ...vals) + 8;
     const Y = v => m.t + ih - (v - lo) / (hi - lo) * ih;
     let g = "";
     if (hi > 120) g += `<rect x="${m.l}" y="${Y(hi).toFixed(1)}" width="${iw}" height="${(Y(120) - Y(hi)).toFixed(1)}" fill="var(--giam)" opacity=".07"/>`;
@@ -1303,7 +1351,12 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     WINDOWS.forEach((w, i) => {
       const cx = m.l + gw * (i + 0.5);
       [["vn100", "var(--tc)", -1], ["vn30", "var(--tran)", 1]].forEach(([k, c, side]) => {
-        const v = LAST[k].r[w], x = cx + side * bw * 0.58 - bw / 2, y = Y(v), y0 = Y(100);
+        const v = LAST[k].r[w], x = cx + side * bw * 0.58 - bw / 2;
+        if (v == null) {
+          g += `<text x="${(x + bw / 2).toFixed(1)}" y="${(Y(100) - 6).toFixed(1)}" text-anchor="middle" fill="var(--dim)" font-size="10.5" font-family="IBM Plex Mono, ui-monospace, monospace">—</text>`;
+          return;
+        }
+        const y = Y(v), y0 = Y(100);
         g += `<rect x="${x.toFixed(1)}" y="${Math.min(y, y0).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(2, Math.abs(y - y0)).toFixed(1)}" class="bar" fill="${c}" opacity=".88" rx="3"/>
             <text x="${(x + bw / 2).toFixed(1)}" y="${(Math.min(y, y0) - 6).toFixed(1)}" text-anchor="middle" fill="${c}" font-size="10.5" font-weight="600" font-family="IBM Plex Mono, ui-monospace, monospace">${nf(v, 0)}</text>`;
       });
@@ -1316,7 +1369,9 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   el("winDate").textContent = dmyF(LAST.date);
   (function () {
     const s = LAST.vn100, fast = s.r[6], slow = s.r[25];
-    const dir = fast > slow + 6 ? `<b class="down">Chu kỳ ngắn đang cao hơn chu kỳ dài</b> — lực cầu vừa tăng tốc trong vài phiên gần nhất, đồng thời là lúc chỉ báo dễ chạm vùng quá mua sớm.`
+    const dir = (fast == null || slow == null)
+      ? `<b class="flat">Chưa đủ dữ liệu tăng/giảm thật</b> để so sánh chu kỳ ngắn/dài — nguồn breadth đang stale.`
+      : fast > slow + 6 ? `<b class="down">Chu kỳ ngắn đang cao hơn chu kỳ dài</b> — lực cầu vừa tăng tốc trong vài phiên gần nhất, đồng thời là lúc chỉ báo dễ chạm vùng quá mua sớm.`
       : fast < slow - 6 ? `<b class="up">Chu kỳ ngắn đang thấp hơn chu kỳ dài</b> — áp lực cung mới xuất hiện và chưa phản ánh hết vào hệ số chu kỳ 25 phiên.`
       : `<b class="flat">Bốn chu kỳ đang đồng pha</b> — tương quan cung cầu ổn định, chưa xuất hiện chuyển biến đột ngột trong ngắn hạn.`;
     el("winNote").innerHTML = `Cột vàng = rổ VN100, cột tím = rổ VN30, lệch từ mốc 100. ${dir} Chu kỳ 6–10 phiên phản ứng nhanh; <b>25 phiên</b> là chu kỳ chuẩn vùng quá mua (&gt;120) / quá bán (&lt;80), quá bán sâu (&lt;70).`;
@@ -1535,8 +1590,9 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     el("heroChg").innerHTML = `<span class="${cls(LAST.pct)}">${sgn(LAST.chg)} (${sgn(LAST.pct)}%)</span> · GTGD ${nf(LAST.gtgd, 0)} tỷ`;
     const r = LAST.vn100.r[25];
     countUp(el("heroAD"), r, 1);
-    el("heroAD").className = "big num " + (r > 120 ? "down" : r < 80 ? "up" : "flat");
-    el("heroZone").innerHTML = r > 120 ? '<span class="down">Vùng quá mua (&gt;120) · VN100</span>'
+    el("heroAD").className = "big num " + (r == null ? "flat" : r > 120 ? "down" : r < 80 ? "up" : "flat");
+    el("heroZone").innerHTML = r == null ? '<span class="flat">Chưa có dữ liệu tăng/giảm thật · VN100</span>'
+      : r > 120 ? '<span class="down">Vùng quá mua (&gt;120) · VN100</span>'
       : r < 70 ? '<span class="up">Vùng quá bán sâu (&lt;70) · VN100</span>'
       : r < 80 ? '<span class="up">Vùng quá bán (&lt;80) · VN100</span>'
       : '<span class="flat">Vùng cân bằng (80–120) · VN100</span>';
