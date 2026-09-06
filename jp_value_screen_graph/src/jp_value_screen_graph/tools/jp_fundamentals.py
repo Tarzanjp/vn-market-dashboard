@@ -83,6 +83,9 @@ BS_KEYS = {
     "total_liabilities": r"^\s*負債合計",
     "total_assets": r"^\s*資産合計",
     "cash": r"^\s*現金及び預金",
+    # needed for the balance identity below, not for the ratio itself
+    "net_assets": r"^\s*(純資産合計|資本合計)",
+    "fixed_assets": r"^\s*(固定資産合計|非流動資産合計)",
 }
 
 
@@ -231,10 +234,21 @@ def parse_bs(pdf_bytes: bytes) -> dict:
 
     if not out:
         return {"error": "no tabular balance sheet found in PDF"}
-    if "investment_securities" not in out and ifrs_other_fin is not None:
-        out["investment_securities"] = ifrs_other_fin
-        out["investment_securities_basis"] = "IFRS proxy: 非流動その他の金融資産"
-        units_seen["investment_securities"] = ifrs_unit
+    # NO SUBSTITUTION. 投資有価証券 does not exist in an IFRS statement of
+    # financial position, so for an IFRS filer this input is 取得不可 and the
+    # Kiyohara ratio is not computable as defined. Earlier this code silently
+    # swapped in 非流動その他の金融資産 and still emitted a "Net Cash Ratio" —
+    # that number was an approximation invented here, not the metric, and
+    # labelling it a proxy did not make it a fact. The figure is still reported
+    # under its own name so a human can decide what, if anything, to do with
+    # it; it is never folded into the ratio.
+    if ifrs_other_fin is not None:
+        out["ifrs_noncurrent_other_financial_assets"] = ifrs_other_fin
+        out["ifrs_note"] = (
+            "IFRS filing: 投資有価証券 does not exist. Net Cash Ratio not computable "
+            "as defined. 非流動その他の金融資産 reported raw, NOT substituted."
+        )
+        units_seen["ifrs_noncurrent_other_financial_assets"] = ifrs_unit
 
     # Every figure used in the ratio must have come from pages stating the same
     # unit; a mix means one of them would be scaled wrong.
@@ -242,6 +256,26 @@ def parse_bs(pdf_bytes: bytes) -> dict:
             ("current_assets", "investment_securities", "total_liabilities")
             if k in out]
     out["unit"] = used[0] if used and len(set(used)) == 1 and used[0] else "unknown"
+
+    # A balance sheet that does not balance was read wrong. This is the only
+    # check that covers the figures the ratio is actually built from — PER,
+    # PBR and market cap are all derived from price and Kabutan and never
+    # touch these lines, which is how a 1000x unit error passed them earlier.
+    checks = {}
+    a, l, n = out.get("total_assets"), out.get("total_liabilities"), out.get("net_assets")
+    if a and l and n:
+        checks["assets_eq_liab_plus_equity"] = {
+            "lhs": a, "rhs": l + n, "diff": a - (l + n),
+            "ok": abs(a - (l + n)) <= max(2, abs(a) * 0.001),
+        }
+    ca, fa = out.get("current_assets"), out.get("fixed_assets")
+    if a and ca and fa:
+        checks["current_plus_fixed_eq_total"] = {
+            "lhs": ca + fa, "rhs": a, "diff": (ca + fa) - a,
+            "ok": abs((ca + fa) - a) <= max(2, abs(a) * 0.001),
+        }
+    out["balance_checks"] = checks
+    out["balances"] = bool(checks) and all(c["ok"] for c in checks.values())
     return out
 
 
@@ -266,9 +300,20 @@ def parse_kabutan(code: str) -> dict:
             if len(m) >= 2:
                 out.setdefault("per", float(m[0]))
                 out.setdefault("pbr", float(m[1]))
-            mc = re.search(r"時価総額\s*([\d,]+)\s*億円", " ".join(rows))
+            # Large caps read "14 兆 1,159 億円" — a compound, not a single
+            # number with a different suffix. Missing it leaves market cap
+            # absent, and a cross-check with nothing to compare against
+            # counts as "no mismatch" rather than "not checked".
+            joined = " ".join(rows)
+            mc = re.search(r"時価総額\s*([\d,]+)\s*兆\s*(?:([\d,]+)\s*億)?円", joined)
             if mc:
-                out.setdefault("market_cap_oku", float(mc.group(1).replace(",", "")))
+                cho = float(mc.group(1).replace(",", "")) * 10000
+                oku = float((mc.group(2) or "0").replace(",", ""))
+                out.setdefault("market_cap_oku", cho + oku)
+            else:
+                mc = re.search(r"時価総額\s*([\d,]+)\s*億円", joined)
+                if mc:
+                    out.setdefault("market_cap_oku", float(mc.group(1).replace(",", "")))
         # annual P&L
         if head.startswith("決算期") and "最終益" in head and "発表日" in head and "annual" not in out:
             ann = []
@@ -383,9 +428,26 @@ def screen(code: str) -> dict:
             r["net_cash_ratio"] = {"value": None, "missing": ["unit (単位 not stated in PDF)"]}
             return r
         ca, inv, li = (bs[k] / div for k in need)   # -> 百万円
-        shares = eq * 1_000_000 / bps
-        mcap = shares * px / 1_000_000                # 百万円
+        # Prefer the published market cap. Deriving it from equity/BPS uses an
+        # older annual row (IFRS filers leave BPS blank quarterly), which put
+        # 6981 7% below the real figure — and market cap is the denominator of
+        # the whole ratio, so that error lands directly on the answer.
+        if kb.get("market_cap_oku"):
+            mcap = kb["market_cap_oku"] * 100          # 億円 -> 百万円
+            shares = mcap * 1_000_000 / px
+            mcap_basis = "published (kabutan)"
+        else:
+            shares = eq * 1_000_000 / bps
+            mcap = shares * px / 1_000_000             # 百万円
+            mcap_basis = "derived from equity/BPS"
         ncr = (ca + inv * 0.7 - li) / mcap
+        if bs.get("balance_checks") and not bs.get("balances"):
+            r["net_cash_ratio"] = {
+                "value": None,
+                "missing": ["balance sheet does not balance — figures misread"],
+                "balance_checks": bs["balance_checks"],
+            }
+            return r
         r["net_cash_ratio"] = {
             "value": round(ncr, 3),
             "formula": "(流動資産 + 投資有価証券x0.7 - 負債合計) / 時価総額",
@@ -395,6 +457,7 @@ def screen(code: str) -> dict:
             "market_cap_mn": round(mcap, 1),
             "shares": round(shares),
             "price_used": px,
+            "market_cap_basis": mcap_basis,
             "passes_kiyohara_1x": ncr > 1,
         }
         # cross-checks against Kabutan's own published figures
@@ -413,6 +476,9 @@ def screen(code: str) -> dict:
         r["cross_checks"] = chk
     else:
         missing = [k for k in need if not bs.get(k)]
+        if "investment_securities" in missing and bs.get("ifrs_note"):
+            missing = [m for m in missing if m != "investment_securities"]
+            missing.append("investment_securities (IFRS: 該当科目なし・取得不可)")
         r["net_cash_ratio"] = {
             "value": None,
             "missing": missing or [k for k, v in (("price", px), ("equity", eq)) if not v],
@@ -452,11 +518,31 @@ def summarize(r: dict) -> str:
                  f"- {n['total_liabilities_mn']:,}) / {n['market_cap_mn']:,} 百万円")
     else:
         L.append(f"  Net Cash Ratio : 取得不可 (missing: {', '.join(n.get('missing', []))})")
+    bs = r.get("balance_sheet", {})
+    if bs.get("balance_checks"):
+        for name, c0 in bs["balance_checks"].items():
+            L.append(f"  identity       : {name} {'OK' if c0['ok'] else 'FAIL'} "
+                     f"({c0['lhs']:,} vs {c0['rhs']:,}, diff {c0['diff']:,})")
+    elif r.get("net_cash_ratio", {}).get("value") is not None:
+        L.append("  identity       : NOT checked (純資産合計/固定資産合計 not found)")
     c = r.get("cross_checks", {})
-    if c:
-        L.append("  cross-check    : " + "  ".join(
-            f"{k.replace('_computed','')}={c.get(k)}/{c.get(k.replace('computed','published'))}"
-            for k in c if k.endswith("_computed")))
+    # Report checked-and-passed separately from not-checked. A comparison with
+    # nothing to compare against is silence, not agreement — reading it as a
+    # pass is how a wrong figure gets called verified.
+    pairs = [("per", "per_computed", "per_published"),
+             ("pbr", "pbr_computed", "pbr_published"),
+             ("mcap", "mcap_computed_oku", "mcap_published_oku")]
+    done, skipped = [], []
+    for name, a, b in pairs:
+        if c.get(a) is not None and c.get(b) is not None:
+            off = abs(c[a] - c[b]) / c[b] if c[b] else 0
+            done.append(f"{name}={c[a]}/{c[b]}{'' if off <= 0.05 else ' MISMATCH'}")
+        else:
+            skipped.append(name)
+    if done:
+        L.append("  cross-check    : " + "  ".join(done))
+    if skipped:
+        L.append("  NOT checked    : " + ", ".join(skipped) + " (no published value to compare)")
     L.append(f"  PER {kb.get('per')}  PBR {kb.get('pbr')}  時価総額 {kb.get('market_cap_oku')}億円")
     if r.get("per_history"):
         L.append("  PER history    : " + " -> ".join(
