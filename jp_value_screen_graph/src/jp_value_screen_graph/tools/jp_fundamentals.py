@@ -1,0 +1,430 @@
+"""Kiyohara screening inputs for any JP ticker — no API key, no LLM.
+
+The expensive part of a Kiyohara screen is not judgement, it is finding
+流動資産 / 投資有価証券 / 負債合計. Those three are not on any aggregator page
+that will serve us (checked 2026-09-06: irbank 403, minkabu 403,
+stockanalysis 403, Yahoo's 財務 page gives prose not line items, Kabutan's
+財務 page has zero occurrences of 流動資産, EDINET's API wants a paid key).
+They live in the 決算短信 PDF.
+
+The route that does work, uniformly, for every listed ticker:
+
+  finance.yahoo.co.jp/quote/<CODE>.T/disclosure   ← mirrors TDnet per ticker
+      -> pick the newest 決算短信 entry -> download its PDF -> parse
+
+So: 4 HTTP calls and one local PDF parse per ticker, all free.
+
+  python -m jp_value_screen_graph.tools.jp_fundamentals 5367 3951 --json
+
+Every figure carries where it came from. Anything that cannot be fetched is
+returned as None with a reason — never inferred, because a Net Cash Ratio
+built on a guessed balance sheet is worse than no ratio at all.
+"""
+
+from __future__ import annotations
+
+import argparse
+import html
+import json
+import re
+import sys
+import time
+import urllib.request
+from typing import Any
+
+UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+)
+DISCLOSURE = "https://finance.yahoo.co.jp/quote/{code}.T/disclosure"
+KABUTAN = "https://kabutan.jp/stock/finance?code={code}"
+CHART = "https://query1.finance.yahoo.com/v8/finance/chart/{code}.T?range=10y&interval=1mo"
+
+
+def _get(url: str, timeout: int = 25) -> bytes:
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return r.read()
+
+
+def _text(el: str) -> str:
+    return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", el))).strip()
+
+
+# --------------------------------------------------------------- 決算短信 PDF
+def find_tanshin(code: str) -> dict:
+    """Newest 決算短信 PDF for this ticker, from Yahoo's TDnet mirror."""
+    try:
+        page = _get(DISCLOSURE.format(code=code)).decode("utf-8", "replace")
+    except Exception as e:  # noqa: BLE001
+        return {"url": None, "error": f"disclosure page: {e}"}
+    items = re.findall(r'<li class="[^"]*DisclosureList__item.*?</li>', page, re.S)
+    # Titles containing 決算短信 also cover amendments and cover notices that carry
+    # no financial statements at all (e.g. 9347's "公認会計士等による期中レビューの
+    # 完了"), and the briefing deck. Those must not be picked.
+    reject = ("訂正", "レビューの完了", "説明資料", "補足", "（差替", "英文", "English")
+    for it in items:  # newest first
+        title = _text(it)
+        if "決算短信" not in title or any(w in title for w in reject):
+            continue
+        m = re.search(r'href="(https://[^"]+?\.pdf)"', it)
+        if m:
+            return {"url": m.group(1), "title": title}
+    return {"url": None, "error": f"no usable 決算短信 among {len(items)} disclosures"}
+
+
+# Anchored at line start: 負債合計 is a substring of 流動負債合計 and 固定負債合計,
+# and 資産合計 of 流動資産合計 — an unanchored match silently picks the subtotal
+# instead of the total, which is how a Net Cash Ratio comes out wrong while
+# still looking plausible.
+BS_KEYS = {
+    "current_assets": r"^\s*流動資産合計",
+    "investment_securities": r"^\s*投資有価証券",
+    "total_liabilities": r"^\s*負債合計",
+    "total_assets": r"^\s*資産合計",
+    "cash": r"^\s*現金及び預金",
+}
+
+
+def _figure(nums: list[str]) -> int | None:
+    """The current-period figure from a balance-sheet row.
+
+    Rows normally read (prior, current). Some IFRS layouts add composition-%
+    and 増減 columns, so the last number is the change, not the period end.
+    That is detectable arithmetically — if last == secondlast - thirdlast the
+    filing put a delta there — which is safer than guessing by column count.
+    """
+    if not nums:
+        return None
+    v = nums[-1]
+    if len(nums) >= 3:
+        try:
+            a, b, c = (float(x.replace(",", "").lstrip("△▲-")) for x in nums[-3:])
+            if abs((b - a) - c) <= max(1.0, abs(c) * 0.001):
+                v = nums[-2]
+        except ValueError:
+            pass
+    neg = v[0] in "△▲-"
+    v = v.lstrip("△▲-").replace(",", "")
+    if not v.isdigit():
+        return None
+    return -int(v) if neg else int(v)
+
+
+def parse_bs(pdf_bytes: bytes) -> dict:
+    """Balance-sheet lines from a 決算短信, in the unit the filing states.
+
+    Handles three layouts that differ in ways that silently corrupt the
+    result if ignored:
+
+    * 連結 filings split the balance sheet across two pages (assets, then
+      liabilities), so every page has to be scanned — scoring pages and
+      reading only the best one finds 流動資産合計 and never 負債合計.
+    * Units are not constant: 非連結 short-form prints 千円, 連結 prints
+      百万円. The unit is read from the filing rather than assumed.
+    * IFRS filings have no 投資有価証券 line. The nearest counterpart to the
+      securities book Kiyohara discounts by 30% is the NON-CURRENT
+      その他の金融資産; the identically-named current line is already inside
+      流動資産合計 and would double-count. 持分法投資 stays excluded, mirroring
+      JGAAP where 関係会社株式 is separate from 投資有価証券.
+
+    A line counts only if it is anchored on a BS label and carries at least
+    two figures — that is what separates a table row from the MD&A prose,
+    which also says 負債合計 but never at the start of a line.
+    """
+    try:
+        import pdfplumber
+    except ImportError:
+        return {"error": "pdfplumber not installed"}
+    import io
+
+    out: dict[str, Any] = {}
+    unit = None
+    ifrs_other_fin = None
+    in_noncurrent = False
+
+    with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+        for page in pdf.pages:
+            page_text = page.extract_text() or ""
+            if unit is None:
+                if re.search(r"単位[:：]\s*百万円", page_text):
+                    unit = "million"
+                elif re.search(r"単位[:：]\s*千円", page_text):
+                    unit = "thousand"
+
+            for line in page_text.split("\n"):
+                if re.match(r"\s*流動資産合計", line):
+                    in_noncurrent = True
+
+                nums = re.findall(r"[△▲-]?[\d,]{4,}", line)
+                if len(nums) < 2:
+                    continue
+
+                if (in_noncurrent and ifrs_other_fin is None
+                        and re.match(r"\s*その他の金融資産", line)):
+                    ifrs_other_fin = _figure(nums)
+
+                for key, pat in BS_KEYS.items():
+                    if key in out or not re.search(pat, line):
+                        continue
+                    val = _figure(nums)
+                    if val is not None:
+                        out[key] = val
+
+    if not out:
+        return {"error": "no tabular balance sheet found in PDF"}
+    if "investment_securities" not in out and ifrs_other_fin is not None:
+        out["investment_securities"] = ifrs_other_fin
+        out["investment_securities_basis"] = "IFRS proxy: 非流動その他の金融資産"
+    out["unit"] = unit or "unknown"
+    return out
+
+
+# ------------------------------------------------------------------- Kabutan
+def parse_kabutan(code: str) -> dict:
+    try:
+        s = _get(KABUTAN.format(code=code)).decode("utf-8", "replace")
+    except Exception as e:  # noqa: BLE001
+        return {"error": f"kabutan: {e}"}
+    tables = re.findall(r"<table.*?</table>", s, re.S)
+    rows_of = [
+        [_text(r) for r in re.findall(r"<tr.*?</tr>", t, re.S) if _text(r)]
+        for t in tables
+    ]
+    out: dict[str, Any] = {}
+
+    for rows in rows_of:
+        head = rows[0] if rows else ""
+        # valuation block
+        if "PER" in head and "PBR" in head and len(rows) > 1:
+            m = re.findall(r"([\d.]+)\s*倍", rows[1])
+            if len(m) >= 2:
+                out.setdefault("per", float(m[0]))
+                out.setdefault("pbr", float(m[1]))
+            mc = re.search(r"時価総額\s*([\d,]+)\s*億円", " ".join(rows))
+            if mc:
+                out.setdefault("market_cap_oku", float(mc.group(1).replace(",", "")))
+        # annual P&L
+        if head.startswith("決算期") and "最終益" in head and "発表日" in head and "annual" not in out:
+            ann = []
+            for r in rows[1:]:
+                m = re.match(
+                    r"(?:単|連)?\s*(予)?\s*(\d{4}\.\d{2})\s+([\d,\-]+)\s+([\d,\-]+)\s+"
+                    r"([\d,\-]+)\s+([\d,\-]+)\s+([\d.\-]+)\s+([\d.\-]+)",
+                    r,
+                )
+                if m:
+                    n = lambda x: None if x in ("-", "") else float(x.replace(",", ""))  # noqa: E731
+                    ann.append({
+                        "fy": m.group(2), "forecast": bool(m.group(1)),
+                        "revenue": n(m.group(3)), "op": n(m.group(4)),
+                        "ordinary": n(m.group(5)), "net": n(m.group(6)),
+                        "eps": n(m.group(7)), "dps": n(m.group(8)),
+                    })
+            if ann:
+                out["annual"] = ann
+        # balance-sheet summary (BPS / equity ratio / equity)
+        if "１株" in head and "自己資本" in head and "総資産" in head:
+            bs = []
+            for r in rows[1:]:
+                m = re.match(
+                    r"(?:単|連|I)?\s*([\d.]+|\d{2}\.\d{2}-\d{2})\s+([\d,.]+)\s+([\d.]+)\s+"
+                    r"([\d,]+)\s+([\d,]+)\s+([\d,]+)\s+([\d.]+)",
+                    r,
+                )
+                if m:
+                    bs.append({
+                        "period": m.group(1),
+                        "bps": float(m.group(2).replace(",", "")),
+                        "equity_ratio": float(m.group(3)),
+                        "total_assets": float(m.group(4).replace(",", "")),
+                        "equity": float(m.group(5).replace(",", "")),
+                        "debt_ratio": float(m.group(7)),
+                    })
+            if bs:
+                out["bs_summary"] = bs
+        # quarterly detail
+        if head.startswith("決算期") and "売上営業" in head and "損益率" in head:
+            q = []
+            for r in rows[1:]:
+                m = re.match(
+                    r"(\d{2}\.\d{2}-\d{2})\s+([\d,]+)\s+([\d,\-]+)\s+([\d,\-]+)\s+([\d,\-]+)\s+([\d.\-]+)",
+                    r,
+                )
+                if m:
+                    q.append({
+                        "period": m.group(1),
+                        "revenue": float(m.group(2).replace(",", "")),
+                        "op": float(m.group(3).replace(",", "")),
+                        "ordinary": float(m.group(4).replace(",", "")),
+                        "net": float(m.group(5).replace(",", "")),
+                        "eps": float(m.group(6)),
+                    })
+            if q:
+                out["quarterly"] = q[-3:]  # v2 spec: latest 3
+    return out
+
+
+# --------------------------------------------------------------- price series
+def price_history(code: str) -> dict:
+    try:
+        d = json.loads(_get(CHART.format(code=code)))["chart"]["result"][0]
+    except Exception as e:  # noqa: BLE001
+        return {"error": f"chart: {e}"}
+    ts, cl = d["timestamp"], d["indicators"]["quote"][0]["close"]
+    monthly = {
+        time.strftime("%Y-%m", time.gmtime(t)): round(c, 1)
+        for t, c in zip(ts, cl) if c
+    }
+    return {"last": d["meta"].get("regularMarketPrice"), "monthly": monthly}
+
+
+# ------------------------------------------------------------------ assemble
+def screen(code: str) -> dict:
+    r: dict[str, Any] = {"code": code, "sources": {}}
+
+    kb = parse_kabutan(code)
+    r["kabutan"] = kb
+    r["sources"]["kabutan"] = KABUTAN.format(code=code)
+
+    ph = price_history(code)
+    r["price"] = ph
+    r["sources"]["chart"] = "Yahoo Finance chart API"
+
+    t = find_tanshin(code)
+    r["tanshin"] = t
+    if t.get("url"):
+        r["sources"]["tanshin"] = t["url"]
+        try:
+            r["balance_sheet"] = parse_bs(_get(t["url"], timeout=40))
+        except Exception as e:  # noqa: BLE001
+            r["balance_sheet"] = {"error": str(e)}
+    else:
+        r["balance_sheet"] = {"error": t.get("error", "no tanshin")}
+
+    # ---- Net Cash Ratio, only when every input is real
+    bs, px = r.get("balance_sheet", {}), ph.get("last")
+    bss = (kb.get("bs_summary") or [])
+    # IFRS filers leave 1株純資産 blank ("－") on quarterly rows, so take the
+    # newest row that actually carries one; equity must come from that same row
+    # or shares would be derived from mismatched periods.
+    row = next((b for b in reversed(bss) if b.get("bps")), None)
+    eq = row["equity"] if row else None            # 百万円
+    bps = row["bps"] if row else None
+    need = ("current_assets", "investment_securities", "total_liabilities")
+    if all(bs.get(k) for k in need) and px and eq and bps:
+        div = {"thousand": 1000, "million": 1}.get(bs.get("unit"))
+        if div is None:
+            r["net_cash_ratio"] = {"value": None, "missing": ["unit (単位 not stated in PDF)"]}
+            return r
+        ca, inv, li = (bs[k] / div for k in need)   # -> 百万円
+        shares = eq * 1_000_000 / bps
+        mcap = shares * px / 1_000_000                # 百万円
+        ncr = (ca + inv * 0.7 - li) / mcap
+        r["net_cash_ratio"] = {
+            "value": round(ncr, 3),
+            "formula": "(流動資産 + 投資有価証券x0.7 - 負債合計) / 時価総額",
+            "current_assets_mn": round(ca, 1),
+            "investment_securities_mn": round(inv, 1),
+            "total_liabilities_mn": round(li, 1),
+            "market_cap_mn": round(mcap, 1),
+            "shares": round(shares),
+            "price_used": px,
+            "passes_kiyohara_1x": ncr > 1,
+        }
+        # cross-checks against Kabutan's own published figures
+        chk = {}
+        if kb.get("per"):
+            fwd = next((a for a in kb.get("annual", []) if a["forecast"]), None)
+            if fwd and fwd.get("eps"):
+                chk["per_computed"] = round(px / fwd["eps"], 1)
+                chk["per_published"] = kb["per"]
+        if kb.get("pbr"):
+            chk["pbr_computed"] = round(px / bps, 2)
+            chk["pbr_published"] = kb["pbr"]
+        if kb.get("market_cap_oku"):
+            chk["mcap_computed_oku"] = round(mcap / 100)
+            chk["mcap_published_oku"] = kb["market_cap_oku"]
+        r["cross_checks"] = chk
+    else:
+        missing = [k for k in need if not bs.get(k)]
+        r["net_cash_ratio"] = {
+            "value": None,
+            "missing": missing or [k for k, v in (("price", px), ("equity", eq)) if not v],
+        }
+
+    # ---- PER history: month-end close / that FY's EPS (the v2 re-rating input)
+    per_hist = []
+    monthly = ph.get("monthly", {})
+    for a in kb.get("annual", []):
+        if not a.get("eps"):
+            continue
+        y, m = a["fy"].split(".")
+        key = f"{y}-{m}"
+        if key in monthly:
+            per_hist.append({
+                "at": key, "price": monthly[key], "eps": a["eps"],
+                "per": round(monthly[key] / a["eps"], 1), "forecast_eps": a["forecast"],
+            })
+    if px and kb.get("annual"):
+        fwd = next((a for a in kb["annual"] if a["forecast"]), None)
+        if fwd and fwd.get("eps"):
+            per_hist.append({
+                "at": "now", "price": px, "eps": fwd["eps"],
+                "per": round(px / fwd["eps"], 1), "forecast_eps": True,
+            })
+    r["per_history"] = per_hist
+    return r
+
+
+def summarize(r: dict) -> str:
+    kb, n = r.get("kabutan", {}), r.get("net_cash_ratio", {})
+    L = [f"=== {r['code']} ==="]
+    if n.get("value") is not None:
+        L.append(f"  Net Cash Ratio : {n['value']}x  "
+                 f"({'PASS' if n['passes_kiyohara_1x'] else 'below'} Kiyohara >1x)")
+        L.append(f"     = ({n['current_assets_mn']:,} + {n['investment_securities_mn']:,}x0.7 "
+                 f"- {n['total_liabilities_mn']:,}) / {n['market_cap_mn']:,} 百万円")
+    else:
+        L.append(f"  Net Cash Ratio : 取得不可 (missing: {', '.join(n.get('missing', []))})")
+    c = r.get("cross_checks", {})
+    if c:
+        L.append("  cross-check    : " + "  ".join(
+            f"{k.replace('_computed','')}={c.get(k)}/{c.get(k.replace('computed','published'))}"
+            for k in c if k.endswith("_computed")))
+    L.append(f"  PER {kb.get('per')}  PBR {kb.get('pbr')}  時価総額 {kb.get('market_cap_oku')}億円")
+    if r.get("per_history"):
+        L.append("  PER history    : " + " -> ".join(
+            f"{h['at']} {h['per']}x" for h in r["per_history"]))
+    if r.get("tanshin", {}).get("title"):
+        L.append(f"  短信            : {r['tanshin']['title'][:56]}")
+    return "\n".join(L)
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description="Kiyohara screening inputs, keyless")
+    ap.add_argument("codes", nargs="+")
+    ap.add_argument("--json", action="store_true")
+    ap.add_argument("--out")
+    a = ap.parse_args()
+    res = []
+    for i, c in enumerate(a.codes):
+        if i:
+            time.sleep(1.0)  # unauthenticated endpoints; stay polite
+        try:
+            res.append(screen(c))
+        except Exception as e:  # noqa: BLE001
+            res.append({"code": c, "error": str(e)})
+        if not a.json:
+            print(summarize(res[-1]), flush=True)
+    if a.out:
+        with open(a.out, "w", encoding="utf-8") as f:
+            json.dump(res, f, ensure_ascii=False, indent=1)
+        print(f"\nwrote {a.out}")
+    elif a.json:
+        print(json.dumps(res, ensure_ascii=False, indent=1))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
