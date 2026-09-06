@@ -111,26 +111,72 @@ def _figure(nums: list[str]) -> int | None:
     return -int(v) if neg else int(v)
 
 
+def _page_unit(page_text: str) -> str | None:
+    """The unit this page's tables are printed in, or None.
+
+    Most filings say （単位：百万円）. IFRS ones often instead put a bare
+    column-header line — "百万円 百万円" or "百万円 ％ 百万円 ％". The unit must
+    be read from the page the balance sheet is actually on: a 千円 filing can
+    still mention 百万円 on an earlier summary page, and taking the first match
+    anywhere scales every figure by 1000.
+    """
+    if re.search(r"単位[:：]\s*百万円", page_text):
+        return "million"
+    if re.search(r"単位[:：]\s*千円", page_text):
+        return "thousand"
+    for ln in page_text.split("\n"):
+        if ln.strip() and re.fullmatch(r"[\s百万千円％%]+", ln):
+            if "百万円" in ln:
+                return "million"
+            if "千円" in ln:
+                return "thousand"
+    return None
+
+
+def _figure(nums: list[str]) -> int | None:
+    """The current-period figure from a balance-sheet row.
+
+    Rows normally read (prior, current). Some IFRS layouts add composition-%
+    and 増減 columns, so the last number is the change, not the period end —
+    detectable arithmetically: if last == secondlast - thirdlast, that column
+    is a delta.
+    """
+    if not nums:
+        return None
+    v = nums[-1]
+    if len(nums) >= 3:
+        try:
+            a, b, c = (float(x.replace(",", "").lstrip("△▲-")) for x in nums[-3:])
+            if abs((b - a) - c) <= max(1.0, abs(c) * 0.001):
+                v = nums[-2]
+        except ValueError:
+            pass
+    neg = v[0] in "△▲-"
+    v = v.lstrip("△▲-").replace(",", "")
+    if not v.isdigit():
+        return None
+    return -int(v) if neg else int(v)
+
+
+# These are totals; a negative one means the wrong column was read (usually a
+# 増減 column that happened to be negative), not a real balance sheet.
+NON_NEGATIVE = {"current_assets", "total_liabilities", "total_assets"}
+
+
 def parse_bs(pdf_bytes: bytes) -> dict:
-    """Balance-sheet lines from a 決算短信, in the unit the filing states.
+    """Balance-sheet lines from a 決算短信, in the unit that page states.
 
-    Handles three layouts that differ in ways that silently corrupt the
-    result if ignored:
+    Handles the layouts that otherwise corrupt the result silently:
+    連結 filings split the balance sheet across two pages (assets, then
+    liabilities), so every page is scanned; units differ per filing and are
+    read from the page the figures came from; and IFRS filings have no
+    投資有価証券 — the nearest counterpart is the NON-CURRENT その他の金融資産,
+    the current line of that name being already inside 流動資産合計.
+    持分法投資 stays excluded, mirroring JGAAP's separate 関係会社株式.
 
-    * 連結 filings split the balance sheet across two pages (assets, then
-      liabilities), so every page has to be scanned — scoring pages and
-      reading only the best one finds 流動資産合計 and never 負債合計.
-    * Units are not constant: 非連結 short-form prints 千円, 連結 prints
-      百万円. The unit is read from the filing rather than assumed.
-    * IFRS filings have no 投資有価証券 line. The nearest counterpart to the
-      securities book Kiyohara discounts by 30% is the NON-CURRENT
-      その他の金融資産; the identically-named current line is already inside
-      流動資産合計 and would double-count. 持分法投資 stays excluded, mirroring
-      JGAAP where 関係会社株式 is separate from 投資有価証券.
-
-    A line counts only if it is anchored on a BS label and carries at least
-    two figures — that is what separates a table row from the MD&A prose,
-    which also says 負債合計 but never at the start of a line.
+    A line counts only if anchored on a BS label and carrying two figures,
+    which is what separates a table row from MD&A prose that also says
+    負債合計 but never at the start of a line.
     """
     try:
         import pdfplumber
@@ -139,18 +185,24 @@ def parse_bs(pdf_bytes: bytes) -> dict:
     import io
 
     out: dict[str, Any] = {}
-    unit = None
+    units_seen: dict[str, str] = {}      # key -> unit of the page it came from
     ifrs_other_fin = None
+    ifrs_unit = None
     in_noncurrent = False
+    last_unit = None
 
     with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
         for page in pdf.pages:
             page_text = page.extract_text() or ""
-            if unit is None:
-                if re.search(r"単位[:：]\s*百万円", page_text):
-                    unit = "million"
-                elif re.search(r"単位[:：]\s*千円", page_text):
-                    unit = "thousand"
+            # A 連結 balance sheet spans two pages and only the first repeats the
+            # unit header, so a page without one inherits the nearest preceding
+            # page that had it. Inheriting forward is safe (a statement does not
+            # switch units mid-way); taking the first unit found anywhere in the
+            # document is not — a 千円 filing can mention 百万円 on an earlier
+            # summary page, which scaled every figure by 1000.
+            page_unit = _page_unit(page_text) or last_unit
+            if page_unit:
+                last_unit = page_unit
 
             for line in page_text.split("\n"):
                 if re.match(r"\s*流動資産合計", line):
@@ -162,21 +214,34 @@ def parse_bs(pdf_bytes: bytes) -> dict:
 
                 if (in_noncurrent and ifrs_other_fin is None
                         and re.match(r"\s*その他の金融資産", line)):
-                    ifrs_other_fin = _figure(nums)
+                    val = _figure(nums)
+                    if val is not None and val >= 0:
+                        ifrs_other_fin, ifrs_unit = val, page_unit
 
                 for key, pat in BS_KEYS.items():
                     if key in out or not re.search(pat, line):
                         continue
                     val = _figure(nums)
-                    if val is not None:
-                        out[key] = val
+                    if val is None:
+                        continue
+                    if key in NON_NEGATIVE and val < 0:
+                        continue          # wrong column; leave it unset
+                    out[key] = val
+                    units_seen[key] = page_unit
 
     if not out:
         return {"error": "no tabular balance sheet found in PDF"}
     if "investment_securities" not in out and ifrs_other_fin is not None:
         out["investment_securities"] = ifrs_other_fin
         out["investment_securities_basis"] = "IFRS proxy: 非流動その他の金融資産"
-    out["unit"] = unit or "unknown"
+        units_seen["investment_securities"] = ifrs_unit
+
+    # Every figure used in the ratio must have come from pages stating the same
+    # unit; a mix means one of them would be scaled wrong.
+    used = [units_seen.get(k) for k in
+            ("current_assets", "investment_securities", "total_liabilities")
+            if k in out]
+    out["unit"] = used[0] if used and len(set(used)) == 1 and used[0] else "unknown"
     return out
 
 
