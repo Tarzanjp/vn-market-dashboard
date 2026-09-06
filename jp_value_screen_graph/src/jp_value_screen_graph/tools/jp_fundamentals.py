@@ -441,6 +441,30 @@ def screen(code: str) -> dict:
             mcap = shares * px / 1_000_000             # 百万円
             mcap_basis = "derived from equity/BPS"
         ncr = (ca + inv * 0.7 - li) / mcap
+        # The accounting identity is scale- and column-invariant: read every
+        # line from the 増減 column and it still balances, because
+        # Δassets = Δliabilities + Δequity; read every line in 千円 instead of
+        # 百万円 and it still balances too. So it cannot catch the two errors
+        # that actually occurred. Only an INDEPENDENT source can: Kabutan
+        # publishes 総資産, parsed from HTML by a different code path, so
+        # comparing it against 資産合計 from the PDF catches a wrong scale or a
+        # systematically wrong column.
+        ta_pdf = bs.get("total_assets")
+        ta_kb = (bss[-1]["total_assets"] if bss else None)
+        if ta_pdf and ta_kb and div:
+            lhs = ta_pdf / div                     # -> 百万円
+            off = abs(lhs - ta_kb) / ta_kb
+            r["total_assets_check"] = {
+                "pdf_mn": round(lhs, 1), "kabutan_mn": ta_kb,
+                "off_pct": round(off * 100, 2), "ok": off <= 0.05,
+            }
+            if off > 0.05:
+                r["net_cash_ratio"] = {
+                    "value": None,
+                    "missing": [f"総資産 mismatch vs Kabutan: {lhs:,.0f} vs {ta_kb:,} "
+                                f"({off*100:.1f}% off) — scale or column misread"],
+                }
+                return r
         if bs.get("balance_checks") and not bs.get("balances"):
             r["net_cash_ratio"] = {
                 "value": None,
@@ -518,6 +542,10 @@ def summarize(r: dict) -> str:
                  f"- {n['total_liabilities_mn']:,}) / {n['market_cap_mn']:,} 百万円")
     else:
         L.append(f"  Net Cash Ratio : 取得不可 (missing: {', '.join(n.get('missing', []))})")
+    ta = r.get("total_assets_check")
+    if ta:
+        L.append(f"  総資産 vs Kabutan: {ta['pdf_mn']:,} vs {ta['kabutan_mn']:,} "
+                 f"({ta['off_pct']}% off) {'OK' if ta['ok'] else 'FAIL'}")
     bs = r.get("balance_sheet", {})
     if bs.get("balance_checks"):
         for name, c0 in bs["balance_checks"].items():
