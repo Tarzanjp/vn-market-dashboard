@@ -346,6 +346,62 @@ def _parse_rss_items(xml_bytes: bytes, category: str, source_name: str) -> list[
     return items
 
 
+def fetch_breadth(trade_date: str, prev: dict) -> tuple[dict | None, str]:
+    """Đếm số mã tăng/giảm/tham chiếu trên HOSE từ dữ liệu từng mã.
+
+    Trước đây field này không có nguồn free nào nên chỉ được điền qua
+    grok-fill.json — và thực tế đã đứng yên từ 2026-08-07, khiến bảng 90 phiên
+    trên dashboard trống hoàn toàn sau khi bỏ dữ liệu mẫu giả.
+
+    VNDirect finfo trả về giá đóng cửa từng mã HOSE theo ngày, không cần API
+    key, nên breadth được **tính** chứ không phải đi tìm một con số có sẵn:
+    a/d/u là số mã change>0 / <0 / ==0, trần và sàn so với ceilingPrice /
+    floorPrice, GTGD là tổng nmValue.
+
+    Tự kiểm chứng: a + d + u phải bằng tổng số mã trả về, và số mã trả về phải
+    bằng totalElements của API. Lệch một trong hai nghĩa là trang bị cắt hoặc
+    dữ liệu thiếu — khi đó trả None để giữ số của phiên trước và đánh dấu
+    stale, thay vì ghi một con số đếm thiếu.
+    """
+    url = ("https://api-finfo.vndirect.com.vn/v4/stock_prices"
+           f"?q=floor:HOSE~date:{trade_date}&size=1200")
+    try:
+        raw = http_get(url)
+        payload = json.loads(raw)
+    except Exception as e:  # noqa: BLE001
+        log(f"breadth: fetch failed ({e}) — giữ số phiên trước")
+        return prev.get("breadth"), "stale" if prev.get("breadth") else "missing"
+
+    rows = payload.get("data") or []
+    reported = payload.get("totalElements")
+    if not rows:
+        log(f"breadth: không có dữ liệu cho {trade_date} (phiên nghỉ?) — giữ số phiên trước")
+        return prev.get("breadth"), "stale" if prev.get("breadth") else "missing"
+
+    a = sum(1 for x in rows if (x.get("change") or 0) > 0)
+    d = sum(1 for x in rows if (x.get("change") or 0) < 0)
+    u = sum(1 for x in rows if (x.get("change") or 0) == 0)
+    ceil_n = sum(1 for x in rows
+                 if x.get("close") and x.get("ceilingPrice") and x["close"] >= x["ceilingPrice"])
+    floor_n = sum(1 for x in rows
+                  if x.get("close") and x.get("floorPrice") and x["close"] <= x["floorPrice"])
+    total = len(rows)
+
+    if a + d + u != total or (reported is not None and reported != total):
+        log(f"breadth: kiểm chứng thất bại (a+d+u={a+d+u}, n={total}, "
+            f"totalElements={reported}) — không ghi số đếm thiếu")
+        return prev.get("breadth"), "stale" if prev.get("breadth") else "missing"
+
+    gtgd_bn = round(sum((x.get("nmValue") or 0) for x in rows) / 1e9, 1)
+    log(f"breadth OK {trade_date}: a={a} d={d} u={u} (n={total}) GTGD={gtgd_bn} tỷ")
+    return {
+        "date": trade_date,
+        "gtgd": gtgd_bn,
+        "all": {"a": a, "d": d, "u": u, "ceil": ceil_n, "floor": floor_n, "total": total},
+        "source": "VNDirect finfo (đếm từ giá đóng cửa từng mã HOSE)",
+    }, "live"
+
+
 def fetch_news_raw() -> list[dict]:
     """Kéo tiêu đề tin thô (không tổng hợp/phân tích) từ các feed RSS miễn phí,
     chính chủ — chỉ dữ liệu xác định (title/date/link/description gốc), không
@@ -672,8 +728,12 @@ def build_live(prev: dict, grok: dict | None = None) -> dict:
     # nay (xem merge_grok_fill). Đánh dấu rõ "stale" thay vì im lặng mang
     # nguyên trạng thái quality cũ theo, để history_row_from_live() không ghi
     # nhầm các phiên này là "proxy" mới khi thực ra chỉ là số liệu cũ lặp lại.
-    for field in ("vnYields", "margin", "breadth", "usdVnd", "foreign", "proprietary"):
+    for field in ("vnYields", "margin", "usdVnd", "foreign", "proprietary"):
         quality[field] = "stale" if prev.get(field) else "missing"
+
+    # breadth: có nguồn free (đếm từng mã HOSE) từ 2026-09-06 — không còn phụ
+    # thuộc grok-fill. Thất bại thì fetch_breadth() tự trả số phiên trước.
+    breadth, quality["breadth"] = fetch_breadth(trade_date, prev)
 
     live = {
         "schemaVersion": "1.0",
@@ -691,7 +751,7 @@ def build_live(prev: dict, grok: dict | None = None) -> dict:
         # margin / VN yields / breadth: free API yếu — prev hoặc Grok
         "vnYields": prev.get("vnYields"),
         "margin": prev.get("margin"),
-        "breadth": prev.get("breadth"),
+        "breadth": breadth,
         "usdVnd": prev.get("usdVnd"),
         "foreign": prev.get("foreign"),
         "proprietary": prev.get("proprietary"),
