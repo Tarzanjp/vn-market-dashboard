@@ -1,14 +1,110 @@
 {
-  "generatedAtIct": "2026-09-07T08:21:04+07:00",
+  "generatedAtIct": "2026-09-07T16:11:02+07:00",
   "count": 19,
   "items": [
     {
-      "title": "Số liệu lạm phát Mỹ có thể gây biến động giá vàng tuần này",
-      "link": "https://vneconomy.vn/so-lieu-lam-phat-my-co-the-gay-bien-dong-gia-vang-tuan-nay.htm",
-      "description": "Giới phân tích dự báo số liệu lạm phát của Mỹ sẽ quyết định mức độ đặt cược của nhà đầu tư vào một động thái tăng lãi suất của Fed...",
-      "publishedAt": "2026-09-07T00:07:01+00:00",
+      "title": "Thúc đẩy hợp tác Việt Nam - Hàn Quốc trong những lĩnh vực chiến lược",
+      "link": "https://vneconomy.vn/thuc-day-hop-tac-viet-nam-han-quoc-trong-nhung-linh-vuc-chien-luoc.htm",
+      "description": "Chủ tịch Quốc hội Trần Thanh Mẫn và Chủ tịch Quốc hội Hàn Quốc Cho Jeong Sik hội đàm; nhất trí phát huy vai trò của cơ quan lập pháp trong thúc đẩy các cam kết cấp cao, mở rộng hợp tác ở những lĩnh vực chiến lược như bán dẫn, AI, hạ tầng, năng lượng; phấn đấu đưa kim ngạch thương mại song phương đạt 150 tỷ USD vào năm 2030...",
+      "publishedAt": "2026-09-07T09:07:57+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
+    },
+    {
+      "title": "Những cổ phiếu sắp bị hai quỹ ETF bán mạnh",
+      "link": "https://vneconomy.vn/nhung-co-phieu-sap-bi-hai-quy-etf-ban-manh.htm",
+      "description": "Trong kỳ tái cơ cấu tháng 9/2026, VanEck Vietnam ETF (theo dõi chỉ số MarketVector Vietnam Local) dự kiến điều chỉnh danh mục dựa trên AUM 13.658 tỷ đồng, đưa tổng số từ 55 mã về 54 mã.",
+      "publishedAt": "2026-09-07T08:50:26+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Hàng loạt doanh nghiệp bất động sản hưởng lợi rõ nét khi TP.HCM được trao nhiều thẩm quyền đất đai",
+      "link": "https://vneconomy.vn/hang-loat-doanh-nghiep-bat-dong-san-huong-loi-ro-net-khi-tphcm-duoc-trao-nhieu-tham-quyen-dat-dai.htm",
+      "description": "Quốc hội thông qua Luật Phát triển đô thị ngày 24/8 (465/474 phiếu), TP.HCM có hiệu lực sớm từ 1/9/2026 và hiệu lực chung từ 1/10/2026. Luật không tạo ra chính sách bất động sản mới mà chuyển thẩm quyền quyết định từ trung ương về TP.HCM...",
+      "publishedAt": "2026-09-07T08:48:30+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Sau đợt giảm nhẹ, dự báo lãi suất sẽ duy trì ở mức cao trong thời gian tới",
+      "link": "https://vneconomy.vn/sau-dot-giam-nhe-du-bao-lai-suat-se-duy-tri-o-muc-cao-trong-thoi-gian-toi.htm",
+      "description": "Yuanta dự báo lãi suất trên thị trường 1 sau nhịp giảm nhẹ vừa qua sẽ tiếp tục duy trì ở mức cao trong những tháng tới, khi tăng trưởng tín dụng vẫn được thúc đẩy trong khi bài toán cân đối nguồn vốn trung và dài hạn chưa được giải quyết hoàn toàn.",
+      "publishedAt": "2026-09-07T08:45:01+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Tháng 8, chỉ số UPCoM Index tăng nhẹ nhưng thanh khoản giảm mạnh",
+      "link": "https://vneconomy.vn/thang-8-chi-so-upcom-index-tang-nhe-nhung-thanh-khoan-giam-manh.htm",
+      "description": "Sở Giao dịch Chứng khoán Hà Nội (HNX) vừa cho biết tháng 8/2026, diễn biến giá cổ phiếu trên thị trường UPCOM có nhiều biến động mạnh.",
+      "publishedAt": "2026-09-07T08:44:41+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Loạt cổ phiếu lớn lao dốc, VN-Index giảm mạnh nhất 13 phiên",
+      "link": "https://vneconomy.vn/loat-co-phieu-lon-lao-doc-vn-index-giam-manh-nhat-13-phien.htm",
+      "description": "Áp lực bán hạ giá đã tăng mạnh trong phiên chiều nay, đặc biệt trong nhóm trụ, tạo sức ép rất lớn lên điểm số. VN-Index đóng cửa ở mức thấp nhất ngày, bốc hơi 1,7% tương đương -31,44 điểm, biên độ giảm sâu nhất 13 phiên và quay lại thử thách ngưỡng 1820 điểm.",
+      "publishedAt": "2026-09-07T08:27:25+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Thị trường điều chỉnh diện rộng, VN-Index thất bại sát mốc 1880 điểm",
+      "link": "https://vneconomy.vn/thi-truong-dieu-chinh-dien-rong-vn-index-that-bai-sat-moc-1880-diem.htm",
+      "description": "Quán tính hào hứng của phiên cuối tuần trước chỉ đủ đẩy VN-Index tăng thêm trong vài phút sau khi mở cửa. Áp lực bán xuất hiện khá mạnh sau đó ép cổ phiếu lùi giá hàng loạt và chỉ số chốt phiên sáng ở mức thấp nhất.",
+      "publishedAt": "2026-09-07T05:04:05+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Phát huy mạnh mẽ nguồn lực trí tuệ người Việt Nam tại Hàn Quốc phục vụ phát triển đất nước",
+      "link": "https://vneconomy.vn/phat-huy-manh-me-nguon-luc-tri-tue-nguoi-viet-nam-tai-han-quoc-phuc-vu-phat-trien-dat-nuoc.htm",
+      "description": "“Sức mạnh của một quốc gia ngày càng được quyết định bởi năng lực sáng tạo, khả năng làm chủ công nghệ và chuyển hóa tri thức thành sức cạnh tranh”, Chủ tịch Quốc hội Trần Thanh Mẫn nhấn mạnh tại buổi làm việc với Mạng lưới Đổi mới sáng tạo và chuyên gia Việt Nam tại Hàn Quốc (VINK) vào chiều 06/9 tại Seoul…",
+      "publishedAt": "2026-09-07T04:42:14+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
+    },
+    {
+      "title": "Các ETF mô phỏng Frontier Markets chuẩn bị bán ồ ạt",
+      "link": "https://vneconomy.vn/cac-etf-mo-phong-frontier-markets-chuan-bi-ban-o-at.htm",
+      "description": "Theo quy tắc kỹ thuật, các quỹ ETF mô phỏng chỉ số Frontier Markets buộc phải tất toán và bán ròng toàn bộ danh mục cổ phiếu Việt Nam một lần trước ngày 21/9. Gánh nặng hấp thụ lượng hàng này hiện đang dồn lên vai dòng tiền nội.",
+      "publishedAt": "2026-09-07T03:29:14+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Từ “soi bảng điện” đến tích sản: Cần thay đổi cách thức đầu tư cổ phiếu",
+      "link": "https://vneconomy.vn/tu-soi-bang-dien-den-tich-san-can-thay-doi-cach-thuc-dau-tu-co-phieu.htm",
+      "description": "Từ góc nhìn kinh tế học hành vi, có thể cách thức thiết kế và vận hành thị trường hiện nay đang vô tình góp phần định hình hành vi đầu cơ ngắn hạn của nhà đầu tư và không tạo thuận lợi cho khả năng tích sản lành mạnh.",
+      "publishedAt": "2026-09-07T03:27:53+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Tổng Bí thư, Chủ tịch nước Tô Lâm cùng Phu nhân lên đường thăm cấp Nhà nước tới Nga, thăm chính thức Pháp và dự Hội nghị Thượng đỉnh Không gian vũ trụ",
+      "link": "https://vneconomy.vn/tong-bi-thu-chu-tich-nuoc-to-lam-cung-phu-nhan-len-duong-tham-cap-nha-nuoc-toi-nga-tham-chinh-thuc-phap-va-du-hoi-nghi-thuong-dinh-khong-gian-vu-tru.htm",
+      "description": "Ngày 7/9/2026, Tổng Bí thư, Chủ tịch nước Tô Lâm cùng Phu nhân Ngô Phương Ly và Đoàn đại biểu cấp cao Việt Nam rời Hà Nội, lên đường thăm cấp Nhà nước tới Liên bang Nga, thăm chính thức Cộng hòa Pháp và dự Hội nghị Thượng đỉnh Không gian vũ trụ tại Paris, Pháp.",
+      "publishedAt": "2026-09-07T02:49:10+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
+    },
+    {
+      "title": "Chuyến thăm Hàn Quốc của Chủ tịch Quốc hội Trần Thanh Mẫn: Mở rộng cơ hội hợp tác đầu tư",
+      "link": "https://vneconomy.vn/chuyen-tham-han-quoc-cua-chu-tich-quoc-hoi-tran-thanh-man-mo-rong-co-hoi-hop-tac-dau-tu.htm",
+      "description": "Chủ tịch Quốc hội Trần Thanh Mẫn đã bắt đầu chuyến thăm chính thức Hàn Quốc với nhiều hoạt động quan trọng. Chuyến thăm sẽ góp phần mở ra cơ hội hợp tác giữa Việt Nam và Hàn Quốc trong các ngành: công nghệ chiến lược, thúc đẩy đổi mới sáng tạo, nâng cao năng lực cạnh tranh và tạo động lực mới cho tăng trưởng...",
+      "publishedAt": "2026-09-07T02:34:19+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
+    },
+    {
+      "title": "Việt Nam - Nga: Từ 75 năm gắn bó, thủy chung đến nâng tầm toàn diện hợp tác",
+      "link": "https://vneconomy.vn/viet-nam-nga-tu-75-nam-gan-bo-thuy-chung-den-nang-tam-toan-dien-hop-tac.htm",
+      "description": "Trả lời phỏng vấn Hãng thông tấn TASS của Nga, Tổng Bí thư, Chủ tịch nước Tô Lâm khẳng định mối quan hệ Việt Nam - Nga gắn bó, thủy chung, tin cậy hiếm có, được tôi luyện trong hơn 75 năm. Việt Nam không bao giờ quên sự giúp đỡ to lớn của nhân dân Liên Xô trước đây, trong đó có Nga, trong các cuộc kháng chiến, kiến thiết đất nước, phát triển và hội nhập...",
+      "publishedAt": "2026-09-07T02:24:03+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
     },
     {
       "title": "Thủ tướng Lê Minh Hưng: Đưa quan hệ đầu tư Việt Nam - Nhật Bản lên tầm đối tác cùng phát triển",
@@ -17,102 +113,6 @@
       "publishedAt": "2026-09-06T10:46:10+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Việt Nam - Myanmar thúc đẩy kết nối hai nền kinh tế, mở rộng thương mại và đầu tư",
-      "link": "https://vneconomy.vn/viet-nam-myanmar-thuc-day-ket-noi-hai-nen-kinh-te-mo-rong-thuong-mai-va-dau-tu.htm",
-      "description": "Việt Nam và Myanmar thống nhất tăng cường kết nối, bổ trợ giữa hai nền kinh tế, mở rộng hợp tác trong thương mại, đầu tư, chuyển đổi số, nông nghiệp, logistics và công nghệ cao, tạo thêm dư địa cho cộng đồng doanh nghiệp hai nước.",
-      "publishedAt": "2026-09-06T10:40:09+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "VN-Index tăng 1,14%, nhà đầu tư thận trọng trước áp lực chốt lời",
-      "link": "https://vneconomy.vn/vn-index-tang-114-nha-dau-tu-than-trong-truoc-ap-luc-chot-loi.htm",
-      "description": "VnEconomy giới thiệu nhận định và khuyến nghị đầu tư của một số công ty chứng khoán về diễn biến thị trường tuần từ 7-11/8/2026.",
-      "publishedAt": "2026-09-06T03:03:15+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Việt Nam - Myanmar tăng cường hợp tác nghị viện, thúc đẩy kết nối doanh nghiệp",
-      "link": "https://vneconomy.vn/viet-nam-myanmar-tang-cuong-hop-tac-nghi-vien-thuc-day-ket-noi-doanh-nghiep.htm",
-      "description": "Ngày 5/9, tại Nhà Quốc hội, Chủ tịch Quốc hội Trần Thanh Mẫn đã hội kiến Tổng thống Cộng hòa Liên bang Myanmar Min Aung Hlaing đang thăm chính thức Việt Nam.",
-      "publishedAt": "2026-09-06T01:28:56+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Việt Nam - Myanmar tạo động lực mới cho hợp tác toàn diện",
-      "link": "https://vneconomy.vn/viet-nam-myanmar-tao-dong-luc-moi-cho-hop-tac-toan-dien.htm",
-      "description": "Tổng Bí thư, Chủ tịch nước Tô Lâm và Tổng thống Myanmar Min Aung Hlaing khẳng định quyết tâm làm sâu sắc quan hệ hữu nghị truyền thống, thúc đẩy hợp tác kinh tế, đầu tư, kết nối doanh nghiệp và giao lưu văn hóa giữa hai nước.",
-      "publishedAt": "2026-09-06T01:27:49+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Việt Nam - Myanmar thúc đẩy hợp tác quốc phòng, an ninh và kinh tế",
-      "link": "https://vneconomy.vn/viet-nam-myanmar-thuc-day-hop-tac-quoc-phong-an-ninh-va-kinh-te.htm",
-      "description": "Thủ tướng Chính phủ Lê Minh Hưng và Tổng thống Myanmar Min Aung Hlaing nhất trí tăng cường tin cậy chính trị, đưa hợp tác quốc phòng, an ninh trở thành một trụ cột của hợp tác song phương, đồng thời thúc đẩy thương mại, đầu tư và sớm khôi phục đường bay thẳng giữa hai nước.",
-      "publishedAt": "2026-09-06T01:23:08+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Việt Nam - Myanmar củng cố tin cậy chính trị, mở rộng hợp tác kinh tế",
-      "link": "https://vneconomy.vn/viet-nam-myanmar-cung-co-tin-cay-chinh-tri-mo-rong-hop-tac-kinh-te.htm",
-      "description": "Tổng Bí thư, Chủ tịch nước Tô Lâm và Tổng thống Myanmar Min Aung Hlaing nhất trí củng cố tin cậy chính trị, phát huy hợp tác quốc phòng - an ninh, đồng thời mở rộng hợp tác kinh tế, thương mại, đầu tư, chuyển đổi số, kết nối và du lịch.",
-      "publishedAt": "2026-09-05T12:48:55+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "HOSE bổ sung thêm 5 mã vào danh sách cắt margin",
-      "link": "https://vneconomy.vn/hose-bo-sung-them-5-ma-vao-danh-sach-cat-margin.htm",
-      "description": "Như vậy tính đến ngày 3/9/2026, danh sách chứng khoán không đủ điều kiện giao dịch ký quỹ của HOSE tăng lên 69 mã - trong đó phần lớn là các cổ phiếu quen thuộc nằm trong diện bị cảnh báo, kiểm soát, hạn chế hoặc đình chỉ giao dịch như APG, APH, DQC, DGC, HVN...",
-      "publishedAt": "2026-09-05T07:25:09+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Tự doanh tiếp tục thoát hàng",
-      "link": "https://vneconomy.vn/tu-doanh-tiep-tuc-thoat-hang.htm",
-      "description": "Tự doanh bán ròng 168,1 tỷ đồng trong phiên cuối tuần, tính riêng khớp lệnh họ bán ròng 160,3 tỷ đồng.",
-      "publishedAt": "2026-09-05T07:24:56+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Phó thủ tướng: Sửa Luật chứng khoán phải đảm bảo thị trường hoạt động ổn định, liên tục",
-      "link": "https://vneconomy.vn/pho-thu-tuong-sua-luat-chung-khoan-phai-dam-bao-thi-truong-hoat-dong-on-dinh-lien-tuc.htm",
-      "description": "Rà soát tính thống nhất, đồng bộ của hệ thống pháp luật, hiệu lực thi hành và các quy định chuyển tiếp, đảm bảo hoạt động thị trường chứng khoán ổn định, liên tục và sẽ rà soát lưu ý thời điểm có hiệu lực pháp luật của dự án Luật...",
-      "publishedAt": "2026-09-05T07:24:23+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Sau báo cáo việc làm “rực rỡ” của Mỹ, Tổng thống Trump kêu gọi Fed giảm lãi suất",
-      "link": "https://vneconomy.vn/sau-bao-cao-viec-lam-ruc-ro-cua-my-tong-thong-trump-keu-goi-fed-giam-lai-suat.htm",
-      "description": "Báo cáo việc làm khả quan làm gia tăng khả năng Fed nâng lãi suất, nhưng ông Trump kêu gọi hành động ngược lại...",
-      "publishedAt": "2026-09-05T02:35:00+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Quỹ đầu tư khổng lồ của Na Uy đề xuất giảm nắm giữ trái phiếu kho bạc Mỹ",
-      "link": "https://vneconomy.vn/quy-dau-tu-khong-lo-cua-na-uy-de-xuat-giam-nam-giu-trai-phieu-kho-bac-my.htm",
-      "description": "Cơ quan quản lý quỹ đầu tư quốc gia của Na Uy - quỹ có giá trị tài sản lên tới khoảng 2 nghìn tỷ USD - đang cân nhắc một thay đổi lớn trong danh mục đầu tư trái phiếu chính phủ...",
-      "publishedAt": "2026-09-05T02:34:31+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Vàng trượt giá sau báo cáo việc làm Mỹ, SPDR Gold Trust tiếp tục bán ròng",
-      "link": "https://vneconomy.vn/vang-truot-gia-sau-bao-cao-viec-lam-my-spdr-gold-trust-tiep-tuc-ban-rong.htm",
-      "description": "Giá vàng thế giới giảm khá mạnh trong phiên giao dịch ngày thứ Sáu (4/9), khi báo cáo việc làm mạnh hơn dự báo của Mỹ làm gia tăng khả năng Cục Dự trữ Liên bang (Fed) tăng lãi suất trong tháng này...",
-      "publishedAt": "2026-09-05T01:31:09+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
     },
     {
       "title": "Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp.",
