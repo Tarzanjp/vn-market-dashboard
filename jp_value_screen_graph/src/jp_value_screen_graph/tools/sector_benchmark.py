@@ -65,7 +65,7 @@ def sector_of(code: str) -> dict:
             "industry": m.group(2).strip(), "segment": seg.group(1) if seg else "?"}
 
 
-def _page(path: str) -> list[dict]:
+def _page(path: str) -> tuple[list[dict], int]:
     """Every stock on the industry page with the PER and PBR Kabutan shows.
 
     The header and data rows do not align by index: the table carries empty
@@ -92,16 +92,22 @@ def _page(path: str) -> list[dict]:
                 return None          # "-" = no earnings to price, or not disclosed
 
         out = []
+        raw = 0
         for r in rows[1:]:
             cells = [c for c in (_text(x) for x in
                      re.findall(r"<t[hd].*?</t[hd]>", r, re.S)) if c]
-            if len(cells) < 6 or not re.fullmatch(r"\d{4}[A-Z]?", cells[0]):
+            # Japanese codes are 4 characters and newer ones end in a letter
+            # (285A キオクシア, 146A). Demanding 4 digits drops them silently.
+            if len(cells) < 6 or not re.fullmatch(r"\d[\dA-Z]{3}", cells[0]):
                 continue
             per, pbr, _yld = cells[-3], cells[-2], cells[-1]
             out.append({"code": cells[0], "name": cells[1], "segment": cells[2],
                         "per": num(per), "pbr": num(pbr)})
-        return out
-    return []
+        for r in rows[1:]:
+            if re.search(r"<t[hd]", r):
+                raw += 1
+        return out, raw
+    return [], 0
 
 
 _CACHE: dict[str, list[dict]] = {}
@@ -122,13 +128,15 @@ def constituents(path: str, pause: float = 1.2, max_pages: int = 40) -> list[dic
     seen: dict[str, dict] = {}
     for n in range(1, max_pages + 1):
         url = path if n == 1 else f"{path}&page={n}"
-        rows = _page(url)
+        rows, raw = _page(url)
         fresh = [r for r in rows if r["code"] not in seen]
-        if not fresh:
-            break
         for r in fresh:
             seen[r["code"]] = r
-        if len(rows) < 15:            # last page
+        # Stop on the PAGE's row count, not the parsed count. Counting parsed
+        # rows means one unparseable row ends pagination early: 電気機器/東証P
+        # has 123 constituents, and a single row (285A) failing the code
+        # pattern stopped the walk at 14 of them.
+        if raw < 15 or not fresh:
             break
         time.sleep(pause)
     _CACHE[path] = list(seen.values())
