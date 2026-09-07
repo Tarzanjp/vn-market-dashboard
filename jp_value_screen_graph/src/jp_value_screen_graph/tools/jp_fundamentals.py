@@ -73,6 +73,48 @@ def find_tanshin(code: str) -> dict:
     return {"url": None, "error": f"no usable 決算短信 among {len(items)} disclosures"}
 
 
+def find_annual_tanshin(code: str, max_pages: int = 4) -> dict:
+    """Newest FULL-YEAR 決算短信 PDF for this ticker.
+
+    The quarterly 短信 that find_tanshin() returns carries a balance sheet but no
+    notes, and the notes are where the answers live: segment information, the
+    cash-flow statement and extraordinary items. 有価証券報告書 is on EDINET, not
+    on Yahoo's TDnet mirror — but the ANNUAL 短信 is, and it has all three.
+
+    Two things this has to get right. The disclosure page shows only ~34 items,
+    so a December-year-end filer's annual report is already off page 1; ?page=N
+    pages further back. And 四半期/中間 titles must be excluded, or the newest
+    quarterly wins again.
+
+    Caution for the caller, not enforced here: an annual 短信 contains BOTH the
+    consolidated statements and, later in the document, the parent-only (個別)
+    ones. 2914's parent-only page shows a 0.8% effective tax rate and a net
+    income that does not match the published figure. Check which one a table
+    belongs to before reading numbers off it.
+    """
+    reject = ("訂正", "説明資料", "補足", "（差替", "英文", "English",
+              "[Summary]", "[Updated]", "[Delayed]", "Financial Results")
+    base = DISCLOSURE.format(code=code)
+    for page_no in range(1, max_pages + 1):
+        url = base if page_no == 1 else f"{base}?page={page_no}"
+        try:
+            page = _get(url).decode("utf-8", "replace")
+        except Exception as e:  # noqa: BLE001
+            return {"url": None, "error": f"disclosure page {page_no}: {e}"}
+        for it in re.findall(r'<li class="[^"]*DisclosureList__item.*?</li>', page, re.S):
+            title = _text(it)
+            if "決算短信" not in title:
+                continue
+            if "四半期" in title or "中間" in title:
+                continue
+            if any(w in title for w in reject):
+                continue
+            m = re.search(r'href="(https://[^"]+?\.pdf)"', it)
+            if m:
+                return {"url": m.group(1), "title": title, "found_on_page": page_no}
+    return {"url": None, "error": f"no annual 決算短信 in {max_pages} pages"}
+
+
 # Anchored at line start: 負債合計 is a substring of 流動負債合計 and 固定負債合計,
 # and 資産合計 of 流動資産合計 — an unanchored match silently picks the subtotal
 # instead of the total, which is how a Net Cash Ratio comes out wrong while
@@ -305,13 +347,13 @@ def parse_kabutan(code: str) -> dict:
             # absent, and a cross-check with nothing to compare against
             # counts as "no mismatch" rather than "not checked".
             joined = " ".join(rows)
-            mc = re.search(r"時価総額\s*([\d,]+)\s*兆\s*(?:([\d,]+)\s*億)?円", joined)
+            mc = re.search(r"時価総額\s*([\d,.]+)\s*兆\s*(?:([\d,.]+)\s*億)?円", joined)
             if mc:
                 cho = float(mc.group(1).replace(",", "")) * 10000
                 oku = float((mc.group(2) or "0").replace(",", ""))
                 out.setdefault("market_cap_oku", cho + oku)
             else:
-                mc = re.search(r"時価総額\s*([\d,]+)\s*億円", joined)
+                mc = re.search(r"時価総額\s*([\d,.]+)\s*億円", joined)
                 if mc:
                     out.setdefault("market_cap_oku", float(mc.group(1).replace(",", "")))
         # annual P&L
