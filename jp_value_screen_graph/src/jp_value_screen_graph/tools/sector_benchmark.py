@@ -53,6 +53,16 @@ def _text(el: str) -> str:
     return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", el))).strip()
 
 
+def declared_count(path: str) -> int | None:
+    """How many constituents the industry page says it has ("123銘柄").
+
+    The page states its own population. Not checking the walk against it is how
+    a median gets computed from 14 of 123 and still looks reasonable.
+    """
+    m = re.search(r"([\d,]+)\s*銘柄", _text(_get(SECTOR.format(path=path))))
+    return int(m.group(1).replace(",", "")) if m else None
+
+
 def sector_of(code: str) -> dict:
     """The stock's industry page path, industry name and market segment."""
     s = _get(STOCK.format(code=code))
@@ -150,6 +160,26 @@ def benchmark(code: str) -> dict:
     mem = constituents(info["path"])
     if not mem:
         return {**info, "error": "industry page carried no PER/PBR table"}
+
+    # Two gates. Both of these were caught by hand three times before being
+    # written down here; a median from a truncated sample looks entirely
+    # plausible, so the tool must refuse rather than rely on someone noticing.
+    #
+    # Gate 1 — the stock must appear in its own sector sample. If it does not,
+    # the walk stopped before reaching it and the median excludes the very
+    # company being measured. This is the tell that caught all three bugs.
+    if not any(m["code"] == code for m in mem):
+        return {**info, "members": len(mem),
+                "error": (f"{code} is absent from its own sector sample "
+                          f"({len(mem)} collected) — pagination stopped early, "
+                          f"the median would exclude the subject")}
+
+    # Gate 2 — the count must match what the page itself declares.
+    declared = declared_count(info["path"])
+    if declared and len(mem) != declared:
+        return {**info, "members": len(mem), "declared": declared,
+                "error": (f"collected {len(mem)} but the page declares {declared} "
+                          f"銘柄 — sample incomplete, median withheld")}
 
     # A non-positive PER is not a cheap stock, it is a company with no earnings
     # to price. Excluded from the median, counted in the open.
