@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-08T12:56:07+07:00",
+  "generatedAtIct": "2026-09-08T20:20:01+07:00",
   "asof": "2026-09-08",
   "quality": {
     "usYields": "live",
@@ -65,34 +65,34 @@
   "fgUs": {
     "score": 41.9,
     "hist": {
-      "prev": 35.2,
-      "week": 52.3,
-      "month": 60.0,
-      "year": 61.2
+      "prev": 41.9,
+      "week": 30.9,
+      "month": 64.4,
+      "year": 58.2
     },
     "asofEt": "2026-09-08"
   },
-  "fgUsFetchedAt": "2026-09-08T12:56:06.281359+07:00",
+  "fgUsFetchedAt": "2026-09-08T20:20:00.965990+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
-    "price": 1817.0,
+    "price": 1830.44,
     "prev": 1821.64,
-    "chg": -4.64,
-    "pct": -0.25,
+    "chg": 8.8,
+    "pct": 0.48,
     "date": "2026-09-08"
   },
-  "vnIndexFetchedAt": "2026-09-08T12:56:06.351350+07:00",
-  "dxy": 98.8,
-  "dxyFetchedAt": "2026-09-08T12:56:06.402263+07:00",
+  "vnIndexFetchedAt": "2026-09-08T20:20:01.020569+07:00",
+  "dxy": 98.83,
+  "dxyFetchedAt": "2026-09-08T20:20:01.069352+07:00",
   "vnYields": null,
   "margin": null,
   "breadth": {
     "date": "2026-09-08",
-    "gtgd": 4371.2,
+    "gtgd": 10783.1,
     "all": {
-      "a": 131,
-      "d": 154,
-      "u": 143,
+      "a": 154,
+      "d": 170,
+      "u": 104,
       "ceil": 5,
       "floor": 1,
       "total": 428
