@@ -5,3 +5,6 @@ automation/agent-last-run.txt
 automation/__pycache__/
 __pycache__/
 .DS_Store
+
+# session working state, not shared
+.claude/SESSION.md
