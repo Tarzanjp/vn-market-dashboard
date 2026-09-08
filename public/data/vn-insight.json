@@ -1,21 +1,70 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-07T22:19:28+07:00",
+  "generatedAtIct": "2026-09-08T20:56:54+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — VN30F1M futures history + company events cho 30 mã cấu thành VN30",
   "method": {
     "vn30Basis": "VN30F1M (hợp đồng gần nhất, giá đóng cửa phiên gần nhất) trừ VN30 giao ngay — số thật. basis_pct = basis/spot×100. Có thể lệch ngày nếu 1 trong 2 chưa có phiên mới nhất.",
     "insiderTrades": "company.events() lọc category=MAJOR_SHAREHOLDER_TRADING, 30 ngày gần nhất, CHỈ 30 mã VN30 (không phải toàn thị trường, xem giới hạn API). Tiêu đề lấy nguyên văn từ công bố HOSE, không tự tách số lượng."
   },
   "vn30": {
-    "spot": 1963.01,
-    "futures": 1964.0,
+    "spot": 1968.52,
+    "futures": 1961.0,
     "contract": "VN30F1M",
-    "basis": 0.99,
-    "basis_pct": 0.05,
-    "asof": "2026-09-07",
+    "basis": -7.52,
+    "basis_pct": -0.38,
+    "asof": "2026-09-08",
     "quality": "live"
   },
   "insiderTrades": [
+    {
+      "ticker": "VIB",
+      "date": "2026-09-11",
+      "direction": "Buy",
+      "title_vi": "Trần Nhất Minh - Đăng kí Mua 64,200 VIB",
+      "title_en": "Tran Nhat Minh - Subscribe to Buy 64,200 VIB shares"
+    },
+    {
+      "ticker": "VIB",
+      "date": "2026-09-11",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Minh Huệ - Đăng kí Mua 9,337 VIB",
+      "title_en": "Nguyen Minh Hue - Subscribe to Buy 9,337 VIB shares"
+    },
+    {
+      "ticker": "VIB",
+      "date": "2026-09-11",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Thị Mộng Tường - Đăng kí Mua 590,000 VIB",
+      "title_en": "Nguyen Thi Mong Tuong - Subscribe to Buy 590,000 VIB shares"
+    },
+    {
+      "ticker": "VIB",
+      "date": "2026-09-11",
+      "direction": "Buy",
+      "title_vi": "Nguyễn Xuân Dũng - Đăng kí Mua 1,500,000 VIB",
+      "title_en": "Nguyen Xuan Dung - Subscribe to Buy 1,500,000 VIB shares"
+    },
+    {
+      "ticker": "VIB",
+      "date": "2026-09-11",
+      "direction": "Buy",
+      "title_vi": "Ân Thanh Sơn - Đăng kí Mua 78,600 VIB",
+      "title_en": "An Thanh Son - Subscribe to Buy 78,600 VIB shares"
+    },
+    {
+      "ticker": "VIB",
+      "date": "2026-09-11",
+      "direction": "Buy",
+      "title_vi": "Hàn Ngọc Vũ - Đăng kí Mua 33,600 VIB",
+      "title_en": "Han Ngoc Vu - Subscribe to Buy 33,600 VIB shares"
+    },
+    {
+      "ticker": "VIB",
+      "date": "2026-09-11",
+      "direction": "Buy",
+      "title_vi": "Trần Hữu Thuận - Đăng kí Mua 14,575 VIB",
+      "title_en": "Tran Huu Thuan - Subscribe to Buy 14,575 VIB shares"
+    },
     {
       "ticker": "MWG",
       "date": "2026-09-07",
