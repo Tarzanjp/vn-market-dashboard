@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-08T16:11:04+07:00",
+  "generatedAtIct": "2026-09-09T08:21:02+07:00",
   "asof": "2026-09-08",
   "quality": {
     "usYields": "live",
@@ -17,7 +17,7 @@
   "usYields": [
     {
       "t": "1 năm",
-      "y": 4.13,
+      "y": 4.15,
       "d": 0.02,
       "m": null,
       "yr": null,
@@ -26,8 +26,8 @@
     },
     {
       "t": "3 năm",
-      "y": 4.45,
-      "d": 0.04,
+      "y": 4.44,
+      "d": -0.01,
       "m": null,
       "yr": null,
       "x": 3,
@@ -35,8 +35,8 @@
     },
     {
       "t": "5 năm",
-      "y": 4.54,
-      "d": 0.02,
+      "y": 4.57,
+      "d": 0.03,
       "m": null,
       "yr": null,
       "x": 5,
@@ -44,8 +44,8 @@
     },
     {
       "t": "10 năm",
-      "y": 4.78,
-      "d": 0.01,
+      "y": 4.8,
+      "d": 0.02,
       "m": null,
       "yr": null,
       "x": 10,
@@ -53,26 +53,26 @@
     },
     {
       "t": "30 năm",
-      "y": 5.24,
-      "d": -0.01,
+      "y": 5.25,
+      "d": 0.01,
       "m": null,
       "yr": null,
       "x": 30,
       "est": false
     }
   ],
-  "usYieldsAsof": "2026-09-04",
+  "usYieldsAsof": "2026-09-08",
   "fgUs": {
-    "score": 41.9,
+    "score": 40.6,
     "hist": {
       "prev": 41.9,
       "week": 30.9,
       "month": 64.4,
       "year": 58.2
     },
-    "asofEt": "2026-09-08"
+    "asofEt": "2026-09-09"
   },
-  "fgUsFetchedAt": "2026-09-08T16:11:03.641657+07:00",
+  "fgUsFetchedAt": "2026-09-09T08:21:00.963873+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
     "price": 1830.44,
@@ -81,9 +81,9 @@
     "pct": 0.48,
     "date": "2026-09-08"
   },
-  "vnIndexFetchedAt": "2026-09-08T16:11:03.941527+07:00",
-  "dxy": 98.98,
-  "dxyFetchedAt": "2026-09-08T16:11:04.203943+07:00",
+  "vnIndexFetchedAt": "2026-09-09T08:21:01.209446+07:00",
+  "dxy": 98.78,
+  "dxyFetchedAt": "2026-09-09T08:21:01.476253+07:00",
   "vnYields": null,
   "margin": null,
   "breadth": {
