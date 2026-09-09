@@ -1,18 +1,18 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-08T20:56:54+07:00",
+  "generatedAtIct": "2026-09-09T20:59:10+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — VN30F1M futures history + company events cho 30 mã cấu thành VN30",
   "method": {
     "vn30Basis": "VN30F1M (hợp đồng gần nhất, giá đóng cửa phiên gần nhất) trừ VN30 giao ngay — số thật. basis_pct = basis/spot×100. Có thể lệch ngày nếu 1 trong 2 chưa có phiên mới nhất.",
     "insiderTrades": "company.events() lọc category=MAJOR_SHAREHOLDER_TRADING, 30 ngày gần nhất, CHỈ 30 mã VN30 (không phải toàn thị trường, xem giới hạn API). Tiêu đề lấy nguyên văn từ công bố HOSE, không tự tách số lượng."
   },
   "vn30": {
-    "spot": 1968.52,
-    "futures": 1961.0,
+    "spot": 1967.64,
+    "futures": 1966.0,
     "contract": "VN30F1M",
-    "basis": -7.52,
-    "basis_pct": -0.38,
-    "asof": "2026-09-08",
+    "basis": -1.64,
+    "basis_pct": -0.08,
+    "asof": "2026-09-09",
     "quality": "live"
   },
   "insiderTrades": [
@@ -505,13 +505,6 @@
       "direction": "Buy",
       "title_vi": "Hoàng Tuyết Mai - Đăng kí Mua 22,000 SSB",
       "title_en": "Hoang Tuyet Mai - Subscribe to Buy 22,000 SSB shares"
-    },
-    {
-      "ticker": "SSB",
-      "date": "2026-08-10",
-      "direction": "Buy",
-      "title_vi": "Hoàng Mạnh Phú - Đăng kí Mua 1,900,000 SSB",
-      "title_en": "Hoang Manh Phu - Subscribe to Buy 1,900,000 SSB shares"
     }
   ]
 }
