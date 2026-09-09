@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-09T12:57:34+07:00",
+  "generatedAtIct": "2026-09-09T20:24:34+07:00",
   "asof": "2026-09-09",
   "quality": {
     "usYields": "live",
@@ -63,7 +63,7 @@
   ],
   "usYieldsAsof": "2026-09-08",
   "fgUs": {
-    "score": 40.5,
+    "score": 39.5,
     "hist": {
       "prev": 40.6,
       "week": 33.0,
@@ -72,29 +72,29 @@
     },
     "asofEt": "2026-09-09"
   },
-  "fgUsFetchedAt": "2026-09-09T12:57:33.136855+07:00",
+  "fgUsFetchedAt": "2026-09-09T20:24:33.033829+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
-    "price": 1835.59,
+    "price": 1827.12,
     "prev": 1830.44,
-    "chg": 5.15,
-    "pct": 0.28,
+    "chg": -3.32,
+    "pct": -0.18,
     "date": "2026-09-09"
   },
-  "vnIndexFetchedAt": "2026-09-09T12:57:33.224199+07:00",
-  "dxy": 98.74,
-  "dxyFetchedAt": "2026-09-09T12:57:33.357130+07:00",
+  "vnIndexFetchedAt": "2026-09-09T20:24:33.083440+07:00",
+  "dxy": 98.65,
+  "dxyFetchedAt": "2026-09-09T20:24:33.134152+07:00",
   "vnYields": null,
   "margin": null,
   "breadth": {
     "date": "2026-09-09",
-    "gtgd": 5500.9,
+    "gtgd": 12330.7,
     "all": {
-      "a": 120,
-      "d": 175,
-      "u": 133,
+      "a": 128,
+      "d": 198,
+      "u": 102,
       "ceil": 3,
-      "floor": 2,
+      "floor": 4,
       "total": 428
     },
     "source": "VNDirect finfo (đếm từ giá đóng cửa từng mã HOSE)"

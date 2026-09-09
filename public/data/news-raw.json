@@ -1,7 +1,55 @@
 {
-  "generatedAtIct": "2026-09-09T12:57:37+07:00",
+  "generatedAtIct": "2026-09-09T20:24:37+07:00",
   "count": 19,
   "items": [
+    {
+      "title": "Nghiên cứu của Fed: Sự dịch chuyển dự trữ khỏi đồng USD sang vàng đã bị phóng đại",
+      "link": "https://vneconomy.vn/nghien-cuu-cua-fed-su-dich-chuyen-du-tru-khoi-dong-usd-sang-vang-da-bi-phong-dai.htm",
+      "description": "Một nghiên cứu của Fed chỉ ra rằng việc giá vàng tăng mạnh trong những năm gần đây chủ yếu được thúc đẩy bởi nhu cầu từ khu vực tư nhân, mà phần lớn dự trữ vàng chính thức lại nằm trong tay các quốc gia chưa từng mua thêm vàng trong hơn 50 năm qua...",
+      "publishedAt": "2026-09-09T12:56:47+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Sửa đồng bộ 3 luật để khơi thông nguồn lực đất đai, nhà ở, bất động sản",
+      "link": "https://vneconomy.vn/sua-dong-bo-3-luat-de-khoi-thong-nguon-luc-dat-dai-nha-o-bat-dong-san.htm",
+      "description": "Thủ tướng Lê Minh Hưng yêu cầu bảo đảm tính đồng bộ, thống nhất giữa Luật Đất đai, Luật Nhà ở và Luật Kinh doanh bất động sản sửa đổi; đồng thời thực chất cắt giảm thủ tục, tháo gỡ các điểm nghẽn, khơi thông nguồn lực cho phát triển.",
+      "publishedAt": "2026-09-09T12:41:36+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
+    },
+    {
+      "title": "Cổ phiếu trụ lại “ép” điểm số",
+      "link": "https://vneconomy.vn/co-phieu-tru-lai-ep-diem-so.htm",
+      "description": "VN-Index đã không thể giữ được sắc xanh vào ít phút cuối phiên chiều nay khi cả VIC lẫn VHM đều lao dốc, trong khi những trụ khác không đủ mạnh. Sắc đỏ ở cổ phiếu cũng lan rộng hơn hẳn phiên sáng, xác nhận có áp lực bán tăng cường.",
+      "publishedAt": "2026-09-09T08:46:42+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Dòng tiền toàn cầu phòng thủ, đổ vào trái phiếu và hàng hóa, rút ròng mạnh khỏi cổ phiếu",
+      "link": "https://vneconomy.vn/dong-tien-toan-cau-phong-thu-do-vao-trai-phieu-va-hang-hoa-rut-rong-manh-khoi-co-phieu.htm",
+      "description": "ETF hàng hóa tiếp tục xu hướng hút ròng tuần thứ 5 liên tiếp hơn 2,3 tỷ USD, +72% tăng mạnh, phản ánh dòng vốn tiếp tục hút ròng ở nhóm tài sản kim loại quý và dầu.",
+      "publishedAt": "2026-09-09T07:18:01+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Đằng sau kỷ lục phát hành trái phiếu nhân dân tệ",
+      "link": "https://vneconomy.vn/dang-sau-ky-luc-phat-hanh-trai-phieu-nhan-dan-te.htm",
+      "description": "Hoạt động phát hành trái phiếu bằng đồng nhân dân tệ đã lên mức cao kỷ lục khi ngày càng nhiều tập đoàn quốc tế và chính phủ nước ngoài tận dụng lãi suất thấp chưa từng có tại Trung Quốc để huy động vốn với chi phí rẻ…",
+      "publishedAt": "2026-09-09T07:17:33+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Toàn thị trường có khoảng hơn 200 cổ phiếu có định giá P/E “siêu rẻ”",
+      "link": "https://vneconomy.vn/toan-thi-truong-co-khoang-hon-200-co-phieu-co-dinh-gia-pe-sieu-re.htm",
+      "description": "Điều này cho thấy mặt bằng định giá cao của thị trường đang tập trung đáng kể vào một số cổ phiếu vốn hóa lớn, thay vì phân bổ đồng đều trên toàn bộ nhóm cổ phiếu.",
+      "publishedAt": "2026-09-09T07:16:33+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
     {
       "title": "Blue-chips giữ nhịp tốt, cổ phiếu dầu khí nổi bật",
       "link": "https://vneconomy.vn/blue-chips-giu-nhip-tot-co-phieu-dau-khi-noi-bat.htm",
@@ -23,30 +71,6 @@
       "link": "https://vneconomy.vn/dong-von-thu-dong-vao-viet-nam-co-the-len-toi-445-ty-usd-trong-thoi-gian-toi.htm",
       "description": "Với cùng lộ trình giải ngân 10% - 20% - 35% - 35%, tổng dòng vốn thụ động dự kiến đạt khoảng 4,455 tỷ USD, gần gấp đôi so với kịch bản cơ sở.",
       "publishedAt": "2026-09-09T03:11:14+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Định giá rẻ nhưng thị trường sẽ tiếp tục tích lũy, nhịp tăng là để thực hiện hóa lợi nhuận?",
-      "link": "https://vneconomy.vn/dinh-gia-re-nhung-thi-truong-se-tiep-tuc-tich-luy-nhip-tang-la-de-thuc-hien-hoa-loi-nhuan.htm",
-      "description": "Đà tăng của thị trường quanh sự kiện nâng hạng theo FTSE là cơ hội để hiện thực hóa lợi nhuận và giảm bớt tỷ trọng các cổ phiếu có hệ số beta cao...",
-      "publishedAt": "2026-09-09T02:25:35+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Các nước giàu chi 2 nghìn tỷ USD trả lãi nợ công trong một năm",
-      "link": "https://vneconomy.vn/cac-nuoc-giau-chi-2-nghin-ty-usd-tra-lai-no-cong-trong-mot-nam.htm",
-      "description": "Các chính phủ trên thế giới đang đối mặt với áp lực tài khóa ngày càng lớn khi tiền lãi nợ công tăng cao, cạnh tranh trực tiếp với các hạng mục chi tiêu thiết yếu khác trong ngân sách...",
-      "publishedAt": "2026-09-09T02:24:44+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Để thị trường chứng khoán quy mô lớn hơn, thanh khoản cao hơn và hút dòng vốn quốc tế nhiều hơn",
-      "link": "https://vneconomy.vn/de-thi-truong-chung-khoan-quy-mo-lon-hon-thanh-khoan-cao-hon-va-hut-dong-von-quoc-te-nhieu-hon.htm",
-      "description": "Một thị trường quy mô lớn hơn, thanh khoản cao hơn và thu hút nhiều dòng vốn quốc tế hơn chỉ có thể phát triển bền vững khi đi cùng với sự nâng lên tương ứng về chất lượng của các chủ thể tham gia thị trường.",
-      "publishedAt": "2026-09-09T02:24:10+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Chứng khoán"
     },
@@ -89,30 +113,6 @@
       "publishedAt": "2026-09-09T01:14:25+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Việt Nam - Nga thúc đẩy kết nối chiến lược, tạo chuyển biến mạnh trong hợp tác kinh tế",
-      "link": "https://vneconomy.vn/viet-nam-nga-thuc-day-ket-noi-chien-luoc-tao-chuyen-bien-manh-trong-hop-tac-kinh-te.htm",
-      "description": "Tổng Bí thư, Chủ tịch nước Tô Lâm và Thủ tướng Nga Mikhail Mishustin nhất trí cần tạo chuyển biến mạnh mẽ hơn trong hợp tác kinh tế - thương mại, thúc đẩy đầu tư hai chiều, tăng cường kết nối vận tải, logistics và mở rộng hợp tác sang các lĩnh vực khoa học - công nghệ mới.",
-      "publishedAt": "2026-09-09T01:11:20+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Lãnh đạo Tập đoàn BIG chuyển thoả thuận cổ phiếu, đón quỹ ngoại làm cổ đông chiến lược",
-      "link": "https://vneconomy.vn/lanh-dao-tap-doan-big-chuyen-thoa-thuan-co-phieu-don-quy-ngoai-lam-co-dong-chien-luoc.htm",
-      "description": "Lãnh đạo Tập đoàn đầu tư BIG (MCK: BIG) vừa đăng ký chuyển nhượng thỏa thuận hơn 1,3 triệu cổ phiếu từ cho đối tác dự kiến trở thành cổ đông chiến lược của công ty.",
-      "publishedAt": "2026-09-09T01:00:00+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Một cổ phiếu ngân hàng hưởng lợi kép từ dòng tiền mua theo nâng hạng và Fubon tái phân bổ",
-      "link": "https://vneconomy.vn/mot-co-phieu-ngan-hang-huong-loi-kep-tu-dong-tien-mua-theo-nang-hang-va-fubon-tai-phan-bo.htm",
-      "description": "VCB chỉ nhận khoảng 8 triệu USD dòng tiền mua từ FTSE GEIS, nhưng được hưởng thêm 22,7 triệu USD từ phần vốn Fubon tái phân bổ, đưa tổng giá trị mua ròng lên mức cao nhất trong danh sách...",
-      "publishedAt": "2026-09-09T00:33:51+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
     },
     {
       "title": "Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp.",
