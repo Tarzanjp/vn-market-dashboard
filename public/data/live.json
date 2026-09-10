@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-09T20:24:34+07:00",
-  "asof": "2026-09-09",
+  "generatedAtIct": "2026-09-10T12:56:27+07:00",
+  "asof": "2026-09-10",
   "quality": {
     "usYields": "live",
     "fgUs": "live",
@@ -17,7 +17,7 @@
   "usYields": [
     {
       "t": "1 năm",
-      "y": 4.15,
+      "y": 4.17,
       "d": 0.02,
       "m": null,
       "yr": null,
@@ -26,8 +26,8 @@
     },
     {
       "t": "3 năm",
-      "y": 4.44,
-      "d": -0.01,
+      "y": 4.49,
+      "d": 0.05,
       "m": null,
       "yr": null,
       "x": 3,
@@ -35,8 +35,8 @@
     },
     {
       "t": "5 năm",
-      "y": 4.57,
-      "d": 0.03,
+      "y": 4.61,
+      "d": 0.04,
       "m": null,
       "yr": null,
       "x": 5,
@@ -44,8 +44,8 @@
     },
     {
       "t": "10 năm",
-      "y": 4.8,
-      "d": 0.02,
+      "y": 4.83,
+      "d": 0.03,
       "m": null,
       "yr": null,
       "x": 10,
@@ -53,49 +53,49 @@
     },
     {
       "t": "30 năm",
-      "y": 5.25,
-      "d": 0.01,
+      "y": 5.28,
+      "d": 0.03,
       "m": null,
       "yr": null,
       "x": 30,
       "est": false
     }
   ],
-  "usYieldsAsof": "2026-09-08",
+  "usYieldsAsof": "2026-09-09",
   "fgUs": {
-    "score": 39.5,
+    "score": 38.9,
     "hist": {
-      "prev": 40.6,
-      "week": 33.0,
-      "month": 64.4,
+      "prev": 39.0,
+      "week": 43.9,
+      "month": 64.7,
       "year": 57.9
     },
-    "asofEt": "2026-09-09"
+    "asofEt": "2026-09-10"
   },
-  "fgUsFetchedAt": "2026-09-09T20:24:33.033829+07:00",
+  "fgUsFetchedAt": "2026-09-10T12:56:26.506934+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
-    "price": 1827.12,
-    "prev": 1830.44,
-    "chg": -3.32,
-    "pct": -0.18,
-    "date": "2026-09-09"
+    "price": 1826.31,
+    "prev": 1827.12,
+    "chg": -0.81,
+    "pct": -0.04,
+    "date": "2026-09-10"
   },
-  "vnIndexFetchedAt": "2026-09-09T20:24:33.083440+07:00",
-  "dxy": 98.65,
-  "dxyFetchedAt": "2026-09-09T20:24:33.134152+07:00",
+  "vnIndexFetchedAt": "2026-09-10T12:56:26.735782+07:00",
+  "dxy": 98.76,
+  "dxyFetchedAt": "2026-09-10T12:56:26.828103+07:00",
   "vnYields": null,
   "margin": null,
   "breadth": {
-    "date": "2026-09-09",
-    "gtgd": 12330.7,
+    "date": "2026-09-10",
+    "gtgd": 4878.2,
     "all": {
-      "a": 128,
-      "d": 198,
-      "u": 102,
-      "ceil": 3,
-      "floor": 4,
-      "total": 428
+      "a": 100,
+      "d": 195,
+      "u": 134,
+      "ceil": 0,
+      "floor": 0,
+      "total": 429
     },
     "source": "VNDirect finfo (đếm từ giá đóng cửa từng mã HOSE)"
   },
