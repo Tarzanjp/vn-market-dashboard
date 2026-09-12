@@ -12,21 +12,21 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   let ASOF = (LIVE && LIVE.asof) ? LIVE.asof : "2026-08-07";
   const WINDOWS = [25, 15, 10, 6]; // các chu kỳ tính hệ số ADR (phiên)
 
-  /* Mẫu đầy đủ 5 kỳ hạn — dùng khi LIVE chỉ có 1–2 điểm (tránh VN[3] undefined) */
-  const US_YIELD_FALLBACK = [
-    { t: "1 năm", y: 4.11, d: -0.02, m: +0.05, yr: +0.34, x: 1, est: true },
-    { t: "3 năm", y: 4.24, d: -0.02, m: +0.06, yr: +0.41, x: 3, est: false },
-    { t: "5 năm", y: 4.33, d: -0.03, m: +0.07, yr: +0.39, x: 5, est: false },
-    { t: "10 năm", y: 4.65, d: -0.03, m: +0.07, yr: +0.37, x: 10, est: false },
-    { t: "30 năm", y: 5.17, d: -0.01, m: +0.18, yr: +0.44, x: 30, est: false }
+  /* Khung KỲ HẠN, không phải số liệu. Chỉ giữ t/x để mọi kỳ hạn luôn có một
+     dòng trong bảng và VN[3] không undefined; giá trị để null → nf() render "—".
+
+     Trước đây hai bảng này chứa lợi suất cứng (VN: 3,08 / 3,79 / 4,08 / 4,54 /
+     4,84). Vì quality.vnYields = "missing" suốt 161/170 ngày và chưa từng
+     "live", cả bảng lợi suất VN, nửa VN của đường cong và phần spread VN−Mỹ
+     thực chất vẽ từ 5 hằng số nướng lúc viết file — người xem đọc 4,54% như
+     lợi suất 10 năm hiện hành. Thiếu số thì để trống (CLAUDE.md §0, §1.4). */
+  const YIELD_TENORS = [
+    { t: "1 năm", x: 1 }, { t: "3 năm", x: 3 }, { t: "5 năm", x: 5 },
+    { t: "10 năm", x: 10 }, { t: "30 năm", x: 30 },
   ];
-  const VN_YIELD_FALLBACK = [
-    { t: "1 năm", y: 3.08, d: +0.00, m: +0.02, yr: +0.86, x: 1, est: true },
-    { t: "3 năm", y: 3.79, d: +0.01, m: +0.01, yr: +0.94, x: 3, est: true },
-    { t: "5 năm", y: 4.08, d: +0.01, m: +0.00, yr: +0.99, x: 5, est: true },
-    { t: "10 năm", y: 4.54, d: +0.01, m: -0.00, yr: +1.05, x: 10, est: false },
-    { t: "30 năm", y: 4.84, d: +0.00, m: +0.02, yr: +0.72, x: 30, est: true }
-  ];
+  const EMPTY_TENOR = { y: null, d: null, m: null, yr: null, est: false, src: "missing" };
+  const US_YIELD_FALLBACK = YIELD_TENORS.map(t => ({ ...t, ...EMPTY_TENOR }));
+  const VN_YIELD_FALLBACK = YIELD_TENORS.map(t => ({ ...t, ...EMPTY_TENOR }));
 
   function normalizeYields(partial, fallback) {
     const byX = {};
@@ -41,8 +41,10 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
         };
     });
     return fallback.map(fb => {
-      if (byX[fb.x]) return Object.assign({}, fb, byX[fb.x], { t: fb.t });
-      return Object.assign({}, fb, { est: true }); // thiếu kỳ hạn → giữ mẫu, đánh dấu e
+      if (byX[fb.x]) return Object.assign({}, fb, byX[fb.x], { t: fb.t, src: "live" });
+      // Thiếu kỳ hạn → KHÔNG thay bằng số nào. Dòng vẫn tồn tại để giữ khung
+      // bảng, nhưng mọi giá trị là null và render thành "—".
+      return Object.assign({}, fb, EMPTY_TENOR);
     });
   }
 
@@ -61,6 +63,20 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
       : null;
     return normalizeYields(raw, VN_YIELD_FALLBACK);
   }
+
+  /* Ngày nghỉ lễ HOSE — CHỈ dùng để dựng bộ khung ngày phiên cho chuỗi mẫu,
+     không tham gia bất kỳ phép tính tài chính nào. Trước đây bảng này được
+     chép cứng ở HAI hàm, dễ lệch nhau khi sửa một chỗ.
+
+     GIỚI HẠN ĐÃ BIẾT — chỉ có 2026. Dự án không có thư viện lịch giao dịch
+     (CLAUDE.md §1.2) và bảng này chưa được đối chiếu với nguồn chính thức nào.
+     Rủi ro thật: bộ khung ngày của loadBreadth() là nơi lịch sử thật được merge
+     vào (byDate.get(h.date)); nếu bảng đánh dấu nhầm một ngày HOSE có giao dịch
+     là nghỉ lễ, dòng lịch sử của ngày đó KHÔNG có chỗ để gắn và bị bỏ im lặng.
+     Vì thế loadBreadth() đếm số dòng lịch sử không gắn được và cảnh báo. */
+  const VN_HOLIDAYS = new Set(["2026-01-01", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20",
+    "2026-04-27", "2026-04-30", "2026-05-01", "2026-09-02"]);
+  const HOLIDAY_YEARS = new Set(["2026"]);
 
   /* --- Dư nợ margin toàn thị trường (tỷ đồng) — CHUỖI HÀNG NGÀY --- */
   function loadMargin() {
@@ -101,6 +117,7 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
         brokers,
         asof: LIVE.margin.asof || LIVE.asof,
         freq: LIVE.margin.freq || "daily",
+        sample: false,
         note: (LIVE.margin.note || "Snapshot auto (LIVE.margin).") + (days.length === 1 ? " · chuỗi chart nội suy từ 1 điểm as-of." : "")
       };
     }
@@ -108,12 +125,10 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     let s = 20260807 >>> 0;
     const rnd = () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 
-    const HOLIDAYS = new Set(["2026-01-01", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20",
-      "2026-04-27", "2026-04-30", "2026-05-01", "2026-09-02"]);
     const dates = []; const cur = new Date(ASOF + "T00:00:00Z");
     while (dates.length < 260) {
       const k = cur.toISOString().slice(0, 10), w = cur.getUTCDay();
-      if (w !== 0 && w !== 6 && !HOLIDAYS.has(k)) dates.push(k);
+      if (w !== 0 && w !== 6 && !VN_HOLIDAYS.has(k)) dates.push(k);
       cur.setUTCDate(cur.getUTCDate() - 1);
     }
     dates.reverse();
@@ -149,20 +164,19 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
       brokers,
       asof: days[days.length - 1].date,
       freq: "daily",
+      sample: true,
       note: "Số liệu MẪU, tần suất thiết kế hàng ngày. Nguồn thật có thể là báo cáo tuần — luôn hiển thị as-of. Thay loadMargin() bằng API sau ATC / báo cáo ngày/tuần."
     };
   }
 
   /* --- Cơ cấu cung cầu theo từng phiên (mới nhất ở cuối mảng) --- */
   function loadBreadth() {
-    const HOLIDAYS = new Set(["2026-01-01", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20",
-      "2026-04-27", "2026-04-30", "2026-05-01", "2026-09-02"]);
     const N = 420;
 
     const dates = []; const cur = new Date(ASOF + "T00:00:00Z");
     while (dates.length < N) {
       const k = cur.toISOString().slice(0, 10), w = cur.getUTCDay();
-      if (w !== 0 && w !== 6 && !HOLIDAYS.has(k)) dates.push(k);
+      if (w !== 0 && w !== 6 && !VN_HOLIDAYS.has(k)) dates.push(k);
       cur.setUTCDate(cur.getUTCDate() - 1);
     }
     dates.reverse();
@@ -215,10 +229,15 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
        biểu đồ không bị trống, và luôn được đánh dấu real:false để không hiển thị
        nhầm là số liệu thật. */
     const byDate = new Map(rows.map(r => [r.date, r]));
+    // Đếm dòng lịch sử không gắn được vào bộ khung ngày. Nguyên nhân hầu
+    // như luôn là VN_HOLIDAYS đánh dấu nhầm một ngày HOSE có giao dịch, hoặc
+    // ASOF nằm ngoài năm mà bảng lễ phủ. Không cảnh báo thì phiên thật biến
+    // mất khỏi mọi biểu đồ mà không ai biết.
+    let unplaced = 0;
     (HISTORY || []).forEach(h => {
       if (h.vnIndex == null) return;
       const row = byDate.get(h.date);
-      if (!row) return;
+      if (!row) { if (h.date >= dates[0]) unplaced++; return; }
       const pct = h.vnIndexPct != null ? h.vnIndexPct : 0;
       row.close = h.vnIndex;
       row.pct = pct;
@@ -230,7 +249,16 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
       if (breadthReal) {
         const a = h.breadth.a || 0, d = h.breadth.d || 0, u = h.breadth.u || 0;
         const total = a + d + u || row.all.total;
-        row.all = { a, d, u, ceil: row.all.ceil, floor: row.all.floor, total };
+        // ceil/floor: giữ số của chính phiên đó nếu nguồn có, còn KHÔNG thì để
+        // null. Trước đây dòng này giữ lại ceil/floor của hàng mẫu PRNG cho một
+        // phiên đã là thật — không dòng nào trong history/*.jsonl có hai trường
+        // này (0/162 khi kiểm), nên cấu phần "Sức mạnh giá" của chỉ số Sợ hãi &
+        // Tham lam thực chất đang chấm trên số ngẫu nhiên.
+        row.all = {
+          a, d, u, total,
+          ceil: h.breadth.ceil != null ? h.breadth.ceil : null,
+          floor: h.breadth.floor != null ? h.breadth.floor : null,
+        };
         if (h.breadth.gtgd != null) row.gtgd = h.breadth.gtgd;
         // Chưa có nguồn thật cho riêng rổ VN100/VN30 — suy tỷ lệ từ tổng thị trường thật.
         const a100 = Math.round(a / total * 100), d100 = Math.round(d / total * 100);
@@ -239,6 +267,16 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
         row.vn30 = { a: a30, d: d30, u: Math.max(0, 30 - a30 - d30), total: 30 };
       }
     });
+
+    if (unplaced) {
+      console.warn(`[breadth] ${unplaced} phiên trong history/*.jsonl nằm trong khoảng `
+        + `${dates[0]}…${dates[dates.length - 1]} nhưng không có chỗ trong bộ khung ngày `
+        + `— kiểm tra VN_HOLIDAYS (hiện chỉ phủ ${[...HOLIDAY_YEARS].join(", ")}).`);
+    }
+    if (!HOLIDAY_YEARS.has(String(ASOF).slice(0, 4))) {
+      console.warn(`[breadth] ASOF ${ASOF} nằm ngoài các năm VN_HOLIDAYS phủ `
+        + `(${[...HOLIDAY_YEARS].join(", ")}) — ngày nghỉ lễ sẽ bị tính là phiên giao dịch.`);
+    }
 
     const L = rows[N - 1];
     const liveBreadthQ = (LIVE && LIVE.quality) ? LIVE.quality.breadth : null;
@@ -250,11 +288,17 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
       const vi = LIVE.vnIndex;
       L.date = vi.date || (br && br.date) || L.date;
       L.close = vi.price;
-      L.pct = vi.pct != null ? vi.pct : 0;
-      L.chg = vi.chg != null ? vi.chg : (vi.prev ? vi.price - vi.prev : 0);
+      // Thiếu % / thay đổi thì để null, KHÔNG mặc định 0: sgn()/cls() đã render
+      // null thành "—" đúng cách, còn 0 render thành "+0,00" — một con số sai
+      // trông như phiên đứng giá (đúng bug CLAUDE.md §1.4 lấy làm ví dụ).
+      L.pct = vi.pct != null ? vi.pct : null;
+      L.chg = vi.chg != null ? vi.chg : (vi.prev != null ? vi.price - vi.prev : null);
       L.real = true;
     } else if (!L.real) {
-      L.close = 1768.06; L.pct = 0.19; L.chg = 1768.06 * 0.0019 / 1.0019;
+      // Trước đây gán cứng 1768,06 / +0,19% — một mức VN-Index trông thật, không
+      // nhãn, hiện ở hero và bảng điện y như số thật. Không có giá thật thì
+      // hiển thị "—" (CLAUDE.md §1.4/§1.5).
+      L.close = null; L.pct = null; L.chg = null;
     }
     L.breadthReal = !!br;
     if (br) {
@@ -265,9 +309,11 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
       // cũ mà breadth được lấy từ đó.
       if (br.gtgd != null) L.gtgd = br.gtgd;
       if (br.all) {
-        L.all = Object.assign({ a: 0, d: 0, u: 0, ceil: 0, floor: 0, total: 0 }, br.all);
-        if (L.all.ceil == null) L.all.ceil = 0;
-        if (L.all.floor == null) L.all.floor = 0;
+        // ceil/floor thiếu thì để null, không về 0: "0 mã trần / 0 mã sàn"
+        // là một tuyên bố về phiên, khác hẳn "không biết".
+        L.all = Object.assign({ a: 0, d: 0, u: 0, ceil: null, floor: null, total: 0 }, br.all);
+        if (L.all.ceil == null) L.all.ceil = null;
+        if (L.all.floor == null) L.all.floor = null;
         if (!L.all.total) L.all.total = (L.all.a || 0) + (L.all.d || 0) + (L.all.u || 0);
       }
       if (br.vn100) L.vn100 = Object.assign({ a: 0, d: 0, u: 0, total: 100 }, br.vn100);
@@ -282,13 +328,14 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     // Không tự bịa số khi thiếu breadth thật (cấm theo CLAUDE.md §1.4/1.5) —
     // để null thay vì một bộ số "trông hợp lý" như trước đây.
     if (!L.all) L.all = { a: null, d: null, u: null, ceil: null, floor: null, total: null };
-    else { if (L.all.ceil == null) L.all.ceil = 0; if (L.all.floor == null) L.all.floor = 0; }
+    else { if (L.all.ceil === undefined) L.all.ceil = null; if (L.all.floor === undefined) L.all.floor = null; }
     if (!L.vn100) L.vn100 = { a: null, d: null, u: null, total: null };
     if (!L.vn30) L.vn30 = { a: null, d: null, u: null, total: null };
-    if (!L.gtgd) L.gtgd = 18100;
-    if (L.close == null || Number.isNaN(+L.close)) L.close = 1768.06;
-    if (L.pct == null || Number.isNaN(+L.pct)) L.pct = 0;
-    if (L.chg == null || Number.isNaN(+L.chg)) L.chg = 0;
+    // Không gán cứng 18.100 tỷ khi thiếu GTGD — nf() render null thành "—".
+    if (!L.gtgd) L.gtgd = null;
+    if (Number.isNaN(+L.close)) L.close = null;
+    if (Number.isNaN(+L.pct)) L.pct = null;
+    if (Number.isNaN(+L.chg)) L.chg = null;
 
     /* Mọi phiên có giá thật (real:true) nhưng breadth không phải live/proxy
        (breadthReal:false) không được phép giữ lại bộ số mẫu (PRNG seed cố
@@ -391,23 +438,56 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   /* ============================================================
      4. TICKER TAPE
      ============================================================ */
+  /* Nhãn độ tin cậy đặt theo dữ liệu thật, không nướng cứng trong JSX.
+     Trước đây 4 panel đều mang sẵn <span class="dtag dtag-sample">Mẫu</span>
+     bất kể nguồn: bảng điện gắn "Mẫu" cả khi breadth là live, còn panel margin
+     sẽ vẫn nói "Mẫu" kể cả sau khi nối được API. Nhãn sai làm người đọc học
+     cách bỏ qua nhãn. */
+  function setTag(id, text, kind) {
+    const n = el(id);
+    if (!n) return;
+    n.textContent = text;
+    n.className = "dtag dtag-" + kind;
+  }
+  (function dataTags() {
+    setTag("boardTag", LAST.breadthReal ? "Dữ liệu thật" : "Chưa có số thật",
+      LAST.breadthReal ? "live" : "sample");
+    // Không có nguồn riêng cho rổ VN100/VN30 — suy theo tỷ lệ từ breadth toàn
+    // thị trường, nên mức đúng là Proxy chứ không phải Mẫu.
+    const adrKind = LAST.breadthReal ? "proxy" : "sample";
+    const adrText = LAST.breadthReal ? "Proxy" : "Chưa có số thật";
+    setTag("gaugeTag", adrText, adrKind);
+    setTag("adrTag", adrText, adrKind);
+    setTag("mgTag", MARGIN.sample ? "Mẫu" : "Dữ liệu thật",
+      MARGIN.sample ? "sample" : "live");
+    // Đường cong lợi suất: đếm thật/mẫu trên cả hai nửa US và VN.
+    const yAll = [...US, ...VN], yLive = yAll.filter(r => r.src === "live").length;
+    setTag("curveTag",
+      yLive === yAll.length ? "Tham chiếu chốt"
+        : yLive === 0 ? "Mẫu — chưa có nguồn thật"
+        : `${yLive}/${yAll.length} kỳ hạn thật`,
+      yLive === yAll.length ? "live" : yLive === 0 ? "sample" : "proxy");
+  })();
+
   function buildTape() {
     const mbr = window.__mbrScore, mbrZ = window.__mbrZone || "";
     const items = [
-      { k: "VN-INDEX", v: nf(LAST.close), c: sgn(LAST.pct) + "%", cl: cls(LAST.pct) },
-      { k: "GTGD HOSE", v: nf(LAST.gtgd, 0) + " tỷ", c: "", cl: "flat" },
+      { k: "VN-INDEX", v: nf(LAST.close), c: LAST.pct == null ? "—" : sgn(LAST.pct) + "%", cl: cls(LAST.pct) },
+      { k: "GTGD HOSE", v: LAST.gtgd == null ? "—" : nf(LAST.gtgd, 0) + " tỷ", c: "", cl: "flat" },
       { k: "ADR 25 VN100", v: nf(LAST.vn100.ratio, 1), c: LAST.vn100.ratio == null ? "chưa có dữ liệu thật" : LAST.vn100.ratio > 120 ? "quá mua" : LAST.vn100.ratio < 80 ? "quá bán" : "cân bằng", cl: LAST.vn100.ratio == null ? "flat" : LAST.vn100.ratio > 120 ? "down" : LAST.vn100.ratio < 80 ? "up" : "flat" },
       { k: "ADR 25 VN30", v: nf(LAST.vn30.ratio, 1), c: "", cl: LAST.vn30.ratio == null ? "flat" : LAST.vn30.ratio > 120 ? "down" : LAST.vn30.ratio < 80 ? "up" : "flat" },
       { k: "DƯ NỢ MARGIN", v: nf(MG_LAST.debt / 1000, 1) + " nghìn tỷ", c: sgn(MG_LAST.net, 0) + " tỷ · mẫu", cl: cls(MG_LAST.net) },
       { k: "RR ĐÒN BẨY", v: mbr == null ? "—" : String(Math.round(mbr)), c: (mbrZ || "") + " · proxy", cl: mbr == null ? "flat" : mbr >= 70 ? "down" : mbr < 40 ? "up" : "flat" },
       { k: "KHỐI NGOẠI", v: "—", c: "chờ API", cl: "flat" },
-      { k: "USD/VND TT", v: "25.338", c: "trung tâm", cl: "down" },
-      { k: "DXY", v: (LIVE && LIVE.dxy != null) ? String(LIVE.dxy) : "≈100,8", c: (LIVE && LIVE.quality && LIVE.quality.dxy === "live") ? "auto" : "", cl: "flat" },
+      // 25.338 từng là số cứng hiển thị như tỷ giá hiện hành, trong khi
+      // live.json ghi usdVnd = null / quality = missing. Thiếu thì "—".
+      { k: "USD/VND TT", v: (LIVE && LIVE.usdVnd != null) ? nf(LIVE.usdVnd, 0) : "—", c: "trung tâm", cl: "flat" },
+      { k: "DXY", v: (LIVE && LIVE.dxy != null) ? String(LIVE.dxy) : "—", c: (LIVE && LIVE.quality && LIVE.quality.dxy === "live") ? "auto" : "", cl: "flat" },
       { k: "FED FUNDS", v: "3,50–3,75%", c: "giữ 9–3", cl: "flat" },
       { k: "NFP T7", v: "−23K", c: "dự báo +80K", cl: "down" },
       { k: "CPI VN 7T", v: "+4,39%", c: "T7 −0,12% m/m", cl: "flat" },
-      ...US.map(r => ({ k: "US " + r.t.replace(" năm", "Y"), v: nf(r.y) + "%", c: sgn(r.d) + "pp", cl: cls(r.d) })),
-      ...VN.map(r => ({ k: "VN " + r.t.replace(" năm", "Y"), v: nf(r.y) + (r.est ? "% e" : "%"), c: sgn(r.d) + "pp", cl: cls(r.d) }))
+      ...US.map(r => ({ k: "US " + r.t.replace(" năm", "Y"), v: r.y == null ? "—" : nf(r.y) + "%", c: r.d == null ? "" : sgn(r.d) + "pp", cl: cls(r.d) })),
+      ...VN.map(r => ({ k: "VN " + r.t.replace(" năm", "Y"), v: r.y == null ? "—" : nf(r.y) + (r.est ? "% e" : "%"), c: r.d == null ? "" : sgn(r.d) + "pp", cl: cls(r.d) }))
     ];
     const html = items.map(i => `<div class="tk"><b>${esc(i.k)}</b><span class="v">${esc(i.v)}</span><span class="c ${i.cl}">${esc(i.c)}</span></div>`).join("");
     el("tape").innerHTML = html + html;
@@ -420,8 +500,8 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   function yieldRows(data, tbody, color) {
     tbody.innerHTML = data.map(r => `
       <tr>
-        <td class="tenor">${r.t}${r.est ? '<span class="est">e</span>' : ''}</td>
-        <td class="num" style="font-weight:600;color:${color}">${nf(r.y)}%</td>
+        <td class="tenor">${r.t}${r.src === "sample" ? '<span class="est" title="Số mẫu tĩnh, chưa có nguồn thật cho kỳ hạn này">mẫu</span>' : r.est ? '<span class="est">e</span>' : ''}</td>
+        <td class="num" style="font-weight:600;color:${color}">${r.y == null ? "—" : nf(r.y) + "%"}</td>
         <td class="num ${cls(r.d)}">${sgn(r.d)}</td>
         <td class="num ${cls(r.m)}">${sgn(r.m)}</td>
         <td class="num ${cls(r.yr)}">${sgn(r.yr)}</td>
@@ -462,8 +542,10 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     const x0 = fx(1), x1 = fx(30);
     const X = v => m.l + (fx(v) - x0) / (x1 - x0) * iw;
 
-    const all = [...US, ...VN].map(r => r.y);
-    let lo = Math.floor(Math.min(...all) * 2) / 2 - 0.25, hi = Math.ceil(Math.max(...all) * 2) / 2 + 0.25;
+    // Lọc null: một kỳ hạn thiếu số làm cả trục thành NaN và biểu đồ biến mất.
+    const all = [...US, ...VN].map(r => r.y).filter(v => v != null);
+    let lo = all.length ? Math.floor(Math.min(...all) * 2) / 2 - 0.25 : 0;
+    let hi = all.length ? Math.ceil(Math.max(...all) * 2) / 2 + 0.25 : 1;
     const Y = v => m.t + ih - (v - lo) / (hi - lo) * ih;
 
     let g = "";
@@ -480,7 +562,9 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     let paths = "";
     series.forEach(s => {
       if (!curveOn[s.k]) return;
-      const pts = s.d.map(r => [X(r.x), Y(r.y)]);
+      // Chỉ vẽ những kỳ hạn có số thật; hết sạch thì không vẽ đường nào.
+      const pts = s.d.filter(r => r.y != null).map(r => [X(r.x), Y(r.y)]);
+      if (!pts.length) return;
       const line = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
       const area = line + ` L ${pts[pts.length - 1][0].toFixed(1)} ${m.t + ih} L ${pts[0][0].toFixed(1)} ${m.t + ih} Z`;
       paths += `<path d="${area}" fill="${s.c}" opacity=".07"/>
@@ -556,18 +640,28 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   (function board() {
     const breadthOk = LAST.breadthReal;
     const a = breadthOk ? LAST.all : null;
-    const ceil = a ? (+a.ceil || 0) : null, floor = a ? (+a.floor || 0) : null,
-      aa = a ? (+a.a || 0) : null, dd = a ? (+a.d || 0) : null, uu = a ? (+a.u || 0) : null;
+    // `+x || 0` biến null thành 0 — với trần/sàn thì "0 mã trần" là một
+    // tuyên bố về phiên, không phải "không biết". Giữ null nguyên vẹn.
+    const num = v => (v == null || Number.isNaN(+v) ? null : +v);
+    const ceil = a ? num(a.ceil) : null, floor = a ? num(a.floor) : null,
+      aa = a ? num(a.a) : null, dd = a ? num(a.d) : null, uu = a ? num(a.u) : null;
+    const cfOk = ceil != null && floor != null;
 
     if (!breadthOk) {
       el("boardBar").innerHTML = `<div style="flex:1;background:var(--line)" title="Chưa có dữ liệu tăng/giảm thật cho phiên này">Chưa có dữ liệu tăng/giảm thật</div>`;
     } else {
-      const segs = [
+      // Không có trần/sàn thì vẽ 3 dải (Tăng/TC/Giảm) thay vì bịa dải
+      // "Trần 0 mã" — thiếu số khác với số bằng không.
+      const segs = cfOk ? [
         { n: "Trần", v: ceil, c: "var(--tran)" },
         { n: "Tăng", v: Math.max(0, aa - ceil), c: "var(--tang)" },
         { n: "TC", v: uu, c: "var(--tc)" },
         { n: "Giảm", v: Math.max(0, dd - floor), c: "var(--giam)" },
         { n: "Sàn", v: floor, c: "var(--san)" }
+      ] : [
+        { n: "Tăng", v: aa, c: "var(--tang)" },
+        { n: "TC", v: uu, c: "var(--tc)" },
+        { n: "Giảm", v: dd, c: "var(--giam)" }
       ];
       el("boardBar").innerHTML = segs.map(s =>
         `<div style="flex:${Math.max(0.001, s.v)};background:${s.c}" title="${s.n}: ${s.v} mã">${s.v >= 14 ? s.v : ""}</div>`).join("");
@@ -576,8 +670,8 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     el("boardStats").innerHTML = `
       <div class="stat"><div class="k">VN-Index</div><div class="v ${cls(LAST.pct)}">${nf(LAST.close)}</div><div class="m ${cls(LAST.pct)}">${sgn(LAST.chg)} (${sgn(LAST.pct)}%)</div></div>
       <div class="stat"><div class="k">Mã tăng / giảm</div><div class="v">${breadthOk ? `<span class="up">${aa}</span><span style="color:var(--dim)">/</span><span class="down">${dd}</span>` : "—"}</div><div class="m">${breadthOk ? uu + " mã tham chiếu" : "chưa có dữ liệu thật"}</div></div>
-      <div class="stat"><div class="k">Mã trần / sàn</div><div class="v">${breadthOk ? `<span class="ceil">${ceil}</span><span style="color:var(--dim)">/</span><span class="floorc">${floor}</span>` : "—"}</div><div class="m">biên độ dao động HOSE ±7%</div></div>
-      <div class="stat"><div class="k">GTGD khớp lệnh</div><div class="v">${nf(LAST.gtgd, 0)}</div><div class="m">tỷ đồng</div></div>
+      <div class="stat"><div class="k">Mã trần / sàn</div><div class="v">${cfOk ? `<span class="ceil">${ceil}</span><span style="color:var(--dim)">/</span><span class="floorc">${floor}</span>` : "—"}</div><div class="m">${cfOk ? "biên độ dao động HOSE ±7%" : "nguồn breadth chưa có trần/sàn"}</div></div>
+      <div class="stat"><div class="k">GTGD khớp lệnh</div><div class="v">${nf(LAST.gtgd, 0)}</div><div class="m">${LAST.gtgd == null ? "chưa có dữ liệu" : "tỷ đồng"}</div></div>
       <div class="stat"><div class="k">ADR 25 · rổ VN100</div><div class="v">${nf(LAST.vn100.ratio, 1)}</div><div class="m">Rổ VN30: ${nf(LAST.vn30.ratio, 1)}</div></div>`;
 
     const r = LAST.vn100.r[25];
@@ -592,7 +686,11 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
         : r < 70 ? `<b class="up">Vùng quá bán sâu (&lt;70).</b> Áp lực cung lan rộng mạnh — hiếm hơn ngưỡng 80; thường sau đợt xả.`
         : r < 80 ? `<b class="up">Vùng quá bán (&lt;80).</b> Ngưỡng chuẩn; độ tin cậy thường cao hơn quá mua khi canh giải ngân ngược xu hướng.`
         : `<b class="flat">Vùng cân bằng (80–120).</b> Cung cầu chưa lệch hẳn về phía nào đủ để phát tín hiệu.`;
-      el("gaugeNote").innerHTML = verdict + ` ADR 25 phiên <b>rổ VN100</b> = <b>${nf(r, 1)}</b>; rổ VN30 = <b>${nf(LAST.vn30.r[25], 1)}</b>. Lệch hai rổ cho biết dòng tiền đang co về vốn hoá lớn hay lan toả. <span class="dtag dtag-sample">Mẫu</span>`;
+      el("gaugeNote").innerHTML = verdict + ` ADR 25 phiên <b>rổ VN100</b> = <b>${nf(r, 1)}</b>; rổ VN30 = <b>${nf(LAST.vn30.r[25], 1)}</b>. Lệch hai rổ cho biết dòng tiền đang co về vốn hoá lớn hay lan toả. <span class="dtag dtag-proxy">Proxy</span>`;
+      // Nhãn trước đây là "Mẫu" và gắn vô điều kiện, kể cả khi ADR tính từ
+      // breadth thật. Đúng mức là Proxy: không có nguồn riêng cho rổ
+      // VN100/VN30, hai chuỗi này suy ra theo tỷ lệ từ breadth toàn thị
+      // trường thật (xem chỗ dựng row.vn100/row.vn30).
     }
   })();
 
@@ -644,24 +742,39 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     const N = ROWS.length, closes = ROWS.map(r => r.close);
     const cl = v => Math.max(0, Math.min(100, v));
     const mean = a => a.reduce((s, x) => s + x, 0) / a.length;
+    /* Bình quân NGHIÊM NGẶT: thiếu một phần tử thì không có kết quả.
+       mean() thường sẽ để JS ép null thành 0 (`s + null === s`), cho ra một con
+       số thấp hơn thực tế mà không cấu phần nào báo là thiếu dữ liệu — đúng
+       kiểu lỗi âm thầm CLAUDE.md §1.4 cấm. Công thức không đổi; chỉ là khi
+       thiếu đầu vào thì cấu phần trả null và tự loại khỏi bình quân bảy cấu
+       phần (cơ chế `ok = c.filter(...)` bên dưới đã có sẵn). */
+    const meanN = a => (a.some(x => x == null || Number.isNaN(+x)) ? null : mean(a));
 
     function at(i) {
       if (i < 130) return null;
       const c = [];
-      const ma125 = mean(closes.slice(i - 124, i + 1));
-      c.push({ k: "Đà thị trường", v: cl(50 + (closes[i] / ma125 - 1) * 500), d: "VN-Index so với trung bình 125 phiên" });
+      const ma125 = meanN(closes.slice(i - 124, i + 1));
+      c.push({ k: "Đà thị trường", v: (ma125 == null || closes[i] == null) ? null : cl(50 + (closes[i] / ma125 - 1) * 500), d: "VN-Index so với trung bình 125 phiên" });
       const adr = ROWS[i].all.r[25];
       c.push({ k: "Độ rộng (ADR 25)", v: adr == null ? null : cl((adr - 70) / 60 * 100), d: "Tương quan mã tăng / mã giảm" });
-      const rets = []; for (let j = i - 19; j <= i; j++) rets.push(closes[j] / closes[j - 1] - 1);
-      const mu = mean(rets), sd = Math.sqrt(mean(rets.map(r => (r - mu) ** 2))) * Math.sqrt(252);
-      c.push({ k: "Biến động 20 phiên", v: cl((0.30 - sd) / (0.30 - 0.09) * 100), d: "Độ lệch chuẩn quy năm, thay cho VIX" });
-      const g5 = mean(ROWS.slice(i - 4, i + 1).map(r => r.gtgd)), g60 = mean(ROWS.slice(i - 59, i + 1).map(r => r.gtgd));
-      c.push({ k: "Thanh khoản", v: cl((g5 / g60 - 0.75) / 0.55 * 100), d: "GTGD 5 phiên so với bình quân 60 phiên" });
-      let ce = 0, fl = 0; for (let j = i - 19; j <= i; j++) { ce += ROWS[j].all.ceil; fl += ROWS[j].all.floor; }
-      c.push({ k: "Sức mạnh giá", v: (ce + fl) === 0 ? 50 : cl(ce / (ce + fl) * 100), d: "Số mã trần so với số mã sàn, 20 phiên" });
-      const r20 = closes[i] / closes[i - 20] - 1;
-      const y10 = yieldAt(VN, 10); const bond = ((y10 != null ? y10 : 4.5) / 100) / 12;
-      c.push({ k: "Nhu cầu trú ẩn", v: cl(50 + (r20 - bond) * 700), d: "Cổ phiếu so với trái phiếu Chính phủ 10 năm" });
+      const rets = []; for (let j = i - 19; j <= i; j++) rets.push(closes[j] == null || closes[j - 1] == null ? null : closes[j] / closes[j - 1] - 1);
+      const mu = meanN(rets);
+      const sd = mu == null ? null : Math.sqrt(mean(rets.map(r => (r - mu) ** 2))) * Math.sqrt(252);
+      c.push({ k: "Biến động 20 phiên", v: sd == null ? null : cl((0.30 - sd) / (0.30 - 0.09) * 100), d: "Độ lệch chuẩn quy năm, thay cho VIX" });
+      const g5 = meanN(ROWS.slice(i - 4, i + 1).map(r => r.gtgd)), g60 = meanN(ROWS.slice(i - 59, i + 1).map(r => r.gtgd));
+      c.push({ k: "Thanh khoản", v: (g5 == null || g60 == null) ? null : cl((g5 / g60 - 0.75) / 0.55 * 100), d: "GTGD 5 phiên so với bình quân 60 phiên" });
+      let ce = 0, fl = 0, cfOk = true;
+      for (let j = i - 19; j <= i; j++) {
+        const a = ROWS[j].all;
+        if (a.ceil == null || a.floor == null) { cfOk = false; break; }
+        ce += a.ceil; fl += a.floor;
+      }
+      c.push({ k: "Sức mạnh giá", v: !cfOk ? null : (ce + fl) === 0 ? 50 : cl(ce / (ce + fl) * 100), d: "Số mã trần so với số mã sàn, 20 phiên" });
+      const r20 = (closes[i] == null || closes[i - 20] == null) ? null : closes[i] / closes[i - 20] - 1;
+      // Không thay lợi suất 10 năm thiếu bằng 4,5% nữa: đó là một con số bịa
+      // đi thẳng vào điểm số hiển thị. Thiếu thì cấu phần này không tính.
+      const y10 = yieldAt(VN, 10); const bond = y10 == null ? null : (y10 / 100) / 12;
+      c.push({ k: "Nhu cầu trú ẩn", v: (r20 == null || bond == null) ? null : cl(50 + (r20 - bond) * 700), d: "Cổ phiếu so với trái phiếu Chính phủ 10 năm" });
       c.push({ k: "Dòng vốn ngoại", v: null, d: "Mua/bán ròng khối ngoại 20 phiên — chưa nối API, loại khỏi bình quân" });
 
       const ok = c.filter(x => x.v != null);
@@ -774,6 +887,13 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     const vni = iso => near(iso, "close");
     const gtgd = iso => near(iso, "gtgd");
 
+    /* Cổng từ chối. Cả ba trụ cột đều chia cho giá hoặc GTGD; thiếu một trong
+       hai thì phép chia ra Infinity/NaN và vẫn cho ra một điểm rủi ro trông
+       bình thường (mbrZone(null) rơi vào "An toàn" — sai theo hướng nguy hiểm
+       nhất). Không đủ đầu vào thì không có điểm. */
+    const needDates = [L.date, d5.date, d20.date];
+    if (needDates.some(dt => vni(dt) == null || gtgd(dt) == null)) return null;
+
     const pMg5 = (L.debt - d5.debt) / d5.debt * 100;
     const pMg20 = (L.debt - d20.debt) / d20.debt * 100;
     const pPx5 = (vni(L.date) - vni(d5.date)) / vni(d5.date) * 100;
@@ -851,6 +971,11 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   }
 
   function renderMgRisk(box, risk) {
+    // risk == null: thiếu giá hoặc GTGD nên ba trụ cột đều không tính được.
+    if (!risk) {
+      box.innerHTML = `<div class="mbr-foot">Chưa đủ dữ liệu giá / GTGD để chấm điểm rủi ro đòn bẩy cho phiên này — xem nhãn as-of ở đầu trang.</div>`;
+      return;
+    }
     const z = risk.zone, sc = risk.score;
     const pillars = risk.pillars.map(p => `
       <div class="mbr-p">
@@ -900,10 +1025,12 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     const d1 = L.debt - prev1.debt, p1 = d1 / prev1.debt * 100;
     const d5 = L.debt - prev5.debt, p5 = d5 / prev5.debt * 100;
     const d20 = L.debt - prev20.debt, p20 = d20 / prev20.debt * 100;
-    const vsLiq = L.debt / LAST.gtgd;
+    // Thiếu GTGD thì tỷ lệ này không tồn tại — chia cho null ra Infinity và
+    // nf() sẽ in "∞", tệ hơn một dấu gạch.
+    const vsLiq = LAST.gtgd ? L.debt / LAST.gtgd : null;
 
-    const risk = marginBankRisk();
-    const rz = risk.zone;
+    const risk = marginBankRisk();          // null = thiếu giá / GTGD, không tính được
+    const rz = risk ? risk.zone : { c: "var(--dim)", n: "chưa đủ dữ liệu" };
 
     const avg1y = win.reduce((s, d) => s + d.debt, 0) / win.length;
     const vsAvg = (L.debt / avg1y - 1) * 100;
@@ -914,7 +1041,7 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
       <div class="stat"><div class="k">5 / 20 phiên</div><div class="v ${cls(d5)}">${sgn(d5, 0)}</div><div class="m ${cls(d20)}">20P ${sgn(d20, 0)} (${sgn(p20, 1)}%)</div></div>
       <div class="stat"><div class="k">Vs TB 1 năm</div><div class="v ${cls(vsAvg)}">${sgn(vsAvg, 1)}%</div><div class="m">TB ${nf(avg1y / 1000, 1)}k tỷ · đỉnh ${nf(hi / 1000, 1)}k</div></div>
       <div class="stat"><div class="k">Dư nợ / GTGD phiên</div><div class="v">${nf(vsLiq, 1)}×</div><div class="m">GTGD HOSE ${nf(LAST.gtgd, 0)} tỷ</div></div>
-      <div class="stat"><div class="k">Rủi ro đòn bẩy</div><div class="v" style="color:${rz.c}">${Math.round(risk.score)}</div><div class="m" style="color:${rz.c}">${rz.n} · proxy</div></div>`;
+      <div class="stat"><div class="k">Rủi ro đòn bẩy</div><div class="v" style="color:${rz.c}">${risk ? Math.round(risk.score) : "—"}</div><div class="m" style="color:${rz.c}">${rz.n} · proxy</div></div>`;
 
     el("mgLegend").innerHTML = [
       { k: "debt", n: "Dư nợ cuối ngày (tỷ đ)", c: "var(--blue)" },
@@ -956,7 +1083,7 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
 
     renderMgRisk(el("mgRiskBox"), risk);
 
-    window.__mbrScore = risk.score;
+    window.__mbrScore = risk ? risk.score : null;
     window.__mbrZone = rz.n;
     buildTape();
   })();
@@ -1102,11 +1229,15 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     let rhi = Math.max(160, Math.ceil(Math.max(...rv) / 10) * 10 + 5);
     const YR = v => m.t + ih - (v - rlo) / (rhi - rlo) * ih;
 
-    const pv = data.map(d => d.close);
-    const plo = Math.min(...pv) * 0.985, phi = Math.max(...pv) * 1.015;
+    // Lọc null trước khi lấy min/max: một phiên thiếu giá/GTGD sẽ làm cả trục
+    // thành NaN và biểu đồ biến mất, thay vì chỉ khuyết đúng điểm đó.
+    const pv = data.map(d => d.close).filter(v => v != null);
+    const plo = pv.length ? Math.min(...pv) * 0.985 : 0;
+    const phi = pv.length ? Math.max(...pv) * 1.015 : 1;
     const YP = v => m.t + ih - (v - plo) / (phi - plo) * ih;
 
-    const vmax = Math.max(...data.map(d => d.gtgd)) * 1.1;
+    const gv = data.map(d => d.gtgd).filter(v => v != null);
+    const vmax = gv.length ? Math.max(...gv) * 1.1 : 1;
     const YV = v => volTop + volH - v / vmax * volH;
 
     let g = "";
@@ -1133,7 +1264,7 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     if (rOn.gtgd) {
       const bw = Math.max(1.2, iw / n * 0.62);
       data.forEach((d, i) => {
-        g += `<rect x="${(X(i) - bw / 2).toFixed(1)}" y="${YV(d.gtgd).toFixed(1)}" width="${bw.toFixed(1)}" height="${(volTop + volH - YV(d.gtgd)).toFixed(1)}" fill="${d.pct >= 0 ? 'var(--up-soft)' : 'var(--down-soft)'}" opacity=".85"/>`;
+        g += `<rect x="${(X(i) - bw / 2).toFixed(1)}" y="${YV(d.gtgd).toFixed(1)}" width="${bw.toFixed(1)}" height="${(volTop + volH - YV(d.gtgd)).toFixed(1)}" fill="${d.pct == null ? 'var(--line)' : d.pct >= 0 ? 'var(--up-soft)' : 'var(--down-soft)'}" opacity=".85"/>`;
       });
     }
     const path = (vals, Yf) => vals.map((v, i) => v == null ? null : (i === 0 || vals[i - 1] == null ? "M" : "L") + X(i).toFixed(1) + " " + Yf(v).toFixed(1)).filter(Boolean).join(" ");

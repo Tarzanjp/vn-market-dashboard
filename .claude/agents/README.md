@@ -1,15 +1,42 @@
-# .claude/agents/ — 日本株過小評価株スクリーニング Multi-Agent システム
+# .claude/agents/
 
-> 実際の運用手順・トラブルシューティングは `PLAYBOOK.md` を参照。本ファイルは
-> 構成・制約の説明に特化する。
+このディレクトリには **互いに無関係な2系統** のAgentが同居しています。混同
+しないこと — 片方はこのリポジトリのプロダクト本体を触り、もう片方は一切触りません。
 
-このディレクトリのAgent群は **VN Market Dashboard 本体とは無関係の別ツール**です
+| 系統 | 対象 | Agent | 権限 |
+|---|---|---|---|
+| **A. VN Market Dashboard(本体)** | `src/`・`*.html`・`vite.config.js`・`automation/` | `vn-page-builder`, `vn-frontend-reviewer` | Read/Write/Edit/Bash あり |
+| **B. 日本株スクリーニング(同居する別ツール)** | 外部Webのみ | `orchestrator` ほか8体 | WebFetch/WebSearch のみ |
+
+---
+
+## A. VN Market Dashboard 本体を触るAgent
+
+ページの追加・修正はここ。**必ず skill `vn-dashboard-engineering`
+(`.claude/skills/vn-dashboard-engineering/SKILL.md`)を読んでから着手する**
+設計になっており、両Agentの本文の冒頭にその手順が書いてある。
+
+- `vn-page-builder.md` — ページ/パネル/フックの追加・修正。手順は
+  「構造を分析 → grepで検証 → 4つの質問に答える → コード → build+preview」の順で固定。
+- `vn-frontend-reviewer.md` — 読み取り専用のレビュー。偽の数値・`as of`欠落・
+  `0`の露出・base pathの罠・JSON契約の断絶を、`file:line` の証拠付きで報告する。
+
+規範の優先順位: `CLAUDE.md`(法) > skill `vn-dashboard-engineering`(現状の
+アーキテクチャ) > 本ファイル。
+
+---
+
+## B. 日本株過小評価株スクリーニング Multi-Agent システム
+
+> 実際の運用手順・トラブルシューティングは `PLAYBOOK.md` を参照。
+
+こちらのAgent群は **VN Market Dashboard 本体とは無関係の別ツール**です
 (ユーザー個人の日本株リサーチ用に、このリポジトリに同居させているだけ)。
 `src/`・`automation/`・`public/data/` には一切アクセスしません — 全Agentが
 `tools: WebFetch, WebSearch`(orchestratorのみ`Agent`も追加)しか持たず、
 Edit/Writeを持たないため構造的に不可能です。
 
-## 構成
+### 構成
 - `orchestrator.md` — 総責任者。8つの専門Agentを実際に起動・統合する(`Agent` tool必須)
 - `benchmark-agent.md` — 業種別PER/PBRベンチマーク
 - `intelligent-data-agent.md` — 個別銘柄データ収集+品質スコア付与

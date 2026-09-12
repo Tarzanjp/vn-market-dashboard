@@ -59,8 +59,11 @@ export function initCashout(data, insight) {
 
   /* ============ Đồng hồ ============ */
   function tick() {
-    const d = new Date();
-    el("clock").textContent = [d.getHours(), d.getMinutes(), d.getSeconds()]
+    // Nhãn cạnh đồng hồ ghi "ICT", nên phải ra giờ ICT chứ không phải giờ máy
+    // người xem: getHours() trên máy ở UTC+9 hiện lệch đúng 2 tiếng và vẫn
+    // mang chữ ICT. Cùng khuôn với worldEngine.js: cộng offset rồi đọc UTC.
+    const d = new Date(Date.now() + 7 * 3600000);
+    el("clock").textContent = [d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds()]
       .map((x) => String(x).padStart(2, "0")).join(":");
   }
   tick();

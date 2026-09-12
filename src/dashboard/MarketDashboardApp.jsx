@@ -62,7 +62,9 @@ export default function MarketDashboardApp() {
               <section className="panel">
                 <div className="p-hd">
                   <h2>Cơ cấu cung cầu phiên gần nhất</h2>
-                  <span className="dtag dtag-sample">Mẫu</span>
+                  {/* Nhãn do dashboardEngine đặt theo chất lượng dữ liệu thật,
+                      không nướng cứng trong JSX (xem histTag làm chuẩn). */}
+                  <span className="dtag dtag-sample" id="boardTag">Mẫu</span>
                   <span className="sub" id="boardDate" />
                 </div>
                 <div className="board">
@@ -79,7 +81,7 @@ export default function MarketDashboardApp() {
               </section>
 
               <section className="panel">
-                <div className="p-hd"><h2>Vùng quá mua / quá bán</h2><span className="dtag dtag-sample">Mẫu</span><span className="sub">ADR 25 · rổ VN100 · ngưỡng 70 / 80 / 120</span></div>
+                <div className="p-hd"><h2>Vùng quá mua / quá bán</h2><span className="dtag dtag-sample" id="gaugeTag">Mẫu</span><span className="sub">ADR 25 · rổ VN100 · ngưỡng 70 / 80 / 120</span></div>
                 <div className="p-body">
                   <div className="gauge">
                     <div className="gauge-track"><div className="gauge-mark" id="gaugeMark" data-v="--" /></div>
@@ -93,7 +95,7 @@ export default function MarketDashboardApp() {
             <section className="panel" style={{ marginTop: 16 }}>
               <div className="p-hd">
                 <h2>Hệ số ADR — Biểu đồ so sánh VN30 / VN100</h2>
-                <span className="dtag dtag-sample">Mẫu</span>
+                <span className="dtag dtag-sample" id="adrTag">Mẫu</span>
                 <span className="sub">Advance / Decline Ratio · quá bán &lt;80 · quá mua &gt;120</span>
                 <div className="right">
                   <div className="seg" id="winSeg">
@@ -191,7 +193,7 @@ export default function MarketDashboardApp() {
             <section className="panel" style={{ marginTop: 24 }} id="marginPanel">
               <div className="p-hd">
                 <h2>Dư nợ cho vay ký quỹ (Margin)</h2>
-                <span className="dtag dtag-sample">Mẫu</span>
+                <span className="dtag dtag-sample" id="mgTag">Mẫu</span>
                 <span className="sub">toàn TT · tỷ đồng · thiết kế <b>hàng ngày</b> (nguồn live có thể tuần)</span>
                 <div className="right">
                   <div className="seg" id="mgPeriod" role="group" aria-label="Khoảng thời gian">
@@ -235,8 +237,10 @@ export default function MarketDashboardApp() {
               <section className="panel">
                 <div className="p-hd">
                   <h2>Đường cong lợi suất trái phiếu Chính phủ</h2>
-                  <span className="dtag dtag-live">Tham chiếu chốt</span>
-                  <span className="sub">USD vs VND · 1–30 năm · kỳ hạn <span className="est">e</span> = nội suy</span>
+                  {/* Nhãn do engine đặt: panel này từng gắn cứng dtag-live
+                      "Tham chiếu chốt" trong khi toàn bộ nửa VN là số mẫu tĩnh. */}
+                  <span className="dtag dtag-live" id="curveTag">Tham chiếu chốt</span>
+                  <span className="sub">USD vs VND · 1–30 năm · <span className="est">mẫu</span> = số tĩnh chưa có nguồn thật · <span className="est">e</span> = nội suy</span>
                   <div className="right">
                     <div className="seg" id="curveScale">
                       <button data-s="log" aria-pressed="true">Log kỳ hạn</button>
