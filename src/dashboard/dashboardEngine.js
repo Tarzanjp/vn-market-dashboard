@@ -28,7 +28,7 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   const US_YIELD_FALLBACK = YIELD_TENORS.map(t => ({ ...t, ...EMPTY_TENOR }));
   const VN_YIELD_FALLBACK = YIELD_TENORS.map(t => ({ ...t, ...EMPTY_TENOR }));
 
-  function normalizeYields(partial, fallback) {
+  function normalizeYields(partial, fallback, srcLabel) {
     const byX = {};
     (partial || []).forEach(r => {
       if (r && r.x != null && r.y != null && !Number.isNaN(+r.y))
@@ -38,10 +38,11 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
           m: r.m == null ? null : +r.m,
           yr: r.yr == null ? null : +r.yr,
           x: +r.x, est: !!r.est,
+          asof: r.asof || null, auction: r.auction || null,
         };
     });
     return fallback.map(fb => {
-      if (byX[fb.x]) return Object.assign({}, fb, byX[fb.x], { t: fb.t, src: "live" });
+      if (byX[fb.x]) return Object.assign({}, fb, byX[fb.x], { t: fb.t, src: srcLabel || "live" });
       // Thiếu kỳ hạn → KHÔNG thay bằng số nào. Dòng vẫn tồn tại để giữ khung
       // bảng, nhưng mọi giá trị là null và render thành "—".
       return Object.assign({}, fb, EMPTY_TENOR);
@@ -58,10 +59,20 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
 
   /* --- Lợi suất TPCP Việt Nam (%) --- */
   function loadVNYields() {
+    // Nguồn là lãi suất TRÚNG THẦU sơ cấp của Kho bạc Nhà nước (đấu thầu HNX),
+    // không phải đường cong thứ cấp từng phiên: nó chỉ đổi vào ngày có đấu
+    // thầu, và mỗi kỳ hạn mang ngày riêng của nó. Vì thế src = "proxy" chứ
+    // không phải "live", và mỗi dòng giữ asof riêng để bảng nói được kỳ hạn này
+    // chốt từ bao giờ — dùng chung một ngày cho cả bảng là sai.
+    const q = (LIVE && LIVE.quality) ? LIVE.quality.vnYields : null;
+    const src = q === "live" ? "live" : q === "proxy" ? "proxy" : null;
     const raw = (LIVE && Array.isArray(LIVE.vnYields) && LIVE.vnYields.length)
-      ? LIVE.vnYields.map(r => ({ t: r.t, y: r.y, d: r.d ?? null, m: r.m ?? null, yr: r.yr ?? null, x: r.x, est: !!r.est }))
+      ? LIVE.vnYields.map(r => ({
+          t: r.t, y: r.y, d: r.d ?? null, m: r.m ?? null, yr: r.yr ?? null,
+          x: r.x, est: !!r.est, asof: r.asof || null, auction: r.auction || null,
+        }))
       : null;
-    return normalizeYields(raw, VN_YIELD_FALLBACK);
+    return normalizeYields(raw, VN_YIELD_FALLBACK, src);
   }
 
   /* Ngày nghỉ lễ HOSE — CHỈ dùng để dựng bộ khung ngày phiên cho chuỗi mẫu,
@@ -461,12 +472,14 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     setTag("mgTag", MARGIN.sample ? "Mẫu" : "Dữ liệu thật",
       MARGIN.sample ? "sample" : "live");
     // Đường cong lợi suất: đếm thật/mẫu trên cả hai nửa US và VN.
-    const yAll = [...US, ...VN], yLive = yAll.filter(r => r.src === "live").length;
+    const yAll = [...US, ...VN];
+    const yLive = yAll.filter(r => r.src === "live").length;
+    const yProxy = yAll.filter(r => r.src === "proxy").length;
     setTag("curveTag",
       yLive === yAll.length ? "Tham chiếu chốt"
-        : yLive === 0 ? "Mẫu — chưa có nguồn thật"
-        : `${yLive}/${yAll.length} kỳ hạn thật`,
-      yLive === yAll.length ? "live" : yLive === 0 ? "sample" : "proxy");
+        : (yLive + yProxy) === 0 ? "Chưa có nguồn"
+        : `${yLive} thật + ${yProxy} sơ cấp / ${yAll.length} kỳ hạn`,
+      yLive === yAll.length ? "live" : (yLive + yProxy) === 0 ? "sample" : "proxy");
   })();
 
   function buildTape() {
@@ -500,7 +513,14 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   function yieldRows(data, tbody, color) {
     tbody.innerHTML = data.map(r => `
       <tr>
-        <td class="tenor">${r.t}${r.src === "sample" ? '<span class="est" title="Số mẫu tĩnh, chưa có nguồn thật cho kỳ hạn này">mẫu</span>' : r.est ? '<span class="est">e</span>' : ''}</td>
+        <td class="tenor">${r.t}${
+          r.src === "sample" ? '<span class="est" title="Số mẫu tĩnh, chưa có nguồn thật cho kỳ hạn này">mẫu</span>'
+          : r.src === "proxy" ? `<span class="est" title="${esc(
+              "Lãi suất trúng thầu sơ cấp (Kho bạc Nhà nước, đấu thầu HNX" +
+              (r.auction ? " đợt " + r.auction : "") + ")" +
+              (r.asof ? ", phát hành " + r.asof : "") +
+              ". Chỉ đổi vào ngày có đấu thầu, không phải lợi suất thứ cấp từng phiên.")}">${r.asof ? r.asof.slice(5).replace("-", "/") : "p"}</span>`
+          : r.est ? '<span class="est">e</span>' : ''}</td>
         <td class="num" style="font-weight:600;color:${color}">${r.y == null ? "—" : nf(r.y) + "%"}</td>
         <td class="num ${cls(r.d)}">${sgn(r.d)}</td>
         <td class="num ${cls(r.m)}">${sgn(r.m)}</td>

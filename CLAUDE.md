@@ -113,7 +113,7 @@ Hệ quả: **một con số sai tệ hơn một trang trắng.** Khi không ch�
 - Cấm sinh nội dung khuyến nghị mua/bán ("nên mua", "giá mục tiêu"). Hệ thống
   mô tả dữ liệu, không tư vấn.
 - Cấm sửa `public/data/live.json`, `regime.json`, `sector-flows.json`,
-  `cashout-vn.json`, `public/data/history/*.jsonl` bằng tay — đây là output do
+  `cashout-vn.json`, `vn-bond-auctions.jsonl`, `public/data/history/*.jsonl` bằng tay — đây là output do
   script sinh ra tự động, sửa tay sẽ bị ghi đè ở lần chạy sau và có thể phá vỡ
   tính idempotent. Sửa logic trong script, không sửa file kết quả.
   (`grok-fill.json`, `grok-fill.example.json`, `events.json`,
@@ -158,7 +158,7 @@ src/
 public/data/      Output của automation — KHÔNG sửa tay (xem §1.5)
 automation/       Script fetch/tính toán — xem automation/README.md cho ops guide đầy đủ
 .github/workflows/
-  data-update.yml       Pipeline chính (stdlib-only) — live.json, history/*.jsonl, news-raw.json, world-live.json
+  data-update.yml       Pipeline chính (stdlib-only) — live.json, history/*.jsonl, news-raw.json, world-live.json, vn-bond-auctions.jsonl
   vn-vnstock-update.yml Pipeline phụ (cần vnstock) — sector-flows.json, cashout-vn.json, regime.json
   deploy.yml             npm run build → publish dist/ → gh-pages
   backfill-history.yml   Manual-only — backfill lịch sử từ nguồn free

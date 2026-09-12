@@ -1,24 +1,24 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-11T20:14:34+07:00",
+  "generatedAtIct": "2026-09-12T11:21:31+07:00",
   "asof": "2026-09-11",
   "quality": {
     "usYields": "live",
     "fgUs": "live",
     "vnIndex": "live",
     "dxy": "live",
-    "vnYields": "missing",
     "margin": "missing",
     "usdVnd": "missing",
     "foreign": "missing",
     "proprietary": "missing",
+    "vnYields": "proxy",
     "breadth": "live"
   },
   "usYields": [
     {
       "t": "1 năm",
-      "y": 4.28,
-      "d": 0.11,
+      "y": 4.35,
+      "d": 0.07,
       "m": null,
       "yr": null,
       "x": 1,
@@ -26,8 +26,8 @@
     },
     {
       "t": "3 năm",
-      "y": 4.63,
-      "d": 0.14,
+      "y": 4.69,
+      "d": 0.06,
       "m": null,
       "yr": null,
       "x": 3,
@@ -35,8 +35,8 @@
     },
     {
       "t": "5 năm",
-      "y": 4.75,
-      "d": 0.14,
+      "y": 4.78,
+      "d": 0.03,
       "m": null,
       "yr": null,
       "x": 5,
@@ -44,8 +44,8 @@
     },
     {
       "t": "10 năm",
-      "y": 4.95,
-      "d": 0.12,
+      "y": 4.96,
+      "d": 0.01,
       "m": null,
       "yr": null,
       "x": 10,
@@ -53,26 +53,26 @@
     },
     {
       "t": "30 năm",
-      "y": 5.37,
-      "d": 0.09,
+      "y": 5.35,
+      "d": -0.02,
       "m": null,
       "yr": null,
       "x": 30,
       "est": false
     }
   ],
-  "usYieldsAsof": "2026-09-10",
+  "usYieldsAsof": "2026-09-11",
   "fgUs": {
-    "score": 31.2,
+    "score": 33.3,
     "hist": {
       "prev": 33.1,
       "week": 45.2,
       "month": 60.1,
       "year": 60.3
     },
-    "asofEt": "2026-09-11"
+    "asofEt": "2026-09-12"
   },
-  "fgUsFetchedAt": "2026-09-11T20:14:32.079002+07:00",
+  "fgUsFetchedAt": "2026-09-12T11:21:30.122343+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
     "price": 1795.21,
@@ -81,10 +81,50 @@
     "pct": -1.86,
     "date": "2026-09-11"
   },
-  "vnIndexFetchedAt": "2026-09-11T20:14:32.174997+07:00",
-  "dxy": 98.98,
-  "dxyFetchedAt": "2026-09-11T20:14:32.253728+07:00",
-  "vnYields": null,
+  "vnIndexFetchedAt": "2026-09-12T11:21:30.355251+07:00",
+  "dxy": 99.09,
+  "dxyFetchedAt": "2026-09-12T11:21:30.628497+07:00",
+  "vnYields": [
+    {
+      "t": "5 năm",
+      "x": 5,
+      "y": 4.26,
+      "d": null,
+      "d_from": null,
+      "m": null,
+      "yr": null,
+      "est": false,
+      "asof": "2026-09-10",
+      "auction": "PH.155.2026",
+      "bond": "TD2631010"
+    },
+    {
+      "t": "10 năm",
+      "x": 10,
+      "y": 4.43,
+      "d": 0.01,
+      "d_from": "2026-09-04",
+      "m": null,
+      "yr": null,
+      "est": false,
+      "asof": "2026-09-10",
+      "auction": "PH.156.2026",
+      "bond": "TD2636024"
+    },
+    {
+      "t": "30 năm",
+      "x": 30,
+      "y": 4.61,
+      "d": null,
+      "d_from": null,
+      "m": null,
+      "yr": null,
+      "est": false,
+      "asof": "2026-09-04",
+      "auction": "PH.153.2026",
+      "bond": "TD2656067"
+    }
+  ],
   "margin": null,
   "breadth": {
     "date": "2026-09-11",

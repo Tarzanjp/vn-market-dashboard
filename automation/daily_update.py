@@ -78,6 +78,12 @@ XAI_API = os.environ.get("XAI_API_BASE", "https://api.x.ai/v1").rstrip("/")
 XAI_MODEL = os.environ.get("XAI_MODEL", "grok-3-latest")
 
 
+# Lợi suất TPCP tách thành module riêng: nó cần một SSL context đặc biệt
+# (HNX không gửi cert trung gian) và một kho tích luỹ đợt đấu thầu, quá
+# nhiều thứ riêng để nhét vào file này.
+from vn_bond_yields import fetch_vn_yields  # noqa: E402
+
+
 def now_ict() -> datetime:
     return datetime.now(ICT)
 
@@ -723,13 +729,20 @@ def build_live(prev: dict, grok: dict | None = None) -> dict:
     # trade date: prefer VN index session date else ICT today
     trade_date = (vn_idx or {}).get("date") or now_ict().date().isoformat()
 
-    # margin / vnYields / breadth / usdVnd / foreign: chưa có free API — luôn là
-    # bản sao của phiên trước cho tới khi Grok/agent điền được số thật của hôm
-    # nay (xem merge_grok_fill). Đánh dấu rõ "stale" thay vì im lặng mang
-    # nguyên trạng thái quality cũ theo, để history_row_from_live() không ghi
-    # nhầm các phiên này là "proxy" mới khi thực ra chỉ là số liệu cũ lặp lại.
-    for field in ("vnYields", "margin", "usdVnd", "foreign", "proprietary"):
+    # margin / usdVnd / foreign / proprietary: chưa có free API — luôn là bản
+    # sao của phiên trước cho tới khi Grok/agent điền được số thật của hôm nay
+    # (xem merge_grok_fill). Đánh dấu rõ "stale" thay vì im lặng mang nguyên
+    # trạng thái quality cũ theo, để history_row_from_live() không ghi nhầm các
+    # phiên này là "proxy" mới khi thực ra chỉ là số liệu cũ lặp lại.
+    for field in ("margin", "usdVnd", "foreign", "proprietary"):
         quality[field] = "stale" if prev.get(field) else "missing"
+
+    # vnYields: có nguồn từ 2026-09-12 — lãi suất trúng thầu TPCP của Kho bạc
+    # Nhà nước, lấy từ kết quả đấu thầu HNX (xem automation/vn_bond_yields.py).
+    # quality = "proxy", KHÔNG phải "live": đây là lợi suất sơ cấp, chỉ đổi vào
+    # ngày có đấu thầu, không phải đường cong thứ cấp từng phiên. Trước đó field
+    # này "missing" 161/170 phiên và frontend vẽ 5 hằng số nướng trong file.
+    vn_yields, quality["vnYields"] = fetch_vn_yields(prev)
 
     # breadth: có nguồn free (đếm từng mã HOSE) từ 2026-09-06 — không còn phụ
     # thuộc grok-fill. Thất bại thì fetch_breadth() tự trả số phiên trước.
@@ -749,7 +762,7 @@ def build_live(prev: dict, grok: dict | None = None) -> dict:
         "dxy": dxy if dxy is not None else prev.get("dxy"),
         "dxyFetchedAt": dxy_at or prev.get("dxyFetchedAt"),
         # margin / VN yields / breadth: free API yếu — prev hoặc Grok
-        "vnYields": prev.get("vnYields"),
+        "vnYields": vn_yields or prev.get("vnYields"),
         "margin": prev.get("margin"),
         "breadth": breadth,
         "usdVnd": prev.get("usdVnd"),

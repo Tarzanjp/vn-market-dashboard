@@ -240,7 +240,7 @@ export default function MarketDashboardApp() {
                   {/* Nhãn do engine đặt: panel này từng gắn cứng dtag-live
                       "Tham chiếu chốt" trong khi toàn bộ nửa VN là số mẫu tĩnh. */}
                   <span className="dtag dtag-live" id="curveTag">Tham chiếu chốt</span>
-                  <span className="sub">USD vs VND · 1–30 năm · <span className="est">mẫu</span> = số tĩnh chưa có nguồn thật · <span className="est">e</span> = nội suy</span>
+                  <span className="sub">USD vs VND · 1–30 năm · nhãn ngày trên kỳ hạn VN = lãi suất trúng thầu sơ cấp (Kho bạc Nhà nước, đấu thầu HNX) và ngày phát hành của đợt đó · <span className="est">e</span> = nội suy</span>
                   <div className="right">
                     <div className="seg" id="curveScale">
                       <button data-s="log" aria-pressed="true">Log kỳ hạn</button>
