@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-12T13:36:27+07:00",
+  "generatedAtIct": "2026-09-12T13:44:57+07:00",
   "asof": "2026-09-11",
   "quality": {
     "usYields": "live",
@@ -12,7 +12,8 @@
     "proprietary": "missing",
     "vnYields": "proxy",
     "breadth": "live",
-    "foreign": "live"
+    "foreign": "live",
+    "usdVndVcb": "live"
   },
   "usYields": [
     {
@@ -72,7 +73,7 @@
     },
     "asofEt": "2026-09-12"
   },
-  "fgUsFetchedAt": "2026-09-12T13:36:24.682758+07:00",
+  "fgUsFetchedAt": "2026-09-12T13:44:54.588267+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
     "price": 1795.21,
@@ -81,9 +82,9 @@
     "pct": -1.86,
     "date": "2026-09-11"
   },
-  "vnIndexFetchedAt": "2026-09-12T13:36:24.951583+07:00",
+  "vnIndexFetchedAt": "2026-09-12T13:44:54.810346+07:00",
   "dxy": 99.09,
-  "dxyFetchedAt": "2026-09-12T13:36:25.158702+07:00",
+  "dxyFetchedAt": "2026-09-12T13:44:55.038370+07:00",
   "vnYields": [
     {
       "t": "5 năm",
@@ -148,6 +149,15 @@
     "scope": "HOSE, toàn phiên (khớp lệnh + thoả thuận)",
     "n": 405,
     "source": "VNDirect finfo (cộng từ buyVal/sellVal từng mã HOSE, chỉ type=STOCK)"
+  },
+  "usdVndVcb": {
+    "buyCash": 25700.0,
+    "buyTransfer": 25730.0,
+    "sell": 26110.0,
+    "unit": "VND / 1 USD",
+    "asof": "2026-09-11T23:00:00+07:00",
+    "bank": "Vietcombank",
+    "source": "Vietcombank api/exchangerates (tỷ giá NHTM, KHÔNG phải tỷ giá trung tâm NHNN)"
   },
   "proprietary": null,
   "notes": [

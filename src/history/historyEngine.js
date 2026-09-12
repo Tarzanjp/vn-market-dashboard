@@ -27,7 +27,12 @@ const SERIES = [
   { key: "vn10y", label: "VN 10Y", color: "var(--vn)", kind: "abs", get: (r) => r.vnYields && r.vnYields["10"], fmt: (v) => v.toFixed(2) + "%" },
   { key: "dxy", label: "DXY", color: "var(--tran)", kind: "pct", get: (r) => r.dxy, fmt: (v) => v.toFixed(2) },
   { key: "margin", label: "Margin", color: "var(--tc)", kind: "pct", get: (r) => r.margin, fmt: (v) => v.toLocaleString("vi-VN", { maximumFractionDigits: 0 }) },
-  { key: "usdVnd", label: "USD/VND", color: "var(--san)", kind: "pct", get: (r) => r.usdVndCentral, fmt: (v) => v.toLocaleString("vi-VN", { maximumFractionDigits: 0 }) },
+  /* Hai chuỗi USD/VND RIÊNG BIỆT, không gộp: tỷ giá trung tâm do NHNN công bố
+     và tỷ giá ngân hàng thương mại của Vietcombank là hai đại lượng khác nhau,
+     lệch nhau 1–2,5%. Vẽ chung một đường sẽ tạo một bậc nhảy vô hình đúng chỗ
+     đổi nguồn. Chuỗi NHNN chỉ có ~10 điểm cũ và không còn được ghi thêm. */
+  { key: "usdVndCb", label: "USD/VND (NHNN trung tâm)", color: "var(--san)", kind: "pct", get: (r) => r.usdVndCentral, fmt: (v) => v.toLocaleString("vi-VN", { maximumFractionDigits: 0 }) },
+  { key: "usdVndVcb", label: "USD/VND (VCB mua CK)", color: "var(--tran)", kind: "pct", get: (r) => r.usdVndVcbTransfer, fmt: (v) => v.toLocaleString("vi-VN", { maximumFractionDigits: 0 }) },
 ];
 const DEFAULT_ON = new Set(["vnIndex", "us10y", "dxy"]);
 

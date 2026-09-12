@@ -503,7 +503,17 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
       })() },
       // 25.338 từng là số cứng hiển thị như tỷ giá hiện hành, trong khi
       // live.json ghi usdVnd = null / quality = missing. Thiếu thì "—".
-      { k: "USD/VND TT", v: (LIVE && LIVE.usdVnd != null) ? nf(LIVE.usdVnd, 0) : "—", c: "trung tâm", cl: "flat" },
+      // Hai ô riêng: tỷ giá trung tâm NHNN vẫn chưa có nguồn nên để "—", còn ô
+      // Vietcombank có số thật. Gộp hai thứ này vào một ô mang nhãn "trung tâm"
+      // là nói sai đại lượng — chúng lệch nhau 1–2,5%.
+      { k: "USD/VND TT", v: (LIVE && LIVE.usdVnd != null) ? nf(LIVE.usdVnd, 0) : "—", c: "NHNN trung tâm", cl: "flat" },
+      { k: "USD/VND VCB", ...(() => {
+        const v = LIVE && LIVE.usdVndVcb;
+        const q = (LIVE && LIVE.quality) ? LIVE.quality.usdVndVcb : null;
+        if (!v || v.buyTransfer == null) return { v: "—", c: "chưa có dữ liệu", cl: "flat" };
+        return { v: nf(v.buyTransfer, 0),
+                 c: "mua CK" + (q === "live" ? "" : " · bảng phiên trước"), cl: "flat" };
+      })() },
       { k: "DXY", v: (LIVE && LIVE.dxy != null) ? String(LIVE.dxy) : "—", c: (LIVE && LIVE.quality && LIVE.quality.dxy === "live") ? "auto" : "", cl: "flat" },
       { k: "FED FUNDS", v: "3,50–3,75%", c: "giữ 9–3", cl: "flat" },
       { k: "NFP T7", v: "−23K", c: "dự báo +80K", cl: "down" },

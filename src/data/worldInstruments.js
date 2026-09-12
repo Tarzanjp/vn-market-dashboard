@@ -65,7 +65,10 @@ export const MARKETS = [
      Ưu tiên: DXY + USD/VND → cặp quy VND → majors → châu Á so sánh */
   { id: "DXY", name: "Chỉ số USD (DXY)", cty: "ICE", grp: "fx", sub: "Chỉ số USD & tỷ giá USD/VND", v: 99.54, p: -0.43, dec: 2, tz: -4, sess: [0, 24] },
   { id: "USDVND_CB", name: "USD/VND trung tâm", cty: "NHNN", grp: "fx", sub: "Chỉ số USD & tỷ giá USD/VND", v: 25338, p: null, dec: 0, tz: 7, sess: [8, 16], note: "NHNN 31/07" },
-  { id: "USDVND", name: "USD/VND", cty: "Vietcombank", grp: "fx", sub: "Chỉ số USD & tỷ giá USD/VND", v: 26085, c: -15, p: -0.06, dec: 0, tz: 7, sess: [8, 16], note: "mua CK 04/08" },
+  // Từ 2026-09-12 ô này được ghi đè bằng bảng giá Vietcombank thật trong
+  // world-live.json (daily_update.py: write_world_live). Số dưới đây chỉ còn là
+  // khung khi chưa fetch được — để null thay vì một tỷ giá cũ trông như hiện hành.
+  { id: "USDVND", name: "USD/VND", cty: "Vietcombank", grp: "fx", sub: "Chỉ số USD & tỷ giá USD/VND", v: null, p: null, dec: 0, tz: 7, sess: [8, 16], note: "mua CK" },
 
   { id: "EURVND", name: "EUR/VND", cty: "Vietcombank", grp: "fx", sub: "Ngoại tệ quy đổi ra VND", v: 29755.87, c: -123, p: -0.41, dec: 2, tz: 7, sess: [8, 16], note: "mua CK 04/08" },
   { id: "JPYVND", name: "JPY/VND", cty: "Vietcombank", grp: "fx", sub: "Ngoại tệ quy đổi ra VND", v: 162.67, c: -2.03, p: -1.23, dec: 2, tz: 7, sess: [8, 16], note: "mua CK 04/08" },

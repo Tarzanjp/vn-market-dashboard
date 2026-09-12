@@ -482,6 +482,75 @@ def fetch_foreign(trade_date: str, prev: dict) -> tuple[dict | None, str]:
     return out, "live"
 
 
+def fetch_usd_vnd_vcb(trade_date: str, prev: dict) -> tuple[dict | None, str]:
+    """Tỷ giá USD/VND của Vietcombank — mua tiền mặt / mua chuyển khoản / bán.
+
+    KHÔNG PHẢI TỶ GIÁ TRUNG TÂM. Field `usdVnd` (và `usdVndCentral` trong lịch
+    sử) là tỷ giá trung tâm do NHNN công bố, một đại lượng khác: hôm nay NHNN
+    25.463 còn Vietcombank mua CK 25.730 / bán 26.110 — lệch 1–2,5%. Ghi số VCB
+    vào key của NHNN sẽ nối hai chuỗi khác nhau thành một đường liền trên biểu
+    đồ Lịch sử, với một bậc nhảy vô hình. Nên đây là key RIÊNG (`usdVndVcb`), và
+    `usdVnd` vẫn "missing" cho tới khi tìm được nguồn NHNN thật.
+
+    robots.txt của vietcombank.com.vn: `User-agent: *  Allow: /`.
+
+    CẠM BẪY CỦA API: tham số `date` được ECHO lại nguyên văn vào trường `Date`
+    của response, kể cả khi hỏi một ngày không có bảng giá mới — hỏi thứ Bảy vẫn
+    trả bảng thứ Sáu nhưng `Date` ghi thứ Bảy. Chỉ `UpdatedDate` nói thật thời
+    điểm công bố, nên as-of lấy từ đó, và quality chỉ là "live" khi bảng đúng
+    thật của phiên đang xét.
+    """
+    url = f"https://www.vietcombank.com.vn/api/exchangerates?date={trade_date}"
+    try:
+        payload = json.loads(http_get(url))
+    except Exception as e:  # noqa: BLE001
+        log(f"usdVndVcb: fetch failed ({e}) — giữ số phiên trước")
+        return prev.get("usdVndVcb"), "stale" if prev.get("usdVndVcb") else "missing"
+
+    usd = next((x for x in (payload.get("Data") or [])
+                if (x.get("currencyCode") or "").upper() == "USD"), None)
+    if not payload.get("Count") or not usd:
+        log(f"usdVndVcb: không có bảng giá cho {trade_date} — giữ số phiên trước")
+        return prev.get("usdVndVcb"), "stale" if prev.get("usdVndVcb") else "missing"
+
+    def _f(key):
+        try:
+            return float(str(usd.get(key)).replace(",", ""))
+        except (TypeError, ValueError):
+            return None
+
+    cash, transfer, sell = _f("cash"), _f("transfer"), _f("sell")
+    # Chặn theo bậc độ lớn: USD/VND nằm trong khoảng vài chục nghìn. Một thay đổi
+    # đơn vị phía Vietcombank (hoặc số 0 lọt vào) phải bị từ chối, không được
+    # render thành tỷ giá.
+    vals = [v for v in (cash, transfer, sell) if v is not None]
+    if not vals or not all(20000 <= v <= 35000 for v in vals):
+        log(f"usdVndVcb: giá trị ngoài khoảng hợp lý {vals} — không ghi")
+        return prev.get("usdVndVcb"), "stale" if prev.get("usdVndVcb") else "missing"
+    if transfer and sell and transfer > sell:
+        log(f"usdVndVcb: mua CK ({transfer}) > bán ({sell}) — vô lý, không ghi")
+        return prev.get("usdVndVcb"), "stale" if prev.get("usdVndVcb") else "missing"
+
+    upd = str(payload.get("UpdatedDate") or "")
+    upd_day = upd[:10] if len(upd) >= 10 else None
+    # "stale" ở đây là MÔ TẢ, không phải báo lỗi: thứ Bảy/Chủ nhật và ngày nghỉ
+    # lễ thì Vietcombank không công bố bảng mới, nên bảng của phiên gần nhất
+    # được mang theo — đúng như mong đợi, không cần đi truy. Chỉ đáng để ý khi
+    # nó "stale" giữa một chuỗi ngày làm việc liên tiếp.
+    quality = "live" if upd_day == trade_date else "stale"
+
+    out = {
+        "buyCash": cash, "buyTransfer": transfer, "sell": sell,
+        "unit": "VND / 1 USD",
+        "asof": upd or None,
+        "bank": "Vietcombank",
+        "source": "Vietcombank api/exchangerates (tỷ giá NHTM, KHÔNG phải tỷ giá trung tâm NHNN)",
+    }
+    log(f"usdVndVcb {quality} {trade_date}: mua CK={transfer:,.0f} bán={sell:,.0f} "
+        f"(bảng công bố {upd_day})")
+    return out, quality
+
+
 def fetch_news_raw() -> list[dict]:
     """Kéo tiêu đề tin thô (không tổng hợp/phân tích) từ các feed RSS miễn phí,
     chính chủ — chỉ dữ liệu xác định (title/date/link/description gốc), không
@@ -545,6 +614,20 @@ def fetch_world_markets() -> dict:
 
 def write_world_live() -> None:
     quotes = fetch_world_markets()
+
+    # Ô USD/VND của Vietcombank trên trang Thế giới vẫn là số tĩnh baked trong
+    # worldInstruments.js từ 04/08 (nhãn "mua CK 04/08"). Yahoo không có tỷ giá
+    # niêm yết của một ngân hàng VN cụ thể, nên lấy từ chính bảng giá VCB đã
+    # fetch cho live.json — không thêm request, không thêm nguồn.
+    live_now = load_previous()
+    vcb = (live_now.get("usdVndVcb") or {}) if isinstance(live_now, dict) else {}
+    if vcb.get("buyTransfer"):
+        quotes["USDVND"] = {
+            "price": vcb["buyTransfer"], "prev": None, "chg": None, "pct": None,
+            "date": (vcb.get("asof") or "")[:10] or None,
+        }
+        log(f"world market USDVND = {vcb['buyTransfer']:,.0f} (Vietcombank mua CK)")
+
     payload = {"generatedAtIct": now_ict().isoformat(timespec="seconds"), "quotes": quotes}
     WORLD_LIVE_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     log(f"wrote {WORLD_LIVE_JSON.relative_to(ROOT)} ({len(quotes)} symbols)")
@@ -825,6 +908,10 @@ def build_live(prev: dict, grok: dict | None = None) -> dict:
     # foreign: cùng API finfo, cộng từ từng mã (không thêm nguồn). Từ 2026-09-12.
     foreign, quality["foreign"] = fetch_foreign(trade_date, prev)
 
+    # usdVndVcb: tỷ giá Vietcombank. Key RIÊNG, không trộn vào `usdVnd` (tỷ giá
+    # trung tâm NHNN) — xem docstring fetch_usd_vnd_vcb.
+    usd_vcb, quality["usdVndVcb"] = fetch_usd_vnd_vcb(trade_date, prev)
+
     live = {
         "schemaVersion": "1.0",
         "generatedAtIct": now_ict().isoformat(timespec="seconds"),
@@ -844,6 +931,7 @@ def build_live(prev: dict, grok: dict | None = None) -> dict:
         "breadth": breadth,
         "usdVnd": prev.get("usdVnd"),
         "foreign": foreign or prev.get("foreign"),
+        "usdVndVcb": usd_vcb or prev.get("usdVndVcb"),
         "proprietary": prev.get("proprietary"),
         "notes": [
             "Nguồn free: US Treasury CSV, Yahoo Finance (VN-Index/DXY), CNN Fear & Greed.",
@@ -901,6 +989,10 @@ def history_row_from_live(live: dict) -> dict:
         ),
         "usdVndCentral": (live.get("usdVnd") or {}).get("central"),
         "foreignNet": (live.get("foreign") or {}).get("net"),
+        # Key riêng, KHÔNG phải usdVndCentral: đó là tỷ giá trung tâm NHNN,
+        # còn đây là tỷ giá NHTM của Vietcombank. Nối chung một chuỗi sẽ tạo
+        # bậc nhảy 1-2,5% vô hình giữa biểu đồ.
+        "usdVndVcbTransfer": (live.get("usdVndVcb") or {}).get("buyTransfer"),
         "quality": {k: q.get(k, "missing") for k in HISTORY_QUALITY_FIELDS},
     }
 
