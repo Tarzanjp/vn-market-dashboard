@@ -11,3 +11,14 @@ __pycache__/
 #  dự án, và trước đây để ngoài main nên cứ mỗi lần đổi nhánh là mất.)
 .claude/SESSION.md
 .claude/settings.local.json
+
+# Công cụ nghiên cứu cổ phiếu Nhật ở nhờ repo này — mã nguồn thì commit,
+# môi trường ảo 726MB thì không.
+jp_value_screen_graph/.venv/
+*.egg-info/
+
+# File rác: AGENTS.md do vnstock sinh ra khi onboard (không phải tài liệu của
+# dự án này, và đặt ở gốc repo dễ bị agent đọc nhầm thành hướng dẫn dự án);
+# final_check.mjs là script soi trang tạm.
+/AGENTS.md
+/final_check.mjs

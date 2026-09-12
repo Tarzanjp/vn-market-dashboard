@@ -1,0 +1,72 @@
+# 市場ごとに違うのは「データの取得元」だけ。
+# 手法(Net Cash Ratio の定義、DCF の組み方、Buy/Watch/Pass の基準、fact-only の
+# 縛り)は agents.yaml 側にあり、3市場で共通・分岐させない。
+# JP の優先ソースは agents.yaml の各 backstory から**そのまま移設**したもの
+# (株探/Kabutan・Yahoo!ファイナンス・EDINET・JPX・バフェット・コード・みんかぶ・
+# 決算短信・適時開示・各社IR)。実績のある取得元なので削らないこと。
+#
+# vault の entity フォルダ (entities/<key>/) とキーを一致させている。
+
+jp:
+  label: 日本株 (JPX)
+  search_region: jp-jp
+  currency: 円(百万円単位で記載)
+  fiscal_year: 3月期が多い
+  ticker_shape: 4桁の数字または英数4字 (6758, 146A)
+  sources_general: |
+    (1) 株探(Kabutan) (2) Yahoo!ファイナンス(日本) (3) EDINET(有価証券報告書・
+    四半期報告書) (4) 日本取引所グループ(JPX)公式データ (5) 各社IRページ
+    (適時開示・決算短信) (6) バフェット・コード / みんかぶ(補助)
+  sources_benchmark: |
+    (1) 日本取引所グループ(JPX)「規模別・業種別PER・PBR」統計
+    (2) EDINET集計データ(中央値) (3) 株探・Yahoo!ファイナンスの業種別集計(補助)
+    (4) 証券会社レポート(参考)。プライム市場と全体市場の違いを区別すること。
+  sources_fundamentals: |
+    (1) EDINET(有価証券報告書・四半期報告書) (2) 株探・Yahoo!ファイナンス(補助)
+    (3) 各社決算短信・IR
+  sources_catalyst: |
+    (1) 各社IR・適時開示 (2) 株探ニュース (3) Yahoo!ファイナンスニュース
+    (4) その他信頼性の高い情報源
+  sources_market_data: |
+    (1) 株探・Yahoo!ファイナンス(売買代金・時価総額・値動き) (2) JPX公式データ
+    (3) その他市場データ
+
+vn:
+  label: ベトナム株 (HOSE/HNX)
+  search_region: vn-vi
+  currency: VND(十億VND = tỷ 単位で記載)
+  fiscal_year: 12月期
+  ticker_shape: 英字3文字 (VNM, HPG)
+  sources_general: |
+    (1) Vietstock (finance.vietstock.vn) (2) CafeF (cafef.vn) (3) HOSE/HNX 適時開示
+    (hsx.vn) (4) 各社IRページ (5) Simplize / Fireant(補助)
+  sources_benchmark: |
+    (1) HOSE 公式の業種別統計 (2) Vietstock の業種別集計 (3) CafeF の業種別集計。
+    VN30 と市場全体の違いを区別すること。
+  sources_fundamentals: |
+    (1) 各社の監査済み財務諸表(BCTC)・年次報告書 (2) Vietstock (3) CafeF
+  sources_catalyst: |
+    (1) HOSE/HNX 適時開示 (2) 各社IR・株主総会(ĐHĐCĐ)資料 (3) Vietstock ニュース
+  sources_market_data: |
+    (1) Vietstock・CafeF(売買代金・時価総額・値動き) (2) HOSE 公式データ
+    (3) 外国人保有比率・room 情報
+
+us:
+  label: 米国株 (NASDAQ/NYSE)
+  search_region: us-en
+  currency: USD(million 単位で記載)
+  fiscal_year: 12月期が多い(例外あり)
+  ticker_shape: 英字ティッカー (AAPL)
+  sources_general: |
+    (1) SEC EDGAR (10-K / 10-Q — 一次資料) (2) stockanalysis.com
+    (3) 各社IRページ (4) Yahoo Finance(補助)
+  sources_benchmark: |
+    (1) GICS セクター別の PER/PBR 中央値(stockanalysis.com のスクリーナ等)
+    (2) S&P/Nasdaq 公式の指数統計。指数構成銘柄と市場全体の違いを区別すること。
+  sources_fundamentals: |
+    (1) SEC EDGAR (10-K / 10-Q) (2) stockanalysis.com (3) 各社IR・earnings call 資料
+  sources_catalyst: |
+    (1) SEC 8-K (2) 各社IR・プレスリリース (3) 主要ニュースソース
+  sources_market_data: |
+    (1) stockanalysis.com・Yahoo Finance(出来高・時価総額・ボラティリティ)
+    (2) 取引所公式データ
