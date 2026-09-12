@@ -491,7 +491,16 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
       { k: "ADR 25 VN30", v: nf(LAST.vn30.ratio, 1), c: "", cl: LAST.vn30.ratio == null ? "flat" : LAST.vn30.ratio > 120 ? "down" : LAST.vn30.ratio < 80 ? "up" : "flat" },
       { k: "DƯ NỢ MARGIN", v: nf(MG_LAST.debt / 1000, 1) + " nghìn tỷ", c: sgn(MG_LAST.net, 0) + " tỷ · mẫu", cl: cls(MG_LAST.net) },
       { k: "RR ĐÒN BẨY", v: mbr == null ? "—" : String(Math.round(mbr)), c: (mbrZ || "") + " · proxy", cl: mbr == null ? "flat" : mbr >= 70 ? "down" : mbr < 40 ? "up" : "flat" },
-      { k: "KHỐI NGOẠI", v: "—", c: "chờ API", cl: "flat" },
+      // Có số thật từ 2026-09-12 (daily_update.py: fetch_foreign, cộng từ
+      // từng mã HOSE). Trước đó ô này luôn "— chờ API".
+      { k: "KHỐI NGOẠI", ...(() => {
+        const f = LIVE && LIVE.foreign;
+        const q = (LIVE && LIVE.quality) ? LIVE.quality.foreign : null;
+        if (!f || f.net == null || q === "missing") return { v: "—", c: "chưa có dữ liệu", cl: "flat" };
+        return { v: sgn(f.net, 0) + " tỷ",
+                 c: (q === "live" ? "HOSE" : q) + (f.net < 0 ? " · bán ròng" : " · mua ròng"),
+                 cl: cls(f.net) };
+      })() },
       // 25.338 từng là số cứng hiển thị như tỷ giá hiện hành, trong khi
       // live.json ghi usdVnd = null / quality = missing. Thiếu thì "—".
       { k: "USD/VND TT", v: (LIVE && LIVE.usdVnd != null) ? nf(LIVE.usdVnd, 0) : "—", c: "trung tâm", cl: "flat" },

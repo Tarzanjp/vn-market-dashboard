@@ -408,6 +408,80 @@ def fetch_breadth(trade_date: str, prev: dict) -> tuple[dict | None, str]:
     }, "live"
 
 
+def fetch_foreign(trade_date: str, prev: dict) -> tuple[dict | None, str]:
+    """Mua/bán/ròng của khối ngoại trên HOSE, TÍNH từ dữ liệu từng mã.
+
+    Trước đây field này chỉ được Grok điền và đã đứng yên ở đúng -59 tỷ suốt 4
+    phiên khác nhau trong lịch sử — dấu hiệu kinh điển của một con số cũ được
+    mang theo. Cùng API VNDirect finfo đang dùng cho breadth (không thêm nguồn),
+    endpoint `foreigns` trả buyVal/sellVal/netVal theo từng mã từng phiên, nên
+    tổng thị trường được CỘNG ra chứ không đi tìm một con số có sẵn.
+
+    HAI CẠM BẪY CỦA ENDPOINT NÀY, cả hai đều làm số phồng lên mà trông vẫn hợp lý:
+
+      1. Response chứa cả dòng `type: "INDEX"` — đó là dòng TỔNG HỢP cấp chỉ số,
+         không phải một mã. Cộng nó chung với từng mã là đếm hai lần cả thị
+         trường: phiên 2026-09-11 các dòng INDEX cộng thêm -8.831 tỷ, biến ròng
+         -834 tỷ thành -10.575 tỷ. Con số sai đó lớn hơn cả tổng GTGD toàn thị
+         trường phiên đó (16.123 tỷ) — tức khối ngoại "mua" nhiều hơn toàn bộ
+         giao dịch, điều bất khả.
+      2. Chứng quyền được trả HAI LẦN, một lần `type: "EW"` và một lần `"CW"`
+         (287 mã trùng ở phiên trên). Giá trị đều 0 nên vô hại hôm nay, nhưng
+         không có gì bảo đảm ngày mai vẫn thế.
+
+    Nên chỉ lấy `type == "STOCK"`.
+
+    Tự kiểm chứng trước khi trả về: mua − bán phải bằng ròng (đẳng thức của
+    chính dữ liệu), không mã nào xuất hiện hai lần, và số mã phải hợp lý so với
+    quy mô HOSE. Lệch bất kỳ điều nào → trả None để giữ số phiên trước và đánh
+    dấu stale, thay vì công bố một tổng cộng thiếu/thừa.
+
+    Đây là giao dịch TOÀN PHIÊN (khớp lệnh + thoả thuận) trên RIÊNG HOSE — khác
+    `cashout-vn.json: foreignNetBn`, vốn là khớp lệnh trên cả ba sàn. Hai con số
+    không bằng nhau và không nên bằng nhau; `scope`/`method` dưới đây nói rõ.
+    """
+    url = ("https://api-finfo.vndirect.com.vn/v4/foreigns"
+           f"?q=floor:HOSE~tradingDate:{trade_date}&size=1500")
+    try:
+        payload = json.loads(http_get(url))
+    except Exception as e:  # noqa: BLE001
+        log(f"foreign: fetch failed ({e}) — giữ số phiên trước")
+        return prev.get("foreign"), "stale" if prev.get("foreign") else "missing"
+
+    rows = [r for r in (payload.get("data") or []) if r.get("type") == "STOCK"]
+    if not rows:
+        log(f"foreign: không có dữ liệu cho {trade_date} (phiên nghỉ?) — giữ số phiên trước")
+        return prev.get("foreign"), "stale" if prev.get("foreign") else "missing"
+
+    codes = {r.get("code") for r in rows}
+    buy = sum(r.get("buyVal") or 0 for r in rows)
+    sell = sum(r.get("sellVal") or 0 for r in rows)
+    net = sum(r.get("netVal") or 0 for r in rows)
+
+    if len(codes) != len(rows):
+        log(f"foreign: {len(rows) - len(codes)} mã trùng trong type=STOCK — không cộng số đếm hai lần")
+        return prev.get("foreign"), "stale" if prev.get("foreign") else "missing"
+    if abs((buy - sell) - net) > 1:            # 1 VND cho sai số dấu phẩy động
+        log(f"foreign: mua-bán ({(buy - sell)/1e9:.1f} tỷ) khác ròng ({net/1e9:.1f} tỷ) — không tin tổng này")
+        return prev.get("foreign"), "stale" if prev.get("foreign") else "missing"
+    if len(rows) < 100:
+        log(f"foreign: chỉ {len(rows)} mã trên HOSE — trang bị cắt, không ghi tổng thiếu")
+        return prev.get("foreign"), "stale" if prev.get("foreign") else "missing"
+
+    out = {
+        "net": round(net / 1e9, 1),
+        "buy": round(buy / 1e9, 1),
+        "sell": round(sell / 1e9, 1),
+        "unit": "tỷ VND",
+        "scope": "HOSE, toàn phiên (khớp lệnh + thoả thuận)",
+        "n": len(rows),
+        "source": "VNDirect finfo (cộng từ buyVal/sellVal từng mã HOSE, chỉ type=STOCK)",
+    }
+    log(f"foreign OK {trade_date}: mua={out['buy']:,.1f} bán={out['sell']:,.1f} "
+        f"ròng={out['net']:,.1f} tỷ (n={out['n']} mã)")
+    return out, "live"
+
+
 def fetch_news_raw() -> list[dict]:
     """Kéo tiêu đề tin thô (không tổng hợp/phân tích) từ các feed RSS miễn phí,
     chính chủ — chỉ dữ liệu xác định (title/date/link/description gốc), không
@@ -734,7 +808,7 @@ def build_live(prev: dict, grok: dict | None = None) -> dict:
     # (xem merge_grok_fill). Đánh dấu rõ "stale" thay vì im lặng mang nguyên
     # trạng thái quality cũ theo, để history_row_from_live() không ghi nhầm các
     # phiên này là "proxy" mới khi thực ra chỉ là số liệu cũ lặp lại.
-    for field in ("margin", "usdVnd", "foreign", "proprietary"):
+    for field in ("margin", "usdVnd", "proprietary"):
         quality[field] = "stale" if prev.get(field) else "missing"
 
     # vnYields: có nguồn từ 2026-09-12 — lãi suất trúng thầu TPCP của Kho bạc
@@ -747,6 +821,9 @@ def build_live(prev: dict, grok: dict | None = None) -> dict:
     # breadth: có nguồn free (đếm từng mã HOSE) từ 2026-09-06 — không còn phụ
     # thuộc grok-fill. Thất bại thì fetch_breadth() tự trả số phiên trước.
     breadth, quality["breadth"] = fetch_breadth(trade_date, prev)
+
+    # foreign: cùng API finfo, cộng từ từng mã (không thêm nguồn). Từ 2026-09-12.
+    foreign, quality["foreign"] = fetch_foreign(trade_date, prev)
 
     live = {
         "schemaVersion": "1.0",
@@ -766,7 +843,7 @@ def build_live(prev: dict, grok: dict | None = None) -> dict:
         "margin": prev.get("margin"),
         "breadth": breadth,
         "usdVnd": prev.get("usdVnd"),
-        "foreign": prev.get("foreign"),
+        "foreign": foreign or prev.get("foreign"),
         "proprietary": prev.get("proprietary"),
         "notes": [
             "Nguồn free: US Treasury CSV, Yahoo Finance (VN-Index/DXY), CNN Fear & Greed.",

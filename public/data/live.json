@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-12T11:21:31+07:00",
+  "generatedAtIct": "2026-09-12T13:36:27+07:00",
   "asof": "2026-09-11",
   "quality": {
     "usYields": "live",
@@ -9,10 +9,10 @@
     "dxy": "live",
     "margin": "missing",
     "usdVnd": "missing",
-    "foreign": "missing",
     "proprietary": "missing",
     "vnYields": "proxy",
-    "breadth": "live"
+    "breadth": "live",
+    "foreign": "live"
   },
   "usYields": [
     {
@@ -72,7 +72,7 @@
     },
     "asofEt": "2026-09-12"
   },
-  "fgUsFetchedAt": "2026-09-12T11:21:30.122343+07:00",
+  "fgUsFetchedAt": "2026-09-12T13:36:24.682758+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
     "price": 1795.21,
@@ -81,9 +81,9 @@
     "pct": -1.86,
     "date": "2026-09-11"
   },
-  "vnIndexFetchedAt": "2026-09-12T11:21:30.355251+07:00",
+  "vnIndexFetchedAt": "2026-09-12T13:36:24.951583+07:00",
   "dxy": 99.09,
-  "dxyFetchedAt": "2026-09-12T11:21:30.628497+07:00",
+  "dxyFetchedAt": "2026-09-12T13:36:25.158702+07:00",
   "vnYields": [
     {
       "t": "5 năm",
@@ -140,7 +140,15 @@
     "source": "VNDirect finfo (đếm từ giá đóng cửa từng mã HOSE)"
   },
   "usdVnd": null,
-  "foreign": null,
+  "foreign": {
+    "net": -834.2,
+    "buy": 1899.3,
+    "sell": 2733.5,
+    "unit": "tỷ VND",
+    "scope": "HOSE, toàn phiên (khớp lệnh + thoả thuận)",
+    "n": 405,
+    "source": "VNDirect finfo (cộng từ buyVal/sellVal từng mã HOSE, chỉ type=STOCK)"
+  },
   "proprietary": null,
   "notes": [
     "Nguồn free: US Treasury CSV, Yahoo Finance (VN-Index/DXY), CNN Fear & Greed.",
