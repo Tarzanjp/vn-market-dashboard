@@ -109,7 +109,7 @@ export default function CashoutApp() {
           <div className="p-hd">
             <div>
               <h2>📊 VN Core Sector Matrix</h2>
-              <span className="sub">Kết hợp tỷ lệ khối lượng so với trung bình 25 phiên trước đó (Vol Ratio) và % thay đổi giá để tự động phân loại dòng tiền theo từng nhóm ngành.</span>
+              <span className="sub">Kết hợp tỷ lệ GTGD so với trung bình 25 phiên trước đó (Vol Ratio) và % thay đổi giá để phân loại dòng tiền. Ngưỡng &quot;nóng&quot; là phân vị 80 lịch sử của chính từng ngành, không phải một hằng số chung.</span>
             </div>
           </div>
           <div className="p-body">
@@ -128,8 +128,8 @@ export default function CashoutApp() {
               </table>
             </div>
             <div className="co-legend-note">
-              <span className="lg-dot" style={{ background: "var(--tang)" }} />Vol Ratio &gt; 1.2 &amp; % Change &gt; 0 → <b style={{ color: "var(--tang)" }}>Cash Inflow (Dòng tiền vào)</b>&nbsp;&nbsp;&nbsp;
-              <span className="lg-dot" style={{ background: "var(--giam)" }} />Vol Ratio &gt; 1.2 &amp; % Change &lt; 0 → <b style={{ color: "var(--giam)" }}>Cash Outflow (Tháo chạy)</b>&nbsp;&nbsp;&nbsp;
+              <span className="lg-dot" style={{ background: "var(--tang)" }} />Vol Ratio vượt ngưỡng riêng của ngành &amp; % Change &gt; 0 → <b style={{ color: "var(--tang)" }}>Cash Inflow (Dòng tiền vào)</b>&nbsp;&nbsp;&nbsp;
+              <span className="lg-dot" style={{ background: "var(--giam)" }} />Vượt ngưỡng &amp; % Change &lt; 0 → <b style={{ color: "var(--giam)" }}>Cash Outflow (Tháo chạy)</b>&nbsp;&nbsp;&nbsp;
               <span className="lg-dot" style={{ background: "var(--dim)" }} />Còn lại → Neutral / Rotation<br />
               <span id="sectorDataNote">※ Toàn bộ số liệu ngành là dữ liệu mẫu (preset/simulated), không phải dữ liệu khớp lệnh thật từ HOSE/HNX.</span>
             </div>

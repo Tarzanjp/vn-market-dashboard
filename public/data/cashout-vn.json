@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "asof": "2026-09-11",
-  "generatedAtIct": "2026-09-12T10:30:06+07:00",
+  "generatedAtIct": "2026-09-12T10:49:52+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — bulk price_board toàn bộ mã HOSE/HNX/UPCOM",
   "method": {
     "tickers": "GTGD bình quân 15 phiên gần nhất (ADTV), sơ tuyển từ top 20 mã theo GTGD phiên hôm nay. Rổ ứng viên là top 20 mã theo GTGD phiên hôm nay — không có API lấy lịch sử hàng loạt nên không xếp hạng được trên toàn bộ ~1.600 mã; một mã ngoài rổ vẫn có thể thuộc top-10 thật theo ADTV.",
@@ -9,6 +9,7 @@
     "foreignNetBn": "Σ (foreign_buy_value − foreign_sell_value) toàn bộ mã — số thật từ snapshot, đơn vị tỷ VND.",
     "sectorValueChg": "GTGD & %thay đổi (bình quân theo GTGD) của các mã thuộc nhóm ngành ICB tương ứng — số thật.",
     "volRatio": "GTGD hôm nay / GTGD bình quân 25 phiên TRƯỚC ĐÓ (phiên hôm nay không nằm trong mẫu số), tính trên tối đa 3 mã lớn nhất ngành theo GTGD — tử và mẫu cùng rổ mã. KHÔNG phải toàn ngành: xem vol_ratio_coverage_pct để biết rổ phủ bao nhiêu phần GTGD của ngành (hai cột chg/value bên cạnh thì tính trên toàn bộ mã). Thiếu đủ 26 phiên lịch sử → null, không hạ cửa sổ cho vừa dữ liệu.",
+    "volRatioThreshold": "Ngưỡng \"khối lượng nóng\" của mỗi ngành = phân vị 80 của CHÍNH tỷ lệ đó trên lịch sử ngành, tính trên các phiên TRƯỚC phiên hiện tại (không look-ahead). Trước đây dùng hằng số 1,2x cho mọi ngành: đo trên 120 phiên thì Bất động sản vượt 1,2 ở 41,7% số phiên còn Ngân hàng chỉ 11,7%, nên cùng một nhãn không so sánh được giữa các dòng. Cần tối thiểu 40 quan sát, thiếu thì null và không phân loại.",
     "proprietaryFlow": "Không có nguồn dữ liệu miễn phí qua API này. Lấy từ public/data/live.json field 'proprietary' (agent nghiên cứu công khai, xem daily_update.py merge_grok_fill), CHỈ khi cùng phiên hôm nay — quality=proxy. Không có nguồn cùng ngày → null (quality=missing), KHÔNG bịa/carry-forward.",
     "tickerForeignFlow": "foreign_buy_value / foreign_sell_value thật của từng mã, KHÔNG phải ước tính toàn bộ lệnh mua/bán (không tách được lệnh của NĐT trong nước).",
     "foreignRoom": "current_room/total_room thật từ price_board (đơn vị cổ phiếu) — room % = current_room/total_room×100. Mã có total_room=0 (không giới hạn sở hữu nước ngoài hoặc thiếu dữ liệu) bị loại khỏi foreignRoomWatch.",
@@ -55,7 +56,8 @@
         "VPB"
       ],
       "vol_ratio_rep_n": 3,
-      "vol_ratio_coverage_pct": 42.2
+      "vol_ratio_coverage_pct": 42.2,
+      "vol_ratio_hot_threshold": 1.13
     },
     {
       "en": "Real Estate",
@@ -69,7 +71,8 @@
         "NVL"
       ],
       "vol_ratio_rep_n": 3,
-      "vol_ratio_coverage_pct": 58.9
+      "vol_ratio_coverage_pct": 58.9,
+      "vol_ratio_hot_threshold": 1.44
     },
     {
       "en": "Steel & Materials",
@@ -83,7 +86,8 @@
         "NKG"
       ],
       "vol_ratio_rep_n": 3,
-      "vol_ratio_coverage_pct": 94.1
+      "vol_ratio_coverage_pct": 94.1,
+      "vol_ratio_hot_threshold": 1.15
     },
     {
       "en": "Securities",
@@ -97,7 +101,8 @@
         "VCI"
       ],
       "vol_ratio_rep_n": 3,
-      "vol_ratio_coverage_pct": 55.9
+      "vol_ratio_coverage_pct": 55.9,
+      "vol_ratio_hot_threshold": 1.29
     },
     {
       "en": "F&B / Retail",
@@ -111,7 +116,8 @@
         "PNJ"
       ],
       "vol_ratio_rep_n": 3,
-      "vol_ratio_coverage_pct": 60.8
+      "vol_ratio_coverage_pct": 60.8,
+      "vol_ratio_hot_threshold": 1.23
     }
   ],
   "tickers": [

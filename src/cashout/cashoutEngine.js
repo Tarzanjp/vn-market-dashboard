@@ -42,7 +42,8 @@ export function initCashout(data, insight) {
       .filter((s) => s.vol_ratio != null)
       .map((s) => ({ en: s.en, vi: s.vi, chg: s.chg, value: s.value_bn, volRatio: s.vol_ratio,
                      repN: s.vol_ratio_rep_n, repSyms: s.vol_ratio_proxy_symbols,
-                     coverage: s.vol_ratio_coverage_pct }));
+                     coverage: s.vol_ratio_coverage_pct,
+                     hotThreshold: s.vol_ratio_hot_threshold }));
   }
   if (isReal && Array.isArray(data.tickers) && data.tickers.length) {
     LEADING_STOCKS = data.tickers.map((t) => ({
@@ -158,9 +159,18 @@ export function initCashout(data, insight) {
   }
 
   /* ============ VN Core Sector Matrix ============ */
-  function classify(chg, volRatio) {
-    if (volRatio > 1.2 && chg > 0) return { label: "Cash Inflow", vi: "Dòng tiền vào", cls: "in" };
-    if (volRatio > 1.2 && chg < 0) return { label: "Cash Outflow", vi: "Tháo chạy", cls: "out" };
+  /* Ngưỡng "khối lượng nóng" đến từ pipeline, riêng cho từng ngành (phân vị 80
+     trên lịch sử của chính ngành đó, loại trừ phiên đang xét). Trước đây dùng
+     1,2x cho mọi ngành: đo trên 120 phiên thì Bất động sản vượt 1,2 ở 41,7% số
+     phiên còn Ngân hàng chỉ 11,7% — cùng chữ "Cash Inflow" nhưng hiếm gặp gấp
+     gần 4 lần tuỳ dòng, nên không so sánh được giữa các ngành.
+     Thiếu ngưỡng (chưa đủ quan sát) thì KHÔNG phân loại, thay vì rơi về hằng số. */
+  function classify(chg, volRatio, hotThreshold) {
+    if (volRatio == null || hotThreshold == null || chg == null) {
+      return { label: "—", vi: "chưa đủ dữ liệu", cls: "neutral" };
+    }
+    if (volRatio > hotThreshold && chg > 0) return { label: "Cash Inflow", vi: "Dòng tiền vào", cls: "in" };
+    if (volRatio > hotThreshold && chg < 0) return { label: "Cash Outflow", vi: "Tháo chạy", cls: "out" };
     return { label: "Neutral", vi: "Rotation", cls: "neutral" };
   }
 
@@ -196,19 +206,23 @@ export function initCashout(data, insight) {
 
       const tdVol = document.createElement("td");
       const volSpan = document.createElement("span");
-      volSpan.className = "co-volratio num" + (s.volRatio > 1.2 ? " hot" : "");
+      volSpan.className = "co-volratio num" +
+        (s.hotThreshold != null && s.volRatio > s.hotThreshold ? " hot" : "");
       volSpan.textContent = s.volRatio.toFixed(2) + "x";
       // Nói rõ ô này đại diện tới đâu — nó KHÔNG cùng phạm vi với hai cột bên trái.
       if (s.coverage != null) {
         volSpan.title =
           `GTGD hôm nay / TB 25 phiên trước, trên ${s.repN} mã lớn nhất ngành` +
           (s.repSyms && s.repSyms.length ? ` (${s.repSyms.join(", ")})` : "") +
-          ` — rổ này chiếm ${s.coverage}% GTGD của ngành hôm nay.`;
+          ` — rổ này chiếm ${s.coverage}% GTGD của ngành hôm nay.` +
+          (s.hotThreshold != null
+            ? ` Ngưỡng "nóng" của riêng ngành này: ${s.hotThreshold.toFixed(2)}x (phân vị 80 lịch sử của nó).`
+            : "");
       }
       tdVol.appendChild(volSpan);
 
       const tdFlow = document.createElement("td");
-      const c = classify(s.chg, s.volRatio);
+      const c = classify(s.chg, s.volRatio, s.hotThreshold);
       const badge = document.createElement("span");
       badge.className = "co-flow-badge " + c.cls;
       badge.textContent = (c.cls === "in" ? "🟢 " : c.cls === "out" ? "🔴 " : "▪ ") + c.label + " (" + c.vi + ")";

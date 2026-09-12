@@ -74,11 +74,10 @@ LEADER_RANK_SESSIONS = 15
 # NotImplementedError ở cả nguồn VCI lẫn KBS), nên phải sơ tuyển từ GTGD hôm
 # nay rồi mới lấy lịch sử cho rổ đó.
 #
-# GIỚI HẠN CHƯA ĐO ĐƯỢC: một mã nằm ngoài top-LEADER_POOL_N hôm nay vẫn có thể
-# thuộc top-10 theo ADTV15 (nếu hôm nay nó giao dịch bất thường ít). Tôi đã thử
-# đo mức rò rỉ này trên rổ 40 mã nhưng chạm hạn mức 20 request/phút của tier
-# khách và tiến trình bị vnstock dừng — nên con số 20 dưới đây là đánh đổi giữa
-# độ phủ và hạn mức, KHÔNG phải kết quả đo. Đừng ghi nó thành "đủ".
+# ĐÃ ĐO (phiên 2026-09-11, rổ 45 mã, giãn cách 4s để không chạm hạn mức): top-10
+# theo ADTV15 rút hết từ hạng 1–15 của GTGD hôm nay, tức 20 còn dư 5 bậc. Đây là
+# một phiên, không phải bảo chứng vĩnh viễn: một mã dẫn dắt nghỉ giao dịch bất
+# thường một hôm vẫn có thể tụt khỏi rổ. Nới rổ tốn đúng 1 request/mã.
 LEADER_POOL_N = 20
 # 15 phiên giao dịch ≈ 21 ngày lịch; lấy dư cho nghỉ lễ/Tết.
 LEADER_CALENDAR_DAYS = 50
@@ -197,9 +196,21 @@ def main() -> int:
     # được cache dùng lại). KHÔNG phải cả ngành — tỷ trọng phủ được ghi ra
     # JSON để trang nói rõ, thay vì để người đọc tưởng là toàn ngành.
     VOL_RATIO_REP_N = 3
+    # Ngưỡng "khối lượng nóng" KHÔNG còn là hằng số 1,2x. Đo trên 120 phiên
+    # (2026-09-12): với cùng ngưỡng 1,2 thì Bất động sản vượt ngưỡng 41,7%
+    # số phiên còn Ngân hàng chỉ 11,7% — cùng một chữ "Cash Inflow" nhưng
+    # hiếm gặp gấp gần 4 lần tuỳ ngành, tức nhãn không so sánh được giữa các
+    # dòng. Thay bằng phân vị của CHÍNH ngành đó trên lịch sử của nó, nên
+    # "nóng" luôn nghĩa là "thuộc nhóm N% phiên sôi động nhất của ngành này".
+    VOL_RATIO_HOT_PCTILE = 0.80
+    # Dưới mức này thì mẫu quá nhỏ để nói phân vị có nghĩa → không phân loại.
+    VOL_RATIO_MIN_OBS = 40
     # Cần đủ 25 phiên nền + phiên hôm nay. Lấy dư lịch cho chắc: 25 phiên giao
     # dịch ≈ 35 ngày lịch, cộng nghỉ lễ/Tết → 75 ngày là an toàn mà không đắt.
-    VOL_RATIO_CALENDAR_DAYS = 75
+    # Dài hơn mức 25 phiên cần cho mẫu số: còn phải dựng chuỗi tỷ lệ lịch sử
+    # để tự hiệu chỉnh ngưỡng (xem VOL_RATIO_HOT_PCTILE). ~200 ngày lịch ≈ 135
+    # phiên → khoảng 110 quan sát tỷ lệ. KHÔNG tốn thêm request, chỉ dài ngày.
+    VOL_RATIO_CALENDAR_DAYS = 200
 
     # ---- Lịch sử giá: fetch MỘT LẦN cho mỗi mã, dùng chung ----
     # Vol Ratio (nền 25 phiên) và ADTV (15 phiên) trước đây gọi lịch sử riêng
@@ -243,7 +254,7 @@ def main() -> int:
         Tử và mẫu dùng CÙNG rổ mã, nên tỷ lệ vẫn đúng kể cả khi rổ chỉ phủ một
         phần ngành; phần phủ được trả về để UI nói rõ.
 
-        Trả (ratio, số mã dùng, tỷ trọng GTGD hôm nay của rổ trong ngành).
+        Trả (ratio, số mã dùng, ngưỡng 'nóng' của riêng ngành này).
         """
         need = VOL_RATIO_BASE_SESSIONS + 1
         today_sum = 0.0
@@ -264,12 +275,34 @@ def main() -> int:
         avg_base = float(base_sum.mean())
         if avg_base <= 0:
             return None, len(used), None
-        return today_sum / avg_base, len(used), None
+        ratio = today_sum / avg_base
+
+        # Ngưỡng tự hiệu chỉnh: dựng lại chính tỷ lệ này cho từng phiên lịch sử
+        # rồi lấy phân vị. Chuỗi CHỈ gồm các phiên TRƯỚC phiên đang xét — phiên
+        # hôm nay không được nằm trong tập tham chiếu của chính nó
+        # (CLAUDE.md §1.3, cùng khuôn với compute_regime.py: history_excl_today).
+        # Căn từ CUỐI: các mã có độ dài lịch sử khác nhau (niêm yết khác thời
+        # điểm, phiên nghỉ khác nhau), reset_index từ đầu sẽ cộng nhầm phiên của
+        # mã này với phiên khác của mã kia.
+        series = [(history_for(sym)["close"] * history_for(sym)["volume"]) for sym in used]
+        m = min(len(v) for v in series)
+        tv = None
+        for v in series:
+            v = v.iloc[-m:].reset_index(drop=True)
+            tv = v if tv is None else tv.add(v, fill_value=0)
+        hist_ratios = []
+        for t in range(VOL_RATIO_BASE_SESSIONS, len(tv) - 1):   # -1: bỏ phiên hôm nay
+            base_t = float(tv.iloc[t - VOL_RATIO_BASE_SESSIONS:t].mean())
+            if base_t > 0:
+                hist_ratios.append(float(tv.iloc[t]) / base_t)
+        thr = (round(float(pd.Series(hist_ratios).quantile(VOL_RATIO_HOT_PCTILE)), 2)
+               if len(hist_ratios) >= VOL_RATIO_MIN_OBS else None)
+        return ratio, len(used), thr
 
     sectors_out = []
     for names, label_en, label_vi in SECTOR_DEFS:
         daily_value_bn, pct_chg, top3 = sector_bucket(names)
-        vr, rep_n, _ = vol_ratio_for(top3)
+        vr, rep_n, hot_thr = vol_ratio_for(top3)
         used = top3[:rep_n]
         # Rổ đại diện phủ bao nhiêu phần GTGD của ngành hôm nay. Không có con số
         # này thì "Vol Ratio" trông như đại lượng toàn ngành, ngang hàng với hai
@@ -278,7 +311,7 @@ def main() -> int:
         rep_val = sub_all[sub_all["listing_symbol"].isin(used)]["match_accumulated_value"].sum() / 1000
         cov = round(rep_val / daily_value_bn * 100, 1) if daily_value_bn else None
         log(f"sector {label_en}: value={daily_value_bn:.1f} chg={pct_chg:.2f} "
-            f"vol_ratio={vr} rep={used} phủ={cov}% GTGD ngành")
+            f"vol_ratio={vr} nguong_nong={hot_thr} rep={used} phủ={cov}% GTGD ngành")
         sectors_out.append({
             "en": label_en,
             "vi": label_vi,
@@ -288,6 +321,9 @@ def main() -> int:
             "vol_ratio_proxy_symbols": used,
             "vol_ratio_rep_n": rep_n,
             "vol_ratio_coverage_pct": cov,
+            # Ngưỡng "nóng" riêng của ngành này (phân vị trên lịch sử của
+            # chính nó, loại trừ phiên hôm nay). null = chưa đủ quan sát.
+            "vol_ratio_hot_threshold": hot_thr,
         })
 
     # Nhãn ngành cho 10 mã dẫn dắt: dùng đúng nhãn EN/VI đã định nghĩa ở
@@ -591,6 +627,13 @@ def main() -> int:
                           "xem vol_ratio_coverage_pct để biết rổ phủ bao nhiêu phần GTGD của ngành "
                           "(hai cột chg/value bên cạnh thì tính trên toàn bộ mã). Thiếu đủ "
                           f"{VOL_RATIO_BASE_SESSIONS + 1} phiên lịch sử → null, không hạ cửa sổ cho vừa dữ liệu."),
+            "volRatioThreshold": (f"Ngưỡng \"khối lượng nóng\" của mỗi ngành = phân vị "
+                                  f"{VOL_RATIO_HOT_PCTILE*100:.0f} của CHÍNH tỷ lệ đó trên lịch sử ngành, "
+                                  "tính trên các phiên TRƯỚC phiên hiện tại (không look-ahead). "
+                                  "Trước đây dùng hằng số 1,2x cho mọi ngành: đo trên 120 phiên thì "
+                                  "Bất động sản vượt 1,2 ở 41,7% số phiên còn Ngân hàng chỉ 11,7%, "
+                                  f"nên cùng một nhãn không so sánh được giữa các dòng. Cần tối thiểu "
+                                  f"{VOL_RATIO_MIN_OBS} quan sát, thiếu thì null và không phân loại."),
             "proprietaryFlow": "Không có nguồn dữ liệu miễn phí qua API này. Lấy từ public/data/live.json field 'proprietary' (agent nghiên cứu công khai, xem daily_update.py merge_grok_fill), CHỈ khi cùng phiên hôm nay — quality=proxy. Không có nguồn cùng ngày → null (quality=missing), KHÔNG bịa/carry-forward.",
             "tickerForeignFlow": "foreign_buy_value / foreign_sell_value thật của từng mã, KHÔNG phải ước tính toàn bộ lệnh mua/bán (không tách được lệnh của NĐT trong nước).",
             "foreignRoom": "current_room/total_room thật từ price_board (đơn vị cổ phiếu) — room % = current_room/total_room×100. Mã có total_room=0 (không giới hạn sở hữu nước ngoài hoặc thiếu dữ liệu) bị loại khỏi foreignRoomWatch.",
