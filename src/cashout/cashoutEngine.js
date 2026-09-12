@@ -40,7 +40,9 @@ export function initCashout(data, insight) {
   if (isReal && Array.isArray(data.sectors) && data.sectors.length) {
     SECTOR_DATA = data.sectors
       .filter((s) => s.vol_ratio != null)
-      .map((s) => ({ en: s.en, vi: s.vi, chg: s.chg, value: s.value_bn, volRatio: s.vol_ratio }));
+      .map((s) => ({ en: s.en, vi: s.vi, chg: s.chg, value: s.value_bn, volRatio: s.vol_ratio,
+                     repN: s.vol_ratio_rep_n, repSyms: s.vol_ratio_proxy_symbols,
+                     coverage: s.vol_ratio_coverage_pct }));
   }
   if (isReal && Array.isArray(data.tickers) && data.tickers.length) {
     LEADING_STOCKS = data.tickers.map((t) => ({
@@ -196,6 +198,13 @@ export function initCashout(data, insight) {
       const volSpan = document.createElement("span");
       volSpan.className = "co-volratio num" + (s.volRatio > 1.2 ? " hot" : "");
       volSpan.textContent = s.volRatio.toFixed(2) + "x";
+      // Nói rõ ô này đại diện tới đâu — nó KHÔNG cùng phạm vi với hai cột bên trái.
+      if (s.coverage != null) {
+        volSpan.title =
+          `GTGD hôm nay / TB 25 phiên trước, trên ${s.repN} mã lớn nhất ngành` +
+          (s.repSyms && s.repSyms.length ? ` (${s.repSyms.join(", ")})` : "") +
+          ` — rổ này chiếm ${s.coverage}% GTGD của ngành hôm nay.`;
+      }
       tdVol.appendChild(volSpan);
 
       const tdFlow = document.createElement("td");
@@ -462,8 +471,13 @@ export function initCashout(data, insight) {
       sectorNote.textContent =
         "※ GTGD & % thay đổi là số thật, tính trên TOÀN BỘ mã trong ngành (phiên " +
         (data.asof || data.generatedAtIct || "—") + "). " +
-        "Nhưng 25D Avg Vol Ratio chỉ là ước tính từ MỘT mã đại diện lớn nhất ngành theo GTGD — " +
-        "hai cột này không cùng phạm vi, nên cột Classification mang tính tham khảo.";
+        "25D Avg Vol Ratio tính trên nhóm mã lớn nhất mỗi ngành, " +
+        (data.sectors.map((x) => x.vol_ratio_coverage_pct)
+          .filter((x) => x != null).length
+          ? "phủ " + Math.min(...data.sectors.map((x) => x.vol_ratio_coverage_pct).filter((x) => x != null)) +
+            "–" + Math.max(...data.sectors.map((x) => x.vol_ratio_coverage_pct).filter((x) => x != null)) + "% GTGD ngành"
+          : "phạm vi hẹp hơn") +
+        " — không cùng phạm vi với hai cột bên trái. Di chuột lên từng ô để xem mã và mức phủ.";
     }
     if (Array.isArray(data.tickers) && data.tickers.length) {
       // Cơ sở xếp hạng đọc từ payload, không giả định: pipeline tự rơi về xếp

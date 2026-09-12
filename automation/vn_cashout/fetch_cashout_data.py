@@ -192,6 +192,11 @@ def main() -> int:
     # Đổi cửa sổ KHÔNG tốn thêm request — chỉ kéo dài khoảng ngày của cùng
     # một lần fetch (xem history_for bên dưới, dùng chung với ADTV).
     VOL_RATIO_BASE_SESSIONS = 25
+    # Số mã đại diện mỗi ngành. 3 là đánh đổi với hạn mức 20 request/phút
+    # (5 ngành × 3 = 15 lần gọi lịch sử, phần lớn trùng rổ mã dẫn dắt nên
+    # được cache dùng lại). KHÔNG phải cả ngành — tỷ trọng phủ được ghi ra
+    # JSON để trang nói rõ, thay vì để người đọc tưởng là toàn ngành.
+    VOL_RATIO_REP_N = 3
     # Cần đủ 25 phiên nền + phiên hôm nay. Lấy dư lịch cho chắc: 25 phiên giao
     # dịch ≈ 35 ngày lịch, cộng nghỉ lễ/Tết → 75 ngày là an toàn mà không đắt.
     VOL_RATIO_CALENDAR_DAYS = 75
@@ -223,35 +228,66 @@ def main() -> int:
         return df
 
     def vol_ratio_for(symbols):
-        # Chỉ dùng mã đại diện lớn nhất (top-1) — xem GIỚI HẠN ở method.volRatio.
+        """GTGD hôm nay / GTGD bình quân 25 phiên trước, trên cùng một rổ mã.
+
+        Trước đây hàm này lấy KHỐI LƯỢNG của đúng MỘT mã (symbols[:1]) làm
+        "Vol Ratio" của cả ngành, trong khi hai cột bên cạnh (% Change và Daily
+        Value) tính trên TOÀN BỘ mã trong ngành. Nói cách khác cột phân loại
+        dòng tiền ngành Ngân hàng thực chất là của riêng STB. Giờ dùng
+        VOL_RATIO_REP_N mã lớn nhất ngành theo GTGD.
+
+        Cộng GTGD chứ không cộng khối lượng: số cổ phiếu của hai mã khác thị giá
+        không cộng được với nhau cho ra đại lượng có nghĩa. GTGD thì được, và
+        cùng đơn vị với cột Daily Value ngay cạnh.
+
+        Tử và mẫu dùng CÙNG rổ mã, nên tỷ lệ vẫn đúng kể cả khi rổ chỉ phủ một
+        phần ngành; phần phủ được trả về để UI nói rõ.
+
+        Trả (ratio, số mã dùng, tỷ trọng GTGD hôm nay của rổ trong ngành).
+        """
         need = VOL_RATIO_BASE_SESSIONS + 1
-        ratios = []
-        for sym in symbols[:1]:
+        today_sum = 0.0
+        base_sum = None
+        used = []
+        for sym in symbols[:VOL_RATIO_REP_N]:
             df = history_for(sym)
             if df is None or len(df) < need:
                 log(f"vol_ratio {sym}: chỉ có {0 if df is None else len(df)} phiên, cần {need} — bỏ qua")
                 continue
-            today_vol = df["volume"].iloc[-1]
-            # -need:-1 = đúng 25 phiên TRƯỚC phiên gần nhất; phiên gần nhất bị
-            # loại khỏi mẫu số (nếu không, khối lượng đột biến tự làm loãng
-            # chính nó và ratio luôn bị kéo về 1).
-            avg_base = df["volume"].iloc[-need:-1].mean()
-            if avg_base > 0:
-                ratios.append(today_vol / avg_base)
-        return sum(ratios) / len(ratios) if ratios else None
+            val = (df["close"] * df["volume"])          # nghìn đồng, xem adtv_bn_for
+            today_sum += float(val.iloc[-1])
+            b = val.iloc[-need:-1].reset_index(drop=True)
+            base_sum = b if base_sum is None else base_sum.add(b, fill_value=0)
+            used.append(sym)
+        if not used or base_sum is None:
+            return None, 0, None
+        avg_base = float(base_sum.mean())
+        if avg_base <= 0:
+            return None, len(used), None
+        return today_sum / avg_base, len(used), None
 
     sectors_out = []
     for names, label_en, label_vi in SECTOR_DEFS:
         daily_value_bn, pct_chg, top3 = sector_bucket(names)
-        vr = vol_ratio_for(top3)
-        log(f"sector {label_en}: value={daily_value_bn:.1f} chg={pct_chg:.2f} vol_ratio={vr} rep={top3}")
+        vr, rep_n, _ = vol_ratio_for(top3)
+        used = top3[:rep_n]
+        # Rổ đại diện phủ bao nhiêu phần GTGD của ngành hôm nay. Không có con số
+        # này thì "Vol Ratio" trông như đại lượng toàn ngành, ngang hàng với hai
+        # cột bên cạnh — mà nó không phải.
+        sub_all = board[board["industry_name"].isin(names)]
+        rep_val = sub_all[sub_all["listing_symbol"].isin(used)]["match_accumulated_value"].sum() / 1000
+        cov = round(rep_val / daily_value_bn * 100, 1) if daily_value_bn else None
+        log(f"sector {label_en}: value={daily_value_bn:.1f} chg={pct_chg:.2f} "
+            f"vol_ratio={vr} rep={used} phủ={cov}% GTGD ngành")
         sectors_out.append({
             "en": label_en,
             "vi": label_vi,
             "chg": round(pct_chg, 2),
             "value_bn": round(daily_value_bn, 1),
             "vol_ratio": round(vr, 2) if vr else None,
-            "vol_ratio_proxy_symbols": top3,
+            "vol_ratio_proxy_symbols": used,
+            "vol_ratio_rep_n": rep_n,
+            "vol_ratio_coverage_pct": cov,
         })
 
     # Nhãn ngành cho 10 mã dẫn dắt: dùng đúng nhãn EN/VI đã định nghĩa ở
@@ -549,7 +585,12 @@ def main() -> int:
             "totalTurnoverBn": "Σ GTGD khớp lệnh tích luỹ toàn bộ mã (accumulated_value), đơn vị tỷ VND — số thật từ snapshot.",
             "foreignNetBn": "Σ (foreign_buy_value − foreign_sell_value) toàn bộ mã — số thật từ snapshot, đơn vị tỷ VND.",
             "sectorValueChg": "GTGD & %thay đổi (bình quân theo GTGD) của các mã thuộc nhóm ngành ICB tương ứng — số thật.",
-            "volRatio": "Ước tính từ khối lượng hôm nay / TB 25 phiên TRƯỚC ĐÓ (phiên hôm nay không nằm trong mẫu số) của DUY NHẤT mã có GTGD lớn nhất ngành — KHÔNG phải toàn ngành. Thiếu đủ 26 phiên lịch sử → null, không hạ cửa sổ cho vừa dữ liệu.",
+            "volRatio": (f"GTGD hôm nay / GTGD bình quân {VOL_RATIO_BASE_SESSIONS} phiên TRƯỚC ĐÓ "
+                          f"(phiên hôm nay không nằm trong mẫu số), tính trên tối đa {VOL_RATIO_REP_N} mã "
+                          "lớn nhất ngành theo GTGD — tử và mẫu cùng rổ mã. KHÔNG phải toàn ngành: "
+                          "xem vol_ratio_coverage_pct để biết rổ phủ bao nhiêu phần GTGD của ngành "
+                          "(hai cột chg/value bên cạnh thì tính trên toàn bộ mã). Thiếu đủ "
+                          f"{VOL_RATIO_BASE_SESSIONS + 1} phiên lịch sử → null, không hạ cửa sổ cho vừa dữ liệu."),
             "proprietaryFlow": "Không có nguồn dữ liệu miễn phí qua API này. Lấy từ public/data/live.json field 'proprietary' (agent nghiên cứu công khai, xem daily_update.py merge_grok_fill), CHỈ khi cùng phiên hôm nay — quality=proxy. Không có nguồn cùng ngày → null (quality=missing), KHÔNG bịa/carry-forward.",
             "tickerForeignFlow": "foreign_buy_value / foreign_sell_value thật của từng mã, KHÔNG phải ước tính toàn bộ lệnh mua/bán (không tách được lệnh của NĐT trong nước).",
             "foreignRoom": "current_room/total_room thật từ price_board (đơn vị cổ phiếu) — room % = current_room/total_room×100. Mã có total_room=0 (không giới hạn sở hữu nước ngoài hoặc thiếu dữ liệu) bị loại khỏi foreignRoomWatch.",
