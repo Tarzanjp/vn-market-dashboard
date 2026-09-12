@@ -109,7 +109,7 @@ export default function CashoutApp() {
           <div className="p-hd">
             <div>
               <h2>📊 VN Core Sector Matrix</h2>
-              <span className="sub">Kết hợp tỷ lệ khối lượng so với trung bình 5 phiên (Vol Ratio) và % thay đổi giá để tự động phân loại dòng tiền theo từng nhóm ngành.</span>
+              <span className="sub">Kết hợp tỷ lệ khối lượng so với trung bình 25 phiên trước đó (Vol Ratio) và % thay đổi giá để tự động phân loại dòng tiền theo từng nhóm ngành.</span>
             </div>
           </div>
           <div className="p-body">
@@ -120,7 +120,7 @@ export default function CashoutApp() {
                     <th>Sector / Ngành</th>
                     <th>% Change</th>
                     <th>Daily Value (VND B)</th>
-                    <th>5D Avg Vol Ratio</th>
+                    <th>25D Avg Vol Ratio</th>
                     <th>Classification</th>
                   </tr>
                 </thead>
@@ -141,7 +141,7 @@ export default function CashoutApp() {
           <div className="p-hd">
             <div>
               <h2>🎯 Market Leader Flow (Ticker Tracking)</h2>
-              <span className="sub" id="stocksSub">Giá trị mua/bán của khối ngoại (Foreign Buy/Sell Value) trong phiên của 10 mã dẫn dắt thị trường (GTGD lớn nhất, chọn động mỗi phiên).</span>
+              <span className="sub" id="stocksSub">10 mã dẫn dắt thị trường, xếp theo GTGD bình quân 15 phiên gần nhất (chọn động mỗi lần chạy) — giá trị mua/bán của khối ngoại trong phiên gần nhất.</span>
             </div>
           </div>
           <div className="p-body">

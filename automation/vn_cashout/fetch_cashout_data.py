@@ -11,11 +11,13 @@ Chạy:    py automation/vn_cashout/fetch_cashout_data.py
 
 Nguồn: VCI (qua vnstock) — bulk price_board cho TOÀN BỘ mã HOSE/HNX/UPCOM
 trong một lần gọi (GTGD khớp lệnh tích luỹ + khối ngoại mua/bán từng mã),
-cộng lịch sử 5 phiên của vài mã đại diện mỗi ngành để tính vol ratio.
+cộng lịch sử 25 phiên của mã đại diện lớn nhất mỗi ngành để tính vol ratio.
 
-"Market Leader Flow" (tickers[]): TOP_TICKERS_N (10) mã có GTGD khớp lệnh
-lớn nhất phiên — chọn ĐỘNG từ board mỗi lần chạy, không hardcode danh sách,
-nên luôn phản ánh đúng nhóm mã đang dẫn dắt dòng tiền hôm nay.
+"Market Leader Flow" (tickers[]): TOP_TICKERS_N (10) mã dẫn dắt, xếp theo
+GTGD bình quân LEADER_RANK_SESSIONS (15) phiên gần nhất — sơ tuyển từ top
+LEADER_POOL_N (20) mã theo GTGD phiên hôm nay rồi lấy lịch sử cho rổ đó.
+Chọn ĐỘNG mỗi lần chạy, không hardcode. Nếu không lấy đủ lịch sử (hạn mức API)
+thì tự rơi về cách cũ — xếp theo GTGD 1 phiên — và ghi rõ ở tickersRankBasis.
 
 Cũng trích thêm (từ CHÍNH bulk price_board đã gọi — không tốn thêm request):
 - Room ngoại còn lại (match_current_room/match_total_room, đơn vị cổ phiếu)
@@ -60,10 +62,26 @@ SECTOR_DEFS = [
     (("Thực phẩm - Đồ uống", "Bán lẻ"), "F&B / Retail", "Bán lẻ/Thực phẩm"),
 ]
 
-# "Market Leader Flow" — top N mã theo GTGD khớp lệnh toàn thị trường hôm nay,
-# chọn ĐỘNG từ board đã fetch sẵn (không hardcode danh sách cố định) để luôn
-# phản ánh đúng dòng tiền dẫn dắt phiên hiện tại thay vì lệch theo 1 rổ cũ.
+# "Market Leader Flow" — top N mã DẪN DẮT, xếp theo GTGD bình quân
+# LEADER_RANK_SESSIONS phiên gần nhất (ADTV) thay vì GTGD của đúng một phiên.
+# Lý do: xếp theo 1 phiên khiến danh sách đổi người mỗi ngày theo một cú giao
+# dịch đơn lẻ; "mã dẫn dắt" phải là mã dẫn dắt bền qua nhiều phiên.
 TOP_TICKERS_N = 10
+LEADER_RANK_SESSIONS = 15
+
+# Rổ ứng viên: xếp hạng đúng theo ADTV cho TOÀN thị trường cần lịch sử của
+# ~1.600 mã — không có API lấy lịch sử hàng loạt (Trading.price_history báo
+# NotImplementedError ở cả nguồn VCI lẫn KBS), nên phải sơ tuyển từ GTGD hôm
+# nay rồi mới lấy lịch sử cho rổ đó.
+#
+# GIỚI HẠN CHƯA ĐO ĐƯỢC: một mã nằm ngoài top-LEADER_POOL_N hôm nay vẫn có thể
+# thuộc top-10 theo ADTV15 (nếu hôm nay nó giao dịch bất thường ít). Tôi đã thử
+# đo mức rò rỉ này trên rổ 40 mã nhưng chạm hạn mức 20 request/phút của tier
+# khách và tiến trình bị vnstock dừng — nên con số 20 dưới đây là đánh đổi giữa
+# độ phủ và hạn mức, KHÔNG phải kết quả đo. Đừng ghi nó thành "đủ".
+LEADER_POOL_N = 20
+# 15 phiên giao dịch ≈ 21 ngày lịch; lấy dư cho nghỉ lễ/Tết.
+LEADER_CALENDAR_DAYS = 50
 
 # "Năng lực hấp thụ vốn" (capacity) — quy ước participation-rate ≤15% GTGD/phiên
 # (phổ biến ở bàn giao dịch tổ chức để giảm market impact) và các mốc vốn MINH
@@ -165,29 +183,61 @@ def main() -> int:
         top3 = sub.sort_values("match_accumulated_value", ascending=False).head(3)["listing_symbol"].tolist()
         return daily_value_bn, pct_chg, top3
 
+    # Cửa sổ nền của vol ratio: khối lượng hôm nay so với trung bình N phiên
+    # TRƯỚC đó. 25 phiên (~1 tháng giao dịch) thay cho 5 phiên trước đây — nền
+    # 5 phiên quá ngắn nên chỉ cần một phiên đột biến lọt vào mẫu là mẫu số bị
+    # kéo lên và ratio hôm sau tụt xuống, khiến nhãn Cash Inflow/Outflow nhấp
+    # nháy theo nhiễu chứ không theo dòng tiền.
+    #
+    # Đổi cửa sổ KHÔNG tốn thêm request — chỉ kéo dài khoảng ngày của cùng
+    # một lần fetch (xem history_for bên dưới, dùng chung với ADTV).
+    VOL_RATIO_BASE_SESSIONS = 25
+    # Cần đủ 25 phiên nền + phiên hôm nay. Lấy dư lịch cho chắc: 25 phiên giao
+    # dịch ≈ 35 ngày lịch, cộng nghỉ lễ/Tết → 75 ngày là an toàn mà không đắt.
+    VOL_RATIO_CALENDAR_DAYS = 75
+
+    # ---- Lịch sử giá: fetch MỘT LẦN cho mỗi mã, dùng chung ----
+    # Vol Ratio (nền 25 phiên) và ADTV (15 phiên) trước đây gọi lịch sử riêng
+    # cho những mã trùng nhau — vừa tốn request trên hạn mức 20/phút của tier
+    # khách, vừa có nguy cơ hai chỉ số đọc hai lần fetch khác nhau (nguồn cùng
+    # là VCI nhưng snapshot lệch thời điểm). Một lần fetch, một bộ nến, hai
+    # phép tính đọc chung — số liệu trên trang do đó nhất quán với nhau.
+    HIST_CALENDAR_DAYS = max(VOL_RATIO_CALENDAR_DAYS, LEADER_CALENDAR_DAYS)
+    _hist_cache: dict[str, "pd.DataFrame | None"] = {}
+
+    def history_for(sym: str):
+        """Nến ngày của `sym`, hoặc None nếu không lấy được. Kết quả (kể cả
+        None) được nhớ để không gọi lại mã đã hỏng."""
+        if sym in _hist_cache:
+            return _hist_cache[sym]
+        df = None
+        try:
+            time.sleep(3.2)
+            df = vs.stock(symbol=sym, source="VCI").quote.history(
+                start=(pd.Timestamp.today() - timedelta(days=HIST_CALENDAR_DAYS)).strftime("%Y-%m-%d"),
+                end=pd.Timestamp.today().strftime("%Y-%m-%d"), interval="1D",
+            )
+        except Exception as e:
+            log(f"history fail {sym}: {e!r}")
+        _hist_cache[sym] = df
+        return df
+
     def vol_ratio_for(symbols):
-        # Free/guest vnstock tier caps at 20 requests/phút — chỉ lấy lịch sử
-        # của mã đại diện lớn nhất (top-1), cách quãng giữa các lần gọi để
-        # không vượt hạn mức khi chạy tuần tự cho 5 ngành.
+        # Chỉ dùng mã đại diện lớn nhất (top-1) — xem GIỚI HẠN ở method.volRatio.
+        need = VOL_RATIO_BASE_SESSIONS + 1
         ratios = []
         for sym in symbols[:1]:
-            for attempt in range(2):
-                try:
-                    time.sleep(3.2)
-                    df = vs.stock(symbol=sym, source="VCI").quote.history(
-                        start=(pd.Timestamp.today() - timedelta(days=14)).strftime("%Y-%m-%d"),
-                        end=pd.Timestamp.today().strftime("%Y-%m-%d"), interval="1D",
-                    )
-                    if len(df) < 6:
-                        break
-                    today_vol = df["volume"].iloc[-1]
-                    avg5 = df["volume"].iloc[-6:-1].mean()
-                    if avg5 > 0:
-                        ratios.append(today_vol / avg5)
-                    break
-                except Exception as e:
-                    log(f"vol_ratio fail {sym} (attempt {attempt}): {e!r}")
-                    time.sleep(15)
+            df = history_for(sym)
+            if df is None or len(df) < need:
+                log(f"vol_ratio {sym}: chỉ có {0 if df is None else len(df)} phiên, cần {need} — bỏ qua")
+                continue
+            today_vol = df["volume"].iloc[-1]
+            # -need:-1 = đúng 25 phiên TRƯỚC phiên gần nhất; phiên gần nhất bị
+            # loại khỏi mẫu số (nếu không, khối lượng đột biến tự làm loãng
+            # chính nó và ratio luôn bị kéo về 1).
+            avg_base = df["volume"].iloc[-need:-1].mean()
+            if avg_base > 0:
+                ratios.append(today_vol / avg_base)
         return sum(ratios) / len(ratios) if ratios else None
 
     sectors_out = []
@@ -273,9 +323,99 @@ def main() -> int:
                 time.sleep(15)
         return out
 
-    top_tickers_board = board.sort_values("match_accumulated_value", ascending=False).head(TOP_TICKERS_N)
+    def adtv_bn_for(symbols, sessions):
+        """GTGD bình quân `sessions` phiên gần nhất (GỒM phiên hôm nay), tỷ VND.
+
+        Khác vol_ratio_for(): ở đây phiên hôm nay PHẢI nằm trong mẫu — đây là
+        thước đo "mã này giao dịch lớn cỡ nào trong 15 phiên qua", không phải
+        so hôm nay với một nền trước đó.
+
+        ĐƠN VỊ: quote.history trả `close` theo NGHÌN ĐỒNG (VIC = 243.3 nghĩa
+        là 243.300 đ/cp), nên close × volume ra nghìn đồng; chia 1e6 mới thành
+        TỶ VND. Chia 1e9 (như thể close tính bằng đồng) cho ra số nhỏ hơn
+        1.000 lần — thứ hạng không đổi vì sai số là hằng số, nên lỗi này KHÔNG
+        lộ ra ở danh sách, chỉ lộ ở con số. Đã đối chiếu: VIC phiên 11/09
+        243.3 × 4.264.000 / 1e6 = 1.037,4 tỷ, khớp GTGD bảng giá 1.041,7 tỷ.
+
+        Dùng close × volume vì đây là số duy nhất suy ra được GTGD từ lịch sử
+        giá; nó là GTGD toàn phiên (khớp lệnh + thoả thuận nếu nguồn gộp), có
+        thể lệch nhẹ so với match_accumulated_value của bảng giá — chấp nhận,
+        vì so sánh giữa các mã đều dùng chung một định nghĩa.
+
+        Trả dict {mã: adtv}; mã nào lỗi/thiếu lịch sử thì KHÔNG có mặt trong
+        dict (không đoán bằng 0 — 0 sẽ đẩy mã xuống đáy như thể nó ế).
+        """
+        out = {}
+        for sym in symbols:
+            df = history_for(sym)
+            if df is None or len(df) < sessions:
+                log(f"adtv {sym}: chỉ có {0 if df is None else len(df)} phiên, cần {sessions} — bỏ qua")
+                continue
+            val = (df["close"] * df["volume"]).iloc[-sessions:]
+            out[sym] = float(val.mean()) / 1e6   # nghìn đồng → tỷ VND
+        return out
+
+    # Sơ tuyển theo GTGD hôm nay, rồi xếp lại theo ADTV 15 phiên.
+    pool_board = board.sort_values("match_accumulated_value", ascending=False).head(LEADER_POOL_N)
+    pool_syms = pool_board["listing_symbol"].tolist()
+    log(f"xếp hạng mã dẫn dắt: rổ {len(pool_syms)} mã theo GTGD hôm nay → ADTV {LEADER_RANK_SESSIONS} phiên")
+    adtv_by_sym = adtv_bn_for(pool_syms, LEADER_RANK_SESSIONS)
+
+    # Cổng kiểm ĐƠN VỊ. ADTV suy từ lịch sử (close nghìn đồng × volume) và GTGD
+    # của bảng giá (match_accumulated_value, triệu đồng) là hai đường tính độc
+    # lập cho cùng một đại lượng — phải cùng bậc độ lớn. Một lỗi ×1000 ở đây
+    # KHÔNG làm sai thứ hạng (sai số là hằng số) nên không thể phát hiện bằng
+    # mắt qua danh sách; chỉ phép đối chiếu này bắt được. Đã sập một lần.
+    if adtv_by_sym:
+        _chk = pool_board.set_index("listing_symbol")["match_accumulated_value"]
+        for _s, _a in list(adtv_by_sym.items())[:3]:
+            _board_bn = float(_chk.get(_s, 0)) / 1000
+            if _board_bn > 0:
+                _r = _a / _board_bn
+                if not (0.2 <= _r <= 5):
+                    log(f"CẢNH BÁO đơn vị: ADTV{LEADER_RANK_SESSIONS}({_s})={_a:.1f} tỷ nhưng "
+                        f"GTGD bảng giá={_board_bn:.1f} tỷ (tỷ lệ {_r:.4f}) — lệch bậc độ lớn, "
+                        f"kiểm lại hệ số quy đổi trước khi tin con số này")
+                else:
+                    log(f"đơn vị OK: ADTV{LEADER_RANK_SESSIONS}({_s})={_a:.1f} tỷ vs GTGD phiên {_board_bn:.1f} tỷ")
+
+    # Suy giảm êm: đủ mã có ADTV thì xếp theo ADTV; không thì giữ nguyên cách cũ
+    # (GTGD 1 phiên). Cơ sở thực tế được ghi vào JSON để UI nói đúng, thay vì
+    # dán nhãn "15 phiên" lên một danh sách xếp theo 1 phiên.
+    if len(adtv_by_sym) >= TOP_TICKERS_N:
+        ranked = sorted(adtv_by_sym.items(), key=lambda kv: -kv[1])[:TOP_TICKERS_N]
+        ranked_syms = [k for k, _ in ranked]
+        rank_basis = f"adtv{LEADER_RANK_SESSIONS}"
+        rank_basis_note = (f"GTGD bình quân {LEADER_RANK_SESSIONS} phiên gần nhất (ADTV), "
+                           f"sơ tuyển từ top {LEADER_POOL_N} mã theo GTGD phiên hôm nay")
+    else:
+        ranked_syms = pool_syms[:TOP_TICKERS_N]
+        rank_basis = "today_turnover"
+        rank_basis_note = (f"GTGD phiên hôm nay — chỉ lấy được ADTV cho {len(adtv_by_sym)}/"
+                           f"{len(pool_syms)} mã (thiếu lịch sử hoặc chạm hạn mức API), "
+                           f"chưa đủ {TOP_TICKERS_N} mã để xếp theo {LEADER_RANK_SESSIONS} phiên")
+        log(f"CẢNH BÁO: {rank_basis_note}")
+
+    # asof = NGÀY PHIÊN của số liệu, khác generatedAtIct (giờ script chạy).
+    # Bảng giá là ảnh chụp trạng thái "hiện tại": chạy 16:30 thứ Sáu thì đó là
+    # phiên thứ Sáu, nhưng chạy sáng thứ Bảy thì VẪN là phiên thứ Sáu — mà
+    # generatedAtIct lại ghi thứ Bảy. Thiếu asof, người xem đọc giờ sinh file
+    # thành ngày phiên. Lấy từ nến cuối của lịch sử đã fetch sẵn (không tốn
+    # thêm request); đó đúng là phiên gần nhất đã chốt.
+    _last = [pd.to_datetime(df["time"]).max()
+             for df in _hist_cache.values() if df is not None and len(df)]
+    asof_session = max(_last).strftime("%Y-%m-%d") if _last else None
+    if asof_session:
+        log(f"asof (ngày phiên) = {asof_session}; generatedAtIct = giờ chạy script")
+    else:
+        log("CẢNH BÁO: không suy được ngày phiên (không có lịch sử nào) — asof = null")
+
+    order = {sym: i for i, sym in enumerate(ranked_syms)}
+    top_tickers_board = (board[board["listing_symbol"].isin(ranked_syms)]
+                         .assign(_o=lambda d: d["listing_symbol"].map(order))
+                         .sort_values("_o"))
     tickers_out = []
-    ticker_turnovers_bn = []  # song song với tickers_out — dùng làm trọng số cho leadersRollup
+    ticker_turnovers_bn = []  # song song với tickers_out — trọng số cho leadersRollup
     for _, r in top_tickers_board.iterrows():
         bid1, ask1 = r["bid_ask_bid_1_price"], r["bid_ask_ask_1_price"]
         sym = r["listing_symbol"]
@@ -295,23 +435,37 @@ def main() -> int:
             "spread_pct": spread_pct(bid1, ask1),
             **fundamentals,
             "capacity_days_500bn": capacity_days(CAPACITY_TICKER_TIER_BN, ticker_turnover_bn, CAPACITY_PARTICIPATION_PCT),
+            # GTGD bình quân 15 phiên — cơ sở xếp hạng. None nếu không lấy
+            # được lịch sử cho mã đó (khi đó cả danh sách rơi về xếp 1 phiên).
+            "adtv15_bn": round(adtv_by_sym[sym], 2) if sym in adtv_by_sym else None,
         })
         ticker_turnovers_bn.append(ticker_turnover_bn)
-    log(f"top {TOP_TICKERS_N} tickers theo GTGD: {[t['code'] for t in tickers_out]}")
+    log(f"top {TOP_TICKERS_N} mã dẫn dắt ({rank_basis}): {[t['code'] for t in tickers_out]}")
 
     # leadersRollup — trung bình theo tỷ trọng GTGD phiên hôm nay (turnover-
     # weighted) của các field fundamentals/ownership trên 10 mã dẫn dắt, chỉ
     # trên giá trị không null (tự chuẩn hoá lại trọng số khi có mã null). Đây
     # là universe top-10-theo-GTGD (tickers_out), KHÁC universe top-10-theo-
     # VỐN-HOÁ của market_concentration["topStocks"] bên dưới — không gộp nhầm.
+    # Trọng số phải cùng cơ sở với thứ hạng: danh sách xếp theo ADTV15 mà lại
+    # bình quân theo GTGD 1 phiên thì một phiên bất thường của 1 mã sẽ lái cả
+    # rollup, dù mã đó vào danh sách nhờ 15 phiên.
+    if rank_basis.startswith("adtv"):
+        rollup_weights = [adtv_by_sym.get(t["code"]) or 0 for t in tickers_out]
+        weight_basis = (f"GTGD bình quân {LEADER_RANK_SESSIONS} phiên của từng mã "
+                        f"(ADTV-weighted, cùng cơ sở với thứ hạng)")
+    else:
+        rollup_weights = ticker_turnovers_bn
+        weight_basis = "GTGD phiên hôm nay của từng mã (turnover-weighted)"
+
     def _weighted_avg(field: str):
-        pairs = [(t[field], w) for t, w in zip(tickers_out, ticker_turnovers_bn) if t.get(field) is not None and w]
+        pairs = [(t[field], w) for t, w in zip(tickers_out, rollup_weights) if t.get(field) is not None and w]
         total_w = sum(w for _, w in pairs)
         return round(sum(v * w for v, w in pairs) / total_w, 2) if total_w else None
 
     leaders_rollup = {
         "n": len(tickers_out),
-        "weightBasis": "GTGD phiên hôm nay của từng mã (turnover-weighted)",
+        "weightBasis": weight_basis,
         **{field: _weighted_avg(field) for field in LEADERS_ROLLUP_FIELDS},
     }
 
@@ -384,13 +538,18 @@ def main() -> int:
 
     payload = {
         "schemaVersion": "1.0",
+        "asof": asof_session,
         "generatedAtIct": generated_at.isoformat(timespec="seconds"),
         "source": "VCI (qua thư viện mã nguồn mở vnstock) — bulk price_board toàn bộ mã HOSE/HNX/UPCOM",
         "method": {
+            "tickers": rank_basis_note + (
+                f". Rổ ứng viên là top {LEADER_POOL_N} mã theo GTGD phiên hôm nay — không có API "
+                "lấy lịch sử hàng loạt nên không xếp hạng được trên toàn bộ ~1.600 mã; "
+                "một mã ngoài rổ vẫn có thể thuộc top-10 thật theo ADTV."),
             "totalTurnoverBn": "Σ GTGD khớp lệnh tích luỹ toàn bộ mã (accumulated_value), đơn vị tỷ VND — số thật từ snapshot.",
             "foreignNetBn": "Σ (foreign_buy_value − foreign_sell_value) toàn bộ mã — số thật từ snapshot, đơn vị tỷ VND.",
             "sectorValueChg": "GTGD & %thay đổi (bình quân theo GTGD) của các mã thuộc nhóm ngành ICB tương ứng — số thật.",
-            "volRatio": "Ước tính từ khối lượng hôm nay / TB 5 phiên của 1-3 mã đại diện lớn nhất ngành (theo GTGD) — KHÔNG phải toàn ngành.",
+            "volRatio": "Ước tính từ khối lượng hôm nay / TB 25 phiên TRƯỚC ĐÓ (phiên hôm nay không nằm trong mẫu số) của DUY NHẤT mã có GTGD lớn nhất ngành — KHÔNG phải toàn ngành. Thiếu đủ 26 phiên lịch sử → null, không hạ cửa sổ cho vừa dữ liệu.",
             "proprietaryFlow": "Không có nguồn dữ liệu miễn phí qua API này. Lấy từ public/data/live.json field 'proprietary' (agent nghiên cứu công khai, xem daily_update.py merge_grok_fill), CHỈ khi cùng phiên hôm nay — quality=proxy. Không có nguồn cùng ngày → null (quality=missing), KHÔNG bịa/carry-forward.",
             "tickerForeignFlow": "foreign_buy_value / foreign_sell_value thật của từng mã, KHÔNG phải ước tính toàn bộ lệnh mua/bán (không tách được lệnh của NĐT trong nước).",
             "foreignRoom": "current_room/total_room thật từ price_board (đơn vị cổ phiếu) — room % = current_room/total_room×100. Mã có total_room=0 (không giới hạn sở hữu nước ngoài hoặc thiếu dữ liệu) bị loại khỏi foreignRoomWatch.",
@@ -398,7 +557,7 @@ def main() -> int:
             "marketConcentration": "market_cap = số CP niêm yết × giá khớp lệnh gần nhất (hoặc giá tham chiếu nếu chưa khớp lệnh phiên này) — số thật từ price_board, đã đối chiếu khớp với company.trading_stats().market_cap. top5Pct/top10Pct = % tổng vốn hoá toàn thị trường (theo mã có market_cap>0) do 5/10 mã lớn nhất nắm giữ — dùng đánh giá rủi ro tập trung khi phân bổ theo tỷ trọng vốn hoá.",
             "fundamentals": "pe/pb/roe từ company.ratio_summary() (dòng TTM mới nhất, báo cáo theo quý — CÓ ĐỘ TRỄ so với ngày công bố BCTC thật, không phải số real-time). foreigner_pct/state_pct/free_float_pct từ company.trading_stats() (snapshot sở hữu). Cả 2 nguồn là số thật của VCI, null nếu công ty chưa công bố/API lỗi tạm thời — không bịa.",
             "capacity": f"Số phiên cần để giải ngân/rút vốn nếu tự giới hạn ở {CAPACITY_PARTICIPATION_PCT*100:.0f}% GTGD/phiên (participation-rate heuristic, quy ước thực thi tổ chức phổ biến ≤10-20%/phiên để giảm market impact) = capital_bn / (turnover_bn × participation_pct). Dùng GTGD CỦA ĐÚNG PHIÊN HÔM NAY (snapshot 1 phiên/lần chạy, không phải ADTV nhiều phiên). Mốc vốn (tiers/capacity_days_500bn) là MINH HOẠ, KHÔNG phải khuyến nghị quy mô vị thế — cơ học thực thi lệnh thuần tuý.",
-            "leadersRollup": "Trung bình theo tỷ trọng GTGD phiên hôm nay (turnover-weighted, chỉ trên giá trị không null, tự chuẩn hoá lại trọng số) của pe/pb/roe/foreigner_pct/state_pct/free_float_pct trên 10 mã dẫn dắt theo GTGD (tickers[]) — KHÔNG phải toàn thị trường, và KHÔNG cùng universe với marketConcentration.topStocks (universe đó là top-10 theo VỐN HOÁ, có thể khác top-10 theo GTGD).",
+            "leadersRollup": f"Trung bình có trọng số ({weight_basis}), chỉ trên giá trị không null, tự chuẩn hoá lại trọng số, của pe/pb/roe/foreigner_pct/state_pct/free_float_pct trên {len(tickers_out)} mã dẫn dắt (tickers[]) — KHÔNG phải toàn thị trường, và KHÔNG cùng universe với marketConcentration.topStocks (universe đó là top-10 theo VỐN HOÁ).",
         },
         "quality": {
             "foreignNetBn": "live",
@@ -410,6 +569,10 @@ def main() -> int:
         "capacity": capacity,
         "sectors": sectors_out,
         "tickers": tickers_out,
+        # Cơ sở xếp hạng THỰC TẾ của tickers[] ở lượt chạy này. UI phải đọc
+        # field này để dán nhãn, không được giả định luôn là 15 phiên.
+        "tickersRankBasis": rank_basis,
+        "tickersRankBasisNote": rank_basis_note,
         "leadersRollup": leaders_rollup,
         "foreignRoomWatch": foreign_room_watch,
         "marketConcentration": market_concentration,

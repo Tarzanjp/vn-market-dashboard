@@ -450,15 +450,30 @@ export function initCashout(data, insight) {
 
   if (isReal) {
     statusEl.className = "pill";
-    statusText.textContent = "Dữ liệu thật · " + (data.generatedAtIct || "");
+    // Ngày PHIÊN trước, giờ sinh file sau — chạy sáng thứ Bảy thì số liệu vẫn
+    // là phiên thứ Sáu, chỉ ghi generatedAtIct sẽ khiến người xem đọc nhầm.
+    statusText.textContent = data.asof
+      ? "Phiên " + data.asof + " · sinh lúc " + (data.generatedAtIct || "—")
+      : "Dữ liệu thật · " + (data.generatedAtIct || "");
     if (Array.isArray(data.sectors) && data.sectors.length) {
       sectorNote.textContent =
-        "※ GTGD & % thay đổi là số thật (snapshot " + (data.generatedAtIct || "") + "). " +
-        "5D Avg Vol Ratio là ước tính từ 1 mã đại diện lớn nhất mỗi ngành theo GTGD, không phải toàn ngành.";
+        "※ GTGD & % thay đổi là số thật, tính trên TOÀN BỘ mã trong ngành (phiên " +
+        (data.asof || data.generatedAtIct || "—") + "). " +
+        "Nhưng 25D Avg Vol Ratio chỉ là ước tính từ MỘT mã đại diện lớn nhất ngành theo GTGD — " +
+        "hai cột này không cùng phạm vi, nên cột Classification mang tính tham khảo.";
     }
     if (Array.isArray(data.tickers) && data.tickers.length) {
+      // Cơ sở xếp hạng đọc từ payload, không giả định: pipeline tự rơi về xếp
+      // theo 1 phiên khi không lấy đủ lịch sử (hạn mức API), và khi đó dán nhãn
+      // "15 phiên" lên danh sách này là sai.
+      const basisNote = data.tickersRankBasisNote
+        || (data.tickersRankBasis === "adtv15"
+            ? "GTGD bình quân 15 phiên gần nhất"
+            : "GTGD phiên hôm nay");
       stocksSub.textContent =
-        "Khối ngoại mua/bán thật (Foreign Buy/Sell Value) trong phiên của 10 mã dẫn dắt (GTGD lớn nhất, chọn động mỗi phiên) — không bao gồm lệnh của NĐT trong nước. " +
+        "10 mã dẫn dắt, xếp theo " + basisNote + ". " +
+        "Số liệu hiển thị là khối ngoại mua/bán thật (Foreign Buy/Sell Value) trong PHIÊN GẦN NHẤT " +
+        "— không bao gồm lệnh của NĐT trong nước. " +
         "Độ dài thanh được chuẩn hoá theo giá trị lớn nhất trong nhóm.";
     }
   } else {
