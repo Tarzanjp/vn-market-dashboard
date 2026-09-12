@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-12T13:44:57+07:00",
+  "generatedAtIct": "2026-09-12T14:00:52+07:00",
   "asof": "2026-09-11",
   "quality": {
     "usYields": "live",
@@ -73,7 +73,7 @@
     },
     "asofEt": "2026-09-12"
   },
-  "fgUsFetchedAt": "2026-09-12T13:44:54.588267+07:00",
+  "fgUsFetchedAt": "2026-09-12T14:00:50.674452+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
     "price": 1795.21,
@@ -82,9 +82,9 @@
     "pct": -1.86,
     "date": "2026-09-11"
   },
-  "vnIndexFetchedAt": "2026-09-12T13:44:54.810346+07:00",
+  "vnIndexFetchedAt": "2026-09-12T14:00:50.903746+07:00",
   "dxy": 99.09,
-  "dxyFetchedAt": "2026-09-12T13:44:55.038370+07:00",
+  "dxyFetchedAt": "2026-09-12T14:00:51.139094+07:00",
   "vnYields": [
     {
       "t": "5 năm",

@@ -621,12 +621,13 @@ def write_world_live() -> None:
     # fetch cho live.json — không thêm request, không thêm nguồn.
     live_now = load_previous()
     vcb = (live_now.get("usdVndVcb") or {}) if isinstance(live_now, dict) else {}
-    if vcb.get("buyTransfer"):
-        quotes["USDVND"] = {
-            "price": vcb["buyTransfer"], "prev": None, "chg": None, "pct": None,
-            "date": (vcb.get("asof") or "")[:10] or None,
-        }
-        log(f"world market USDVND = {vcb['buyTransfer']:,.0f} (Vietcombank mua CK)")
+    vcb_day = (vcb.get("asof") or "")[:10] or None
+    for wid, key, what in (("USDVND", "buyTransfer", "mua CK"),
+                           ("USDVND_CB", "sell", "bán ra")):
+        if vcb.get(key):
+            quotes[wid] = {"price": vcb[key], "prev": None, "chg": None,
+                           "pct": None, "date": vcb_day}
+            log(f"world market {wid} = {vcb[key]:,.0f} (Vietcombank {what})")
 
     payload = {"generatedAtIct": now_ict().isoformat(timespec="seconds"), "quotes": quotes}
     WORLD_LIVE_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")

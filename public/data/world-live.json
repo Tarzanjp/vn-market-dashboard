@@ -1,5 +1,5 @@
 {
-  "generatedAtIct": "2026-09-12T13:45:04+07:00",
+  "generatedAtIct": "2026-09-12T14:01:00+07:00",
   "quotes": {
     "VNINDEX": {
       "price": 1795.21,
@@ -212,11 +212,18 @@
       "date": "2026-09-11"
     },
     "BTC": {
-      "price": 77308.83,
+      "price": 77285.83,
       "prev": 78438.58,
-      "chg": -1129.75,
-      "pct": -1.44,
+      "chg": -1152.75,
+      "pct": -1.47,
       "date": "2026-09-12"
+    },
+    "USDVND_CB": {
+      "price": 26110.0,
+      "prev": null,
+      "chg": null,
+      "pct": null,
+      "date": "2026-09-11"
     }
   }
 }

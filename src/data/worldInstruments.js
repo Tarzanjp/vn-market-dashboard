@@ -64,7 +64,12 @@ export const MARKETS = [
   /* ============================ TIỀN TỆ ============================
      Ưu tiên: DXY + USD/VND → cặp quy VND → majors → châu Á so sánh */
   { id: "DXY", name: "Chỉ số USD (DXY)", cty: "ICE", grp: "fx", sub: "Chỉ số USD & tỷ giá USD/VND", v: 99.54, p: -0.43, dec: 2, tz: -4, sess: [0, 24] },
-  { id: "USDVND_CB", name: "USD/VND trung tâm", cty: "NHNN", grp: "fx", sub: "Chỉ số USD & tỷ giá USD/VND", v: 25338, p: null, dec: 0, tz: 7, sess: [8, 16], note: "NHNN 31/07" },
+  // Ô này từng là tỷ giá trung tâm NHNN, đứng yên ở 25.338 từ 31/07 vì không
+  // có nguồn nào cập nhật. Chuyển sang giá BÁN RA của Vietcombank — số thật,
+  // cập nhật hằng ngày, và đi cặp với ô "mua CK" bên cạnh để thấy luôn chênh
+  // lệch mua/bán. Đổi cả NHÃN chứ không chỉ đổi số: giữ chữ "trung tâm" trên
+  // một tỷ giá NHTM là gọi sai đại lượng.
+  { id: "USDVND_CB", name: "USD/VND bán ra", cty: "Vietcombank", grp: "fx", sub: "Chỉ số USD & tỷ giá USD/VND", v: null, p: null, dec: 0, tz: 7, sess: [8, 16], note: "bán ra" },
   // Từ 2026-09-12 ô này được ghi đè bằng bảng giá Vietcombank thật trong
   // world-live.json (daily_update.py: write_world_live). Số dưới đây chỉ còn là
   // khung khi chưa fetch được — để null thay vì một tỷ giá cũ trông như hiện hành.
