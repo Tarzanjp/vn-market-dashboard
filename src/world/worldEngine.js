@@ -16,9 +16,13 @@ export function initWorldIndices() {
      2. TIỆN ÍCH
      ============================================================ */
   const el = id => document.getElementById(id);
-  const nf = (v, d = 2) => v == null ? "—" : v.toLocaleString("vi-VN", { minimumFractionDigits: d, maximumFractionDigits: d });
-  const sgn = (v, d = 2) => v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + nf(Math.abs(v), d);
-  const cls = v => v == null ? "flat" : v > 0 ? "up" : v < 0 ? "down" : "flat";
+  // Chặn cả NaN, không chỉ null: NaN.toLocaleString() ra chuỗi "NaN" và lọt
+  // thẳng ra UI. Hai bản nf() kia (historyEngine.js, dashboardEngine.js) đã
+  // chặn — bản này thì chưa, nên là bản duy nhất có thể in "NaN".
+  const bad = v => v == null || Number.isNaN(+v);
+  const nf = (v, d = 2) => bad(v) ? "—" : (+v).toLocaleString("vi-VN", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const sgn = (v, d = 2) => bad(v) ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + nf(Math.abs(v), d);
+  const cls = v => bad(v) ? "flat" : v > 0 ? "up" : v < 0 ? "down" : "flat";
   const hhmm = h => {
     const H = Math.floor(h) % 24, M = Math.round((h - Math.floor(h)) * 60);
     return String(H).padStart(2, "0") + ":" + String(M).padStart(2, "0");
@@ -218,24 +222,49 @@ export function initWorldIndices() {
   // nào thì tile đó giữ nguyên số tĩnh, không có gì vỡ.
   loadLiveOverlay();
 
+  /* Mốc chốt số liệu hiển thị ở header. Bắt buộc theo CLAUDE.md §1.4: có
+     generatedAtIct trong JSON mà không render ra đâu cả là lỗi. Kèm luôn số mã
+     thật/tổng, vì phần lớn tile vẫn là số tĩnh trong worldInstruments.js —
+     không nói ra thì cả bảng trông như cùng một độ tươi. */
+  function setAsof(text) {
+    const n = el("liveAsof");
+    if (n) n.textContent = text;
+  }
+
+  /* generatedAtIct ĐÃ là giờ ICT kèm offset ("2026-09-10T16:11:12+07:00").
+     Không dựng new Date() rồi đọc getHours(): hàm đó trả giờ theo múi của
+     máy người xem, nên máy ở UTC+9 sẽ hiện "18:11" và vẫn dán chữ ICT —
+     sai đúng 2 tiếng. Đọc thẳng các trường trong chuỗi. */
+  function fmtIct(iso) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(String(iso));
+    return m ? `${m[3]}/${m[2]} ${m[4]}:${m[5]}` : String(iso);   // chuỗi lạ: giữ nguyên, không đoán
+  }
+
   async function loadLiveOverlay() {
     try {
       const res = await fetch("data/world-live.json", { cache: "no-store" });
-      if (!res.ok) return;
+      if (!res.ok) { setAsof("Số liệu: không tải được · đang hiển thị số tĩnh"); return; }
       const data = await res.json();
       const quotes = data.quotes || {};
       let changed = false;
+      let liveCount = 0;
       MARKETS.forEach(m => {
         const q = quotes[m.id];
         if (!q || q.price == null) return;
         m.v = q.price;
         m.p = q.pct;
         m.c = q.chg;
+        liveCount++;
         changed = true;
       });
+      setAsof(data.generatedAtIct
+        ? `Số liệu: ${fmtIct(data.generatedAtIct)} ICT · ${liveCount}/${MARKETS.length} mã cập nhật`
+        : `Số liệu: không rõ thời điểm · ${liveCount}/${MARKETS.length} mã cập nhật`);
       if (changed) render();
     } catch {
-      // Không có mạng / file chưa tồn tại — giữ số tĩnh làm dự phòng, không báo lỗi.
+      // Không có mạng / file chưa tồn tại — giữ số tĩnh làm dự phòng, nhưng
+      // phải nói ra, không im lặng để số cũ trông như số mới.
+      setAsof("Số liệu: không tải được · đang hiển thị số tĩnh");
     }
   }
 }

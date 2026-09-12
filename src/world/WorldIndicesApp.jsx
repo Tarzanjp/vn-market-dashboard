@@ -19,6 +19,10 @@ export default function WorldIndicesApp() {
     <>
       <SiteHeader active="world" subtitle="Hệ thống theo dõi thị trường tài chính">
         <span className="pill"><span className="dot live" /><span id="openCount">—</span></span>
+        {/* Đồng hồ chạy giây là giờ hiện tại của người xem, KHÔNG phải thời điểm
+            chốt số liệu — thiếu pill dưới đây thì giá đã chốt từ hôm trước vẫn
+            trông như realtime (CLAUDE.md §1.4). */}
+        <span className="pill" id="liveAsof">Số liệu: —</span>
         <span className="pill"><span className="num" id="clock">--:--:--</span> ICT</span>
       </SiteHeader>
 

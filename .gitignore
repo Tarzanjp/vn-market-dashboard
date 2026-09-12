@@ -5,3 +5,9 @@ automation/agent-last-run.txt
 automation/__pycache__/
 __pycache__/
 .DS_Store
+
+# Trạng thái phiên làm việc của Claude Code + cấu hình máy cá nhân — không chia sẻ.
+# (.claude/agents, hooks, skills, settings.json THÌ commit: chúng là cơ chế của
+#  dự án, và trước đây để ngoài main nên cứ mỗi lần đổi nhánh là mất.)
+.claude/SESSION.md
+.claude/settings.local.json

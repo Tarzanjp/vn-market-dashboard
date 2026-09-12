@@ -19,10 +19,22 @@ export default function HistoryApp() {
 
   const hasData = rows && rows.length > 0;
 
+  /* Chuỗi JSONL không mang generatedAtIct, nên mốc "as of" đúng của trang này
+     là phiên mới nhất thực sự có trong dữ liệu (CLAUDE.md §1.4 — số nào lên UI
+     cũng phải nói rõ tính đến bao giờ). Không suy ra từ "hôm nay". */
+  const lastDate = hasData ? rows[rows.length - 1].date : null;
+  const dmy = (iso) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+    return m ? `${m[3]}/${m[2]}/${m[1]}` : null;
+  };
+
   return (
     <>
       <SiteHeader active="history" subtitle="Lịch sử giá · lợi suất · sự kiện vĩ mô">
         <span className="pill">{hasData ? `${rows.length} phiên trong lịch sử` : "Đang tải…"}</span>
+        <span className="pill">
+          {dmy(lastDate) ? `Đến phiên ${dmy(lastDate)}` : "Đến phiên —"}
+        </span>
       </SiteHeader>
 
       <main className="wrap">
@@ -81,6 +93,8 @@ export default function HistoryApp() {
         <Footer>
           Lịch sử &amp; Tương quan · Dữ liệu tham khảo, không phải khuyến nghị đầu tư.
           Tương quan thống kê không hàm ý quan hệ nhân quả.
+          Nguồn: chuỗi lịch sử do <code>automation/daily_update.py</code> ghi hằng ngày
+          (Yahoo Finance, US Treasury), sự kiện vĩ mô từ <code>public/data/events.json</code>.
         </Footer>
       </main>
     </>

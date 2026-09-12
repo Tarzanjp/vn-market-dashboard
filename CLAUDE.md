@@ -151,6 +151,7 @@ src/
   cashout/        Trang Dòng tiền & Cashout — cashoutEngine.js
   sectorFlows/    Trang Dòng tiền ngành — sectorFlowsEngine.js (RRG quadrant)
   regime/         Trang Regime Dashboard — RegimeApp.jsx
+  guide/          Trang Hướng dẫn đọc (huong-dan-doc.html) — GuideApp.jsx (React thuần, không engine)
   components/     Layout dùng chung (header, nav, ticker tape, footer)
   hooks/          useJsonFetch (nền chung) + useLiveMarketData/useHistory/useCashout/useSectorFlows/useRegime/useNews
   data/           worldInstruments.js — danh sách tĩnh + mã TradingView cho trang Thế giới
@@ -164,7 +165,8 @@ automation/       Script fetch/tính toán — xem automation/README.md cho ops 
 ```
 
 Mỗi trang HTML (`index.html`, `the-gioi.html`, `lich-su.html`,
-`dong-tien-cashout.html`, `dong-tien-nganh.html`, `buc-tranh-thi-truong.html`)
+`dong-tien-cashout.html`, `dong-tien-nganh.html`, `buc-tranh-thi-truong.html`,
+`huong-dan-doc.html` — **7 trang**, xem `vite.config.js` làm nguồn sự thật)
 là một Vite build entry riêng, mount React root riêng — giữ URL ổn định, chia
 sẻ components/hooks/styles chung.
 
@@ -195,6 +197,14 @@ Không có `make test`/`make lint` — xem §6 cho định nghĩa "xong" thật.
 ---
 
 ## 5. Cách làm việc với tôi
+
+0. **Trước khi thêm/sửa một trang, một hook, hay bất cứ thứ gì dưới `src/`:
+   đọc skill `vn-dashboard-engineering`** (`.claude/skills/vn-dashboard-engineering/SKILL.md`).
+   File này nói *luật*; skill đó nói *cơ chế* — 7 entry Vite, hai khuôn mẫu
+   trang, bẫy base path khi deploy, hợp đồng JSON, quy trình 9 bước thêm
+   trang. Trình tự bắt buộc: **phân tích cấu trúc → xác minh bằng grep → mới
+   code**. Có sẵn hai agent làm đúng trình tự đó: `vn-page-builder` (dựng/sửa
+   trang) và `vn-frontend-reviewer` (rà soát) — xem `.claude/agents/README.md`.
 
 1. **Plan mode cho: đổi công thức tài chính (regime scores, RRG, ADR, yield
    curve...), đổi schema JSON đang được nhiều trang đọc, hoặc >3 file.** Trình
