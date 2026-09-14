@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-14T13:14:15+07:00",
+  "generatedAtIct": "2026-09-14T22:39:46+07:00",
   "asof": "2026-09-14",
   "quality": {
     "usYields": "live",
@@ -64,27 +64,27 @@
   ],
   "usYieldsAsof": "2026-09-11",
   "fgUs": {
-    "score": 33.3,
+    "score": 30.4,
     "hist": {
-      "prev": 33.1,
+      "prev": 33.3,
       "week": 45.2,
-      "month": 60.1,
-      "year": 60.3
+      "month": 64.3,
+      "year": 61.3
     },
     "asofEt": "2026-09-14"
   },
-  "fgUsFetchedAt": "2026-09-14T13:14:10.619488+07:00",
+  "fgUsFetchedAt": "2026-09-14T22:39:41.728653+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
-    "price": 1790.8,
+    "price": 1788.23,
     "prev": 1795.21,
-    "chg": -4.41,
-    "pct": -0.25,
+    "chg": -6.98,
+    "pct": -0.39,
     "date": "2026-09-14"
   },
-  "vnIndexFetchedAt": "2026-09-14T13:14:10.870571+07:00",
-  "dxy": 99.34,
-  "dxyFetchedAt": "2026-09-14T13:14:10.971083+07:00",
+  "vnIndexFetchedAt": "2026-09-14T22:39:41.792630+07:00",
+  "dxy": 99.56,
+  "dxyFetchedAt": "2026-09-14T22:39:41.856951+07:00",
   "vnYields": [
     {
       "t": "5 năm",
@@ -129,33 +129,33 @@
   "margin": null,
   "breadth": {
     "date": "2026-09-14",
-    "gtgd": 5783.1,
+    "gtgd": 15495.9,
     "all": {
-      "a": 113,
-      "d": 193,
-      "u": 123,
-      "ceil": 4,
-      "floor": 5,
+      "a": 88,
+      "d": 243,
+      "u": 98,
+      "ceil": 2,
+      "floor": 10,
       "total": 429
     },
     "source": "VNDirect finfo (đếm từ giá đóng cửa từng mã HOSE)"
   },
   "usdVnd": null,
   "foreign": {
-    "net": 220.6,
-    "buy": 1042.1,
-    "sell": 821.5,
+    "net": 814.7,
+    "buy": 3953.4,
+    "sell": 3138.7,
     "unit": "tỷ VND",
     "scope": "HOSE, toàn phiên (khớp lệnh + thoả thuận)",
     "n": 405,
     "source": "VNDirect finfo (cộng từ buyVal/sellVal từng mã HOSE, chỉ type=STOCK)"
   },
   "usdVndVcb": {
-    "buyCash": 25720.0,
-    "buyTransfer": 25750.0,
-    "sell": 26130.0,
+    "buyCash": 25770.0,
+    "buyTransfer": 25800.0,
+    "sell": 26180.0,
     "unit": "VND / 1 USD",
-    "asof": "2026-09-14T10:23:53+07:00",
+    "asof": "2026-09-14T14:40:45+07:00",
     "bank": "Vietcombank",
     "source": "Vietcombank api/exchangerates (tỷ giá NHTM, KHÔNG phải tỷ giá trung tâm NHNN)"
   },
