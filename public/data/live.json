@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-16T12:58:48+07:00",
+  "generatedAtIct": "2026-09-16T21:02:10+07:00",
   "asof": "2026-09-16",
   "quality": {
     "usYields": "live",
@@ -64,7 +64,7 @@
   ],
   "usYieldsAsof": "2026-09-15",
   "fgUs": {
-    "score": 28.5,
+    "score": 29.3,
     "hist": {
       "prev": 28.7,
       "week": 38.2,
@@ -73,18 +73,18 @@
     },
     "asofEt": "2026-09-16"
   },
-  "fgUsFetchedAt": "2026-09-16T12:58:41.781922+07:00",
+  "fgUsFetchedAt": "2026-09-16T21:02:02.392657+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
-    "price": 1813.04,
+    "price": 1810.11,
     "prev": 1811.15,
-    "chg": 1.89,
-    "pct": 0.1,
+    "chg": -1.04,
+    "pct": -0.06,
     "date": "2026-09-16"
   },
-  "vnIndexFetchedAt": "2026-09-16T12:58:41.840337+07:00",
-  "dxy": 99.61,
-  "dxyFetchedAt": "2026-09-16T12:58:41.883138+07:00",
+  "vnIndexFetchedAt": "2026-09-16T21:02:02.453701+07:00",
+  "dxy": 99.72,
+  "dxyFetchedAt": "2026-09-16T21:02:02.504515+07:00",
   "vnYields": [
     {
       "t": "5 năm",
@@ -129,22 +129,22 @@
   "margin": null,
   "breadth": {
     "date": "2026-09-16",
-    "gtgd": 4631.0,
+    "gtgd": 12007.7,
     "all": {
-      "a": 117,
-      "d": 194,
-      "u": 118,
-      "ceil": 1,
-      "floor": 2,
+      "a": 123,
+      "d": 200,
+      "u": 106,
+      "ceil": 7,
+      "floor": 4,
       "total": 429
     },
     "source": "VNDirect finfo (đếm từ giá đóng cửa từng mã HOSE)"
   },
   "usdVnd": null,
   "foreign": {
-    "net": 90.7,
-    "buy": 882.5,
-    "sell": 791.8,
+    "net": 233.6,
+    "buy": 2668.6,
+    "sell": 2435.0,
     "unit": "tỷ VND",
     "scope": "HOSE, toàn phiên (khớp lệnh + thoả thuận)",
     "n": 405,
@@ -155,7 +155,7 @@
     "buyTransfer": 25800.0,
     "sell": 26180.0,
     "unit": "VND / 1 USD",
-    "asof": "2026-09-16T09:02:23+07:00",
+    "asof": "2026-09-16T14:59:49+07:00",
     "bank": "Vietcombank",
     "source": "Vietcombank api/exchangerates (tỷ giá NHTM, KHÔNG phải tỷ giá trung tâm NHNN)"
   },
