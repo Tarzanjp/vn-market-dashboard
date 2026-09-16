@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-15T21:10:04+07:00",
-  "asof": "2026-09-15",
+  "generatedAtIct": "2026-09-16T12:58:48+07:00",
+  "asof": "2026-09-16",
   "quality": {
     "usYields": "live",
     "fgUs": "live",
@@ -18,7 +18,7 @@
   "usYields": [
     {
       "t": "1 năm",
-      "y": 4.37,
+      "y": 4.39,
       "d": 0.02,
       "m": null,
       "yr": null,
@@ -27,8 +27,8 @@
     },
     {
       "t": "3 năm",
-      "y": 4.73,
-      "d": 0.04,
+      "y": 4.76,
+      "d": 0.03,
       "m": null,
       "yr": null,
       "x": 3,
@@ -36,8 +36,8 @@
     },
     {
       "t": "5 năm",
-      "y": 4.8,
-      "d": 0.02,
+      "y": 4.83,
+      "d": 0.03,
       "m": null,
       "yr": null,
       "x": 5,
@@ -45,8 +45,8 @@
     },
     {
       "t": "10 năm",
-      "y": 4.97,
-      "d": 0.01,
+      "y": 5.0,
+      "d": 0.03,
       "m": null,
       "yr": null,
       "x": 10,
@@ -54,62 +54,62 @@
     },
     {
       "t": "30 năm",
-      "y": 5.34,
-      "d": -0.01,
+      "y": 5.36,
+      "d": 0.02,
       "m": null,
       "yr": null,
       "x": 30,
       "est": false
     }
   ],
-  "usYieldsAsof": "2026-09-14",
+  "usYieldsAsof": "2026-09-15",
   "fgUs": {
-    "score": 31.3,
+    "score": 28.5,
     "hist": {
-      "prev": 31.1,
-      "week": 39.1,
+      "prev": 28.7,
+      "week": 38.2,
       "month": 64.3,
-      "year": 64.5
+      "year": 64.4
     },
-    "asofEt": "2026-09-15"
+    "asofEt": "2026-09-16"
   },
-  "fgUsFetchedAt": "2026-09-15T21:09:59.521235+07:00",
+  "fgUsFetchedAt": "2026-09-16T12:58:41.781922+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
-    "price": 1811.15,
-    "prev": 1788.23,
-    "chg": 22.92,
-    "pct": 1.28,
-    "date": "2026-09-15"
+    "price": 1813.04,
+    "prev": 1811.15,
+    "chg": 1.89,
+    "pct": 0.1,
+    "date": "2026-09-16"
   },
-  "vnIndexFetchedAt": "2026-09-15T21:09:59.574912+07:00",
-  "dxy": 99.55,
-  "dxyFetchedAt": "2026-09-15T21:09:59.712809+07:00",
+  "vnIndexFetchedAt": "2026-09-16T12:58:41.840337+07:00",
+  "dxy": 99.61,
+  "dxyFetchedAt": "2026-09-16T12:58:41.883138+07:00",
   "vnYields": [
     {
       "t": "5 năm",
       "x": 5,
-      "y": 4.26,
-      "d": null,
-      "d_from": null,
+      "y": 4.27,
+      "d": 0.01,
+      "d_from": "2026-09-10",
       "m": null,
       "yr": null,
       "est": false,
-      "asof": "2026-09-10",
-      "auction": "PH.155.2026",
+      "asof": "2026-09-17",
+      "auction": "PH.160.2026",
       "bond": "TD2631010"
     },
     {
       "t": "10 năm",
       "x": 10,
       "y": 4.43,
-      "d": 0.01,
-      "d_from": "2026-09-04",
+      "d": 0.0,
+      "d_from": "2026-09-10",
       "m": null,
       "yr": null,
       "est": false,
-      "asof": "2026-09-10",
-      "auction": "PH.156.2026",
+      "asof": "2026-09-17",
+      "auction": "PH.161.2026",
       "bond": "TD2636024"
     },
     {
@@ -128,34 +128,34 @@
   ],
   "margin": null,
   "breadth": {
-    "date": "2026-09-15",
-    "gtgd": 13483.3,
+    "date": "2026-09-16",
+    "gtgd": 4631.0,
     "all": {
-      "a": 244,
-      "d": 91,
-      "u": 94,
-      "ceil": 10,
-      "floor": 0,
+      "a": 117,
+      "d": 194,
+      "u": 118,
+      "ceil": 1,
+      "floor": 2,
       "total": 429
     },
     "source": "VNDirect finfo (đếm từ giá đóng cửa từng mã HOSE)"
   },
   "usdVnd": null,
   "foreign": {
-    "net": 708.9,
-    "buy": 3029.8,
-    "sell": 2320.9,
+    "net": 90.7,
+    "buy": 882.5,
+    "sell": 791.8,
     "unit": "tỷ VND",
     "scope": "HOSE, toàn phiên (khớp lệnh + thoả thuận)",
     "n": 405,
     "source": "VNDirect finfo (cộng từ buyVal/sellVal từng mã HOSE, chỉ type=STOCK)"
   },
   "usdVndVcb": {
-    "buyCash": 25720.0,
-    "buyTransfer": 25750.0,
-    "sell": 26130.0,
+    "buyCash": 25770.0,
+    "buyTransfer": 25800.0,
+    "sell": 26180.0,
     "unit": "VND / 1 USD",
-    "asof": "2026-09-15T14:48:05+07:00",
+    "asof": "2026-09-16T09:02:23+07:00",
     "bank": "Vietcombank",
     "source": "Vietcombank api/exchangerates (tỷ giá NHTM, KHÔNG phải tỷ giá trung tâm NHNN)"
   },
