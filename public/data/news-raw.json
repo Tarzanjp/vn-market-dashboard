@@ -1,116 +1,132 @@
 {
-  "generatedAtIct": "2026-09-16T08:21:10+07:00",
+  "generatedAtIct": "2026-09-17T08:21:17+07:00",
   "count": 20,
   "items": [
     {
-      "title": "Giá vàng tiếp tục giảm trong lúc chờ tin Fed, SPDR Gold Trust mua ròng",
-      "link": "https://vneconomy.vn/gia-vang-tiep-tuc-giam-trong-luc-cho-tin-fed-spdr-gold-trust-mua-rong.htm",
-      "description": "Mặc áp lực giảm giá lên kim loại quý đang lớn, quỹ vàng khổng lồ SPDR Gold Trust có động thái mua ròng trở lại sau mấy phiên nghe ngóng...",
-      "publishedAt": "2026-09-16T00:30:15+00:00",
+      "title": "Fed phát tín hiệu tiếp tục tăng lãi suất trong năm nay",
+      "link": "https://vneconomy.vn/fed-phat-tin-hieu-tiep-tuc-tang-lai-suat-trong-nam-nay.htm",
+      "description": "Cục Dự trữ Liên bang (Fed) ngày 16/9 có động thái tăng lãi suất đầu tiên sau hơn 3 năm, đồng thời phát tín hiệu sẽ có thêm một đợt tăng nữa trong năm nay...",
+      "publishedAt": "2026-09-17T00:41:10+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Chứng khoán"
     },
     {
-      "title": "Chứng khoán Mỹ giảm liền hai phiên dưới sức ép từ lợi suất trái phiếu và giá dầu cùng tăng cao",
-      "link": "https://vneconomy.vn/chung-khoan-my-giam-lien-hai-phien-duoi-suc-ep-tu-loi-suat-trai-phieu-va-gia-dau-cung-tang-cao.htm",
-      "description": "Thị trường chứng khoán Mỹ giảm điểm trong phiên giao dịch ngày thứ Ba (15/9), trong lúc nhà đầu tư chờ quyết định lãi suất có thể mang tính bước ngoặt của Cục Dự trữ Liên bang Mỹ (Fed)...",
-      "publishedAt": "2026-09-16T00:30:09+00:00",
+      "title": "Chứng khoán Mỹ mất điểm vì sự cứng rắn của Fed, dầu trượt giá sau nỗ lực tăng cung của Saudi Arabia",
+      "link": "https://vneconomy.vn/chung-khoan-my-mat-diem-vi-su-cung-ran-cua-fed-dau-truot-gia-sau-no-luc-tang-cung-cua-saudi-arabia.htm",
+      "description": "Thị trường chứng khoán Mỹ giảm điểm trong phiên giao dịch ngày thứ Tư (16/9), sau khi Cục Dự trữ Liên bang Mỹ (Fed) tăng lãi suất và phát tín hiệu có thể tiếp tục thắt chặt chính sách trong thời gian tới...",
+      "publishedAt": "2026-09-17T00:01:42+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Chứng khoán"
     },
     {
-      "title": "VN-Index tăng 23 điểm, nhưng vẫn cần thêm sự đồng thuận của dòng tiền lớn",
-      "link": "https://vneconomy.vn/vn-index-tang-23-diem-nhung-van-can-them-su-dong-thuan-cua-dong-tien-lon.htm",
-      "description": "VnEconomy giới thiệu nhận định và khuyến nghị đầu tư của một số công ty chứng khoán về diễn biến thị trường ngày 16/9/2026.",
-      "publishedAt": "2026-09-16T00:29:51+00:00",
+      "title": "VN-Index giảm nhẹ, nhà đầu tư thận trọng trước kháng cự 1820",
+      "link": "https://vneconomy.vn/vn-index-giam-nhe-nha-dau-tu-than-trong-truoc-khang-cu-1820.htm",
+      "description": "VnEconomy giới thiệu nhận định và khuyến nghị đầu tư của một số công ty chứng khoán về diễn biến thị trường ngày 17/9/2026.",
+      "publishedAt": "2026-09-16T23:46:58+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Vàng lao dốc, USD tăng mạnh sau khi Fed tăng lãi suất",
+      "link": "https://vneconomy.vn/vang-lao-doc-usd-tang-manh-sau-khi-fed-tang-lai-suat.htm",
+      "description": "Giá vàng thế giới giảm trong phiên giao dịch ngày thứ Tư (16/9), trượt sâu thêm dưới ngưỡng 4.300 USD/oz, sau khi Cục Dự trữ Liên bang Mỹ (Fed) tăng lãi suất đầu tiên trong hơn 3 năm trở lại đây...",
+      "publishedAt": "2026-09-16T23:45:37+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Đề xuất sàn tài sản mã hóa phải báo cáo tài sản khách hàng 6 tháng/lần",
+      "link": "https://vneconomy.vn/de-xuat-san-tai-san-ma-hoa-phai-bao-cao-tai-san-khach-hang-6-thanglan.htm",
+      "description": "Định kỳ ngày 31/7 và 31/1 hằng năm, tổ chức cung cấp dịch vụ tài sản mã hóa phải gửi Ủy ban Chứng khoán Nhà nước báo cáo 6 tháng về tài sản khách hàng đã được kiểm toán...",
+      "publishedAt": "2026-09-16T23:44:23+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Thủ tướng Lê Minh Hưng: Xử lý triệt để chồng chéo, bất cập, khơi thông nguồn lực",
+      "link": "https://vneconomy.vn/thu-tuong-le-minh-hung-xu-ly-triet-de-chong-cheo-bat-cap-khoi-thong-nguon-luc.htm",
+      "description": "Chủ trì Phiên họp chuyên đề xây dựng pháp luật tháng 9, Thủ tướng Lê Minh Hưng yêu cầu xử lý triệt để các chồng chéo, bất cập, khơi thông nguồn lực, bảo vệ quyền lợi hợp pháp của người dân, doanh nghiệp và nâng cao hiệu quả quản lý nhà nước.",
+      "publishedAt": "2026-09-16T23:37:28+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
+    },
+    {
+      "title": "Nhà vua Thái Lan và Hoàng hậu kết thúc tốt đẹp chuyến thăm cấp Nhà nước đến Việt Nam",
+      "link": "https://vneconomy.vn/nha-vua-thai-lan-va-hoang-hau-ket-thuc-tot-dep-chuyen-tham-cap-nha-nuoc-den-viet-nam.htm",
+      "description": "Chiều tối 16/9, Nhà vua Thái Lan Maha Vajiralongkorn Phra Vajiraklaochaoyuhua và Hoàng hậu Suthida Bajrasudhabimalalakshana rời Hà Nội, kết thúc chuyến thăm cấp Nhà nước đến Việt Nam từ ngày 14-16/9/2026, theo lời mời của Tổng Bí thư, Chủ tịch nước Tô Lâm và Phu nhân.",
+      "publishedAt": "2026-09-16T23:35:11+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
+    },
+    {
+      "title": "Federal Reserve issues FOMC statement",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+      "description": "Federal Reserve issues FOMC statement",
+      "publishedAt": "2026-09-16T18:00:00+00:00",
+      "category": "fed",
+      "source": "Federal Reserve — Monetary Policy"
+    },
+    {
+      "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916b.htm",
+      "description": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
+      "publishedAt": "2026-09-16T18:00:00+00:00",
+      "category": "fed",
+      "source": "Federal Reserve — Monetary Policy"
+    },
+    {
+      "title": "Từng vỡ nợ, Hy Lạp bây giờ đi vay với lãi suất còn thấp hơn cả Pháp",
+      "link": "https://vneconomy.vn/tung-vo-no-hy-lap-bay-gio-di-vay-voi-lai-suat-con-thap-hon-ca-phap.htm",
+      "description": "Trong một hiện tượng đáng chú ý trên thị trường tài chính châu Âu, Chính phủ Hy Lạp hiện đang phải trả lãi suất thấp hơn so với Chính phủ Pháp khi phát hành trái phiếu để vay nợ, dù gánh nặng nợ công của nước này vẫn lớn hơn so với Pháp...",
+      "publishedAt": "2026-09-16T13:12:51+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Thúc đẩy hợp tác công nghệ, hạ tầng, năng lượng với các tập đoàn Trung Quốc",
+      "link": "https://vneconomy.vn/thuc-day-hop-tac-cong-nghe-ha-tang-nang-luong-voi-cac-tap-doan-trung-quoc.htm",
+      "description": "Tiếp lãnh đạo Huawei, CCCC và CEEC tại Nam Ninh, Phó Thủ tướng Thường trực Chính phủ Phạm Gia Túc đề nghị các tập đoàn tăng cường hợp tác, đầu tư tại Việt Nam trong các lĩnh vực công nghệ số, hạ tầng giao thông, năng lượng xanh và đường sắt.",
+      "publishedAt": "2026-09-16T12:20:46+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
+    },
+    {
+      "title": "Khối ngoại mua ròng ngay trước thềm Fed nâng lãi suất",
+      "link": "https://vneconomy.vn/khoi-ngoai-mua-rong-ngay-truoc-them-fed-nang-lai-suat.htm",
+      "description": "Khối ngoại có phiên mua ròng thứ 3 liên tiếp với giá trị ròng giảm so với hôm qua còn 259,3 tỷ đồng, tính riêng giao dịch khớp lệnh thì họ mua ròng 18,9 tỷ đồng.",
+      "publishedAt": "2026-09-16T12:11:01+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Vận hành thị trường tài sản mã hóa trong năm nay, chủ trọng bảo vệ nhà đầu tư và phòng chống rửa tiền",
+      "link": "https://vneconomy.vn/van-hanh-thi-truong-tai-san-ma-hoa-trong-nam-nay-chu-trong-bao-ve-nha-dau-tu-va-phong-chong-rua-tien.htm",
+      "description": "Việt Nam mong muốn tham khảo kinh nghiệm của FMA và các cơ quan quản lý Liên minh châu Âu trong quá trình hoàn thiện khuôn khổ pháp luật về lĩnh vực dịch vụ tài sản mã hóa...",
+      "publishedAt": "2026-09-16T09:20:31+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Chứng khoán"
+    },
+    {
+      "title": "Phó Thủ tướng Thường trực Phạm Gia Túc đề nghị Quảng Tây thúc đẩy kết nối đường sắt, cửa khẩu thông minh và AI",
+      "link": "https://vneconomy.vn/pho-thu-tuong-thuong-truc-pham-gia-tuc-de-nghi-quang-tay-thuc-day-ket-noi-duong-sat-cua-khau-thong-minh-va-ai.htm",
+      "description": "Phó Thủ tướng Thường trực Phạm Gia Túc đề nghị Quảng Tây tạo thuận lợi cho hàng hóa Việt Nam, thúc đẩy đầu tư chất lượng cao, đẩy nhanh kết nối đường sắt, vận hành cửa khẩu thông minh và mở rộng hợp tác khoa học, công nghệ, trí tuệ nhân tạo.",
+      "publishedAt": "2026-09-16T09:17:30+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
+    },
+    {
+      "title": "Các bộ, tỉnh phải hoàn thiện Khung kiến trúc Chính phủ số trước 29/1/2027",
+      "link": "https://vneconomy.vn/cac-bo-tinh-phai-hoan-thien-khung-kien-truc-chinh-phu-so-truoc-2912027.htm",
+      "description": "Các bộ, ngành và địa phương phải xây dựng mới hoặc rà soát, cập nhật và ban hành Khung kiến trúc Chính phủ số cấp bộ, cấp tỉnh chậm nhất ngày 29/1/2027, hướng tới một không gian số thống nhất, phục vụ tốt hơn người dân và doanh nghiệp...",
+      "publishedAt": "2026-09-16T01:44:14+00:00",
+      "category": "vn-macro",
+      "source": "VnEconomy — Tiêu điểm"
     },
     {
       "title": "Tăng cường giao lưu nhân dân, hợp tác giáo dục và lập pháp giữa Việt Nam - Thái Lan",
       "link": "https://vneconomy.vn/tang-cuong-giao-luu-nhan-dan-hop-tac-giao-duc-va-lap-phap-giua-viet-nam-thai-lan.htm",
       "description": "Chủ tịch Quốc hội Trần Thanh Mẫn và Nhà vua Thái Lan Maha Vajiralongkorn Phra Vajiraklaochaoyuhua nhất trí tăng cường giao lưu nhân dân, hợp tác giáo dục, lập pháp, qua đó tiếp tục làm sâu sắc quan hệ Đối tác Chiến lược toàn diện Việt Nam - Thái Lan.",
       "publishedAt": "2026-09-16T00:06:26+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Việt Nam – Thái Lan thúc đẩy kết nối hai nền kinh tế, làm sâu sắc quan hệ Đối tác Chiến lược toàn diện",
-      "link": "https://vneconomy.vn/viet-nam-thai-lan-thuc-day-ket-noi-hai-nen-kinh-te-lam-sau-sac-quan-he-doi-tac-chien-luoc-toan-dien.htm",
-      "description": "Thủ tướng Lê Minh Hưng đề nghị Việt Nam và Thái Lan tiếp tục làm sâu sắc quan hệ Đối tác Chiến lược toàn diện, tăng cường kết nối hai nền kinh tế, thúc đẩy thương mại, đầu tư và hợp tác trong các lĩnh vực mới.",
-      "publishedAt": "2026-09-16T00:05:17+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Việt Nam - Thái Lan tạo động lực mới cho quan hệ Đối tác chiến lược toàn diện",
-      "link": "https://vneconomy.vn/viet-nam-thai-lan-tao-dong-luc-moi-cho-quan-he-doi-tac-chien-luoc-toan-dien.htm",
-      "description": "Trong hội đàm ngày 15/9, Tổng Bí thư, Chủ tịch nước Tô Lâm và Nhà vua Thái Lan Maha Vajiralongkorn Phra Vajiraklaochaoyuhua nhất trí tiếp tục củng cố tin cậy chính trị, thúc đẩy hợp tác kinh tế, thương mại, đầu tư, giao lưu nhân dân, đưa quan hệ Đối tác chiến lược toàn diện Việt Nam - Thái Lan ngày càng sâu sắc, thực chất và bền vững.",
-      "publishedAt": "2026-09-16T00:03:06+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Khối ngoại ồ ạt mua ròng cổ phiếu Việt Nam ngay trước thềm Fed công bố lãi suất",
-      "link": "https://vneconomy.vn/khoi-ngoai-o-at-mua-rong-co-phieu-viet-nam-ngay-truoc-them-fed-cong-bo-lai-suat.htm",
-      "description": "Vào những phiên nhà đầu tư nước ngoài mua ròng mạnh, thị trường thường có xu hướng tăng. Hôm nay nhà đầu tư nước ngoài mua ròng 731,9 tỷ đồng, tính riêng giao dịch khớp lệnh thì họ mua ròng 692,5 tỷ đồng.",
-      "publishedAt": "2026-09-15T13:59:48+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Venezuela và đề xuất đôla hóa để ổn định nền kinh tế",
-      "link": "https://vneconomy.vn/venezuela-va-de-xuat-dola-hoa-de-on-dinh-nen-kinh-te.htm",
-      "description": "Đôla hóa chính thức sẽ đồng nghĩa với việc chấp nhận đồng USD làm đơn vị tiền tệ chính thức của Venezuela, thay thế cho đồng bolivar không chỉ trong các giao dịch hàng ngày mà còn trên toàn hệ thống tài chính...",
-      "publishedAt": "2026-09-15T12:00:38+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Mối quan hệ giữa Tổng thống Trump và Chủ tịch Fed liệu có xấu đi sau cuộc họp tuần này?",
-      "link": "https://vneconomy.vn/moi-quan-he-giua-tong-thong-trump-va-chu-tich-fed-lieu-co-xau-di-sau-cuoc-hop-tuan-nay.htm",
-      "description": "Nhà lãnh đạo ngân hàng trung ương quyền lực nhất thế giới đang ở vào một vị thế đầy khó khăn: một bên là thị trường với kỳ vọng lãi suất tăng và một bên là vị Tổng thống đã nhiều lần thúc ép Fed nới lỏng chính sách tiền tệ...",
-      "publishedAt": "2026-09-15T11:59:30+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Thứ trưởng Bộ Tài chính: Bảo đảm đối xử bình đẳng và bảo hộ đầy đủ quyền, lợi ích của nhà đầu tư",
-      "link": "https://vneconomy.vn/thu-truong-bo-tai-chinh-bao-dam-doi-xu-binh-dang-va-bao-ho-day-du-quyen-loi-ich-cua-nha-dau-tu.htm",
-      "description": "Việt Nam ưu tiên thu hút dòng vốn chất lượng cao, bảo đảm đối xử bình đẳng và bảo hộ đầy đủ quyền, lợi ích hợp pháp của nhà đầu tư...",
-      "publishedAt": "2026-09-15T10:13:38+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Dynam Capital Limited: Tháng 9 hứa hẹn là một tháng đáng chú ý của thị trường chứng khoán Việt Nam",
-      "link": "https://vneconomy.vn/dynam-capital-limited-thang-9-hua-hen-la-mot-thang-dang-chu-y-cua-thi-truong-chung-khoan-viet-nam.htm",
-      "description": "Việc Việt Nam được FTSE nâng hạng đánh dấu một bước tiến nữa trong quá trình phát triển của một thị trường đã thay đổi mạnh mẽ trong 20 năm hoạt động của VNH, đồng thời diễn ra trong bối cảnh đất nước cần những nguồn vốn sâu rộng hơn để tài trợ cho các tham vọng phát triển.",
-      "publishedAt": "2026-09-15T08:40:57+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Đối ngoại nhân dân phải tạo nguồn lực cụ thể cho phát triển đất nước",
-      "link": "https://vneconomy.vn/doi-ngoai-nhan-dan-phai-tao-nguon-luc-cu-the-cho-phat-trien-dat-nuoc.htm",
-      "description": "Tổng Bí thư, Chủ tịch nước Tô Lâm yêu cầu đối ngoại nhân dân chuyển mạnh từ mở rộng quan hệ sang xây dựng quan hệ thực chất, hiệu quả, tạo dựng niềm tin và huy động nguồn lực phục vụ phát triển đất nước.",
-      "publishedAt": "2026-09-15T08:33:51+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Chuyển các cam kết tại BRICS thành dự án, kết quả cụ thể",
-      "link": "https://vneconomy.vn/chuyen-cac-cam-ket-tai-brics-thanh-du-an-ket-qua-cu-the.htm",
-      "description": "Theo Bộ trưởng Ngoại giao Lê Hoài Trung, chuyến công tác của Thủ tướng Chính phủ Lê Minh Hưng tại Ấn Độ đã đạt nhiều kết quả quan trọng, mở thêm không gian hợp tác với BRICS và các đối tác; thời gian tới cần chuyển hóa các cam kết, thỏa thuận thành những dự án, kết quả cụ thể.",
-      "publishedAt": "2026-09-15T08:33:47+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Tổng Bí thư, Chủ tịch nước Tô Lâm chủ trì Lễ đón chính thức Nhà vua Vương quốc Thái Lan và Hoàng hậu",
-      "link": "https://vneconomy.vn/tong-bi-thu-chu-tich-nuoc-to-lam-chu-tri-le-don-chinh-thuc-nha-vua-vuong-quoc-thai-lan-va-hoang-hau.htm",
-      "description": "Theo TTXVN, sáng 15/9, tại Nhà Quốc hội, Tổng Bí thư, Chủ tịch nước Tô Lâm và Phu nhân Ngô Phương Ly đã chủ trì Lễ đón chính thức Nhà vua Vương quốc Thái Lan Maha Vajiralongkorn Phra Vajiraklaochaoyuhua và Hoàng hậu Suthida Bajrasudhabimalalakshana, thăm cấp Nhà nước tới Việt Nam, từ ngày 14 đến ngày 16/9/2026.",
-      "publishedAt": "2026-09-15T07:41:49+00:00",
       "category": "vn-macro",
       "source": "VnEconomy — Tiêu điểm"
     },
@@ -127,22 +143,6 @@
       "link": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260910a.htm",
       "description": "Agencies reduce regulatory burden for community banks, increase eligibility for 18-month exam cycle",
       "publishedAt": "2026-09-10T20:00:00+00:00",
-      "category": "us-macro",
-      "source": "Federal Reserve — All Press Releases"
-    },
-    {
-      "title": "Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp.",
-      "link": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260904a.htm",
-      "description": "Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp.",
-      "publishedAt": "2026-09-04T15:00:00+00:00",
-      "category": "us-macro",
-      "source": "Federal Reserve — All Press Releases"
-    },
-    {
-      "title": "Federal Reserve Board issues enforcement action with former employee of Banco Popular de Puerto Rico",
-      "link": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260827a.htm",
-      "description": "Federal Reserve Board issues enforcement action with former employee of Banco Popular de Puerto Rico",
-      "publishedAt": "2026-08-27T15:00:00+00:00",
       "category": "us-macro",
       "source": "Federal Reserve — All Press Releases"
     },
