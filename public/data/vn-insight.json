@@ -1,21 +1,28 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-16T21:30:35+07:00",
+  "generatedAtIct": "2026-09-17T21:35:47+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — VN30F1M futures history + company events cho 30 mã cấu thành VN30",
   "method": {
     "vn30Basis": "VN30F1M (hợp đồng gần nhất, giá đóng cửa phiên gần nhất) trừ VN30 giao ngay — số thật. basis_pct = basis/spot×100. Có thể lệch ngày nếu 1 trong 2 chưa có phiên mới nhất.",
     "insiderTrades": "company.events() lọc category=MAJOR_SHAREHOLDER_TRADING, 30 ngày gần nhất, CHỈ 30 mã VN30 (không phải toàn thị trường, xem giới hạn API). Tiêu đề lấy nguyên văn từ công bố HOSE, không tự tách số lượng."
   },
   "vn30": {
-    "spot": 1954.29,
-    "futures": 1953.0,
+    "spot": 1975.01,
+    "futures": 1975.5,
     "contract": "VN30F1M",
-    "basis": -1.29,
-    "basis_pct": -0.07,
-    "asof": "2026-09-16",
+    "basis": 0.49,
+    "basis_pct": 0.02,
+    "asof": "2026-09-17",
     "quality": "live"
   },
   "insiderTrades": [
+    {
+      "ticker": "SSB",
+      "date": "2026-09-18",
+      "direction": "Sell",
+      "title_vi": "Bùi Quốc Hiệu - Đăng kí Bán 56,449 SSB",
+      "title_en": "Bui Quoc Hieu - Subscribe to Sell 56,449 SSB shares"
+    },
     {
       "ticker": "HPG",
       "date": "2026-09-15",
