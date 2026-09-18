@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-18T12:53:45+07:00",
+  "generatedAtIct": "2026-09-18T20:23:30+07:00",
   "asof": "2026-09-18",
   "quality": {
     "usYields": "live",
@@ -64,7 +64,7 @@
   ],
   "usYieldsAsof": "2026-09-17",
   "fgUs": {
-    "score": 28.5,
+    "score": 28.7,
     "hist": {
       "prev": 28.7,
       "week": 32.7,
@@ -73,18 +73,18 @@
     },
     "asofEt": "2026-09-18"
   },
-  "fgUsFetchedAt": "2026-09-18T12:53:40.512404+07:00",
+  "fgUsFetchedAt": "2026-09-18T20:23:25.337844+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
-    "price": 1839.67,
+    "price": 1815.66,
     "prev": 1822.77,
-    "chg": 16.9,
-    "pct": 0.93,
+    "chg": -7.11,
+    "pct": -0.39,
     "date": "2026-09-18"
   },
-  "vnIndexFetchedAt": "2026-09-18T12:53:40.564791+07:00",
-  "dxy": 100.29,
-  "dxyFetchedAt": "2026-09-18T12:53:40.611973+07:00",
+  "vnIndexFetchedAt": "2026-09-18T20:23:25.378824+07:00",
+  "dxy": 100.47,
+  "dxyFetchedAt": "2026-09-18T20:23:25.417955+07:00",
   "vnYields": [
     {
       "t": "5 năm",
@@ -129,12 +129,12 @@
   "margin": null,
   "breadth": {
     "date": "2026-09-18",
-    "gtgd": 6446.9,
+    "gtgd": 22058.6,
     "all": {
-      "a": 212,
-      "d": 93,
-      "u": 124,
-      "ceil": 2,
+      "a": 199,
+      "d": 134,
+      "u": 96,
+      "ceil": 3,
       "floor": 4,
       "total": 429
     },
@@ -142,20 +142,20 @@
   },
   "usdVnd": null,
   "foreign": {
-    "net": 717.6,
-    "buy": 1449.0,
-    "sell": 731.4,
+    "net": 1276.7,
+    "buy": 10479.3,
+    "sell": 9202.6,
     "unit": "tỷ VND",
     "scope": "HOSE, toàn phiên (khớp lệnh + thoả thuận)",
     "n": 405,
     "source": "VNDirect finfo (cộng từ buyVal/sellVal từng mã HOSE, chỉ type=STOCK)"
   },
   "usdVndVcb": {
-    "buyCash": 25790.0,
-    "buyTransfer": 25820.0,
-    "sell": 26200.0,
+    "buyCash": 25800.0,
+    "buyTransfer": 25830.0,
+    "sell": 26210.0,
     "unit": "VND / 1 USD",
-    "asof": "2026-09-18T08:05:46+07:00",
+    "asof": "2026-09-18T17:00:34+07:00",
     "bank": "Vietcombank",
     "source": "Vietcombank api/exchangerates (tỷ giá NHTM, KHÔNG phải tỷ giá trung tâm NHNN)"
   },
