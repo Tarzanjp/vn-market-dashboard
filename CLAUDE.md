@@ -206,6 +206,14 @@ Không có `make test`/`make lint` — xem §6 cho định nghĩa "xong" thật.
    code**. Có sẵn hai agent làm đúng trình tự đó: `vn-page-builder` (dựng/sửa
    trang) và `vn-frontend-reviewer` (rà soát) — xem `.claude/agents/README.md`.
 
+0b. **Trước khi đi tìm nguồn cho một trường dữ liệu mới: đọc skill
+   `market-data-sources`** (`.claude/skills/market-data-sources/SKILL.md`).
+   Nó ghi endpoint nào đã kiểm chứng là chạy, endpoint nào đã LOẠI và vì sao
+   (VBMA sau Cloudflare, TCBS 403, FireAnt 401, vnstock không có trái phiếu…),
+   cùng cạm bẫy từng nguồn — dòng tổng hợp lẫn dòng chi tiết, sai bậc đơn vị,
+   phân trang dừng sớm, ô trống nghĩa là "trượt" chứ không phải 0. Thêm nguồn
+   mới thì cập nhật lại file đó, kèm chỉ thị `robots.txt` thật.
+
 1. **Plan mode cho: đổi công thức tài chính (regime scores, RRG, ADR, yield
    curve...), đổi schema JSON đang được nhiều trang đọc, hoặc >3 file.** Trình
    bày: thay đổi gì, ảnh hưởng gì, 2 phương án + đánh đổi. Chờ tôi duyệt. Fix
