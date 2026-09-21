@@ -5,7 +5,7 @@
 
 | 系統 | 対象 | Agent | 権限 |
 |---|---|---|---|
-| **A. VN Market Dashboard(本体)** | `src/`・`*.html`・`vite.config.js`・`automation/` | `vn-page-builder`, `vn-frontend-reviewer` | Read/Write/Edit/Bash あり |
+| **A. VN Market Dashboard(本体)** | `src/`・`*.html`・`vite.config.js`・`automation/` | `vn-page-builder`, `vn-frontend-reviewer`, `vn-market-context`, `vn-sector-rotation`, `vn-news-tagger` | Read/Write/Edit/Bash あり |
 | **B. 日本株スクリーニング(同居する別ツール)** | 外部Webのみ | `orchestrator` ほか8体 | WebFetch/WebSearch のみ |
 
 ---
@@ -20,6 +20,12 @@
   「構造を分析 → grepで検証 → 4つの質問に答える → コード → build+preview」の順で固定。
 - `vn-frontend-reviewer.md` — 読み取り専用のレビュー。偽の数値・`as of`欠落・
   `0`の露出・base pathの罠・JSON契約の断絶を、`file:line` の証拠付きで報告する。
+- `vn-market-context.md` — `live.json` + `regime.json` + `cashout-vn.json` を読み、
+  当日の市場概況をベトナム語で150–250字に要約する。買い/売り推奨なし。
+- `vn-sector-rotation.md` — `sector-flows.json` の RS-Ratio/Momentum から
+  Leading/Weakening/Lagging/Improving の4象限にセクターを分類して表示する。
+- `vn-news-tagger.md` — `news-raw.json` を読み、3–6件の重要ニュースを選別して
+  `news.json` に書き出す。`econ-actuals.json` のupsertも担当。WebSearch不要。
 
 規範の優先順位: `CLAUDE.md`(法) > skill `vn-dashboard-engineering`(現状の
 アーキテクチャ) > 本ファイル。
