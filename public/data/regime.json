@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-21T19:01:23+07:00",
+  "generatedAtIct": "2026-09-21T23:40:37+07:00",
   "date": "2026-09-21",
   "method": {
     "liquidity": "Percentile của GTGD hôm nay trên lịch sử tích luỹ (rolling) — tự thích nghi theo thời gian, không phải ngưỡng cố định. Lịch sử ban đầu có thể gồm phiên ước tính backfill (volume VNINDEX × hệ số quy đổi hiệu chỉnh từ 1 phiên thật) trước khi đủ phiên snapshot thật — xem automation/vn_regime/backfill_liquidity.py và tỷ lệ thật/ước tính trong scores.liquidity.basis.",
@@ -30,14 +30,14 @@
       "basis": "6/10 ngành ở góc Dẫn dắt+Cải thiện (kỳ 2026-09)"
     },
     "macro": {
-      "value": 32.2,
+      "value": 34.1,
       "band": "danger",
       "n": 2,
       "basis": "F&G Mỹ + xu hướng DXY 10 phiên"
     }
   },
   "marketStats": {
-    "realizedVol20d": 15.9,
+    "realizedVol20d": 16.0,
     "n": 20,
     "basis": "stdev log-return 20 phiên gần nhất (VN-Index thật) × √252, annualized"
   },
@@ -57,9 +57,9 @@
     "turnoverQuality": "live",
     "foreignNetBn": -627.6,
     "marginBn": null,
-    "dxy": 100.35,
+    "dxy": 100.39,
     "us10y": 5.01,
-    "fgUs": 29.1,
+    "fgUs": 33.3,
     "sectorRRG": {
       "leading": 3,
       "weakening": 1,
@@ -68,8 +68,8 @@
       "n": 10,
       "period": "2026-09"
     },
-    "vnIndex": 1803.82,
-    "vnIndexPct": -0.65,
+    "vnIndex": 1799.67,
+    "vnIndexPct": -0.88,
     "cashoutSectors": [
       {
         "en": "Banking",
