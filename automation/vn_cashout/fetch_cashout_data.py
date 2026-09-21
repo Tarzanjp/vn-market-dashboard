@@ -384,6 +384,7 @@ def main() -> int:
 
     payload = {
         "schemaVersion": "1.0",
+        "asof": today_ict,
         "generatedAtIct": generated_at.isoformat(timespec="seconds"),
         "source": "VCI (qua thư viện mã nguồn mở vnstock) — bulk price_board toàn bộ mã HOSE/HNX/UPCOM",
         "method": {
