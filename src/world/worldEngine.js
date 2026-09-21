@@ -6,6 +6,7 @@ import { MARKETS as MARKETS_SRC, SUB_ORDER, GRP_NAME, GRP_ORDER, GRP_DESC, SUB_G
    rationale on keeping this as DOM-manipulating code rather than
    idiomatic React state.
    ============================================================ */
+import { nf, sgn, cls, esc } from "../lib/format.js";
 export function initWorldIndices() {
   let MARKETS = MARKETS_SRC.map(m => ({ ...m }));
   MARKETS.sort((a, b) => SUB_ORDER.indexOf(a.sub) - SUB_ORDER.indexOf(b.sub));
@@ -20,13 +21,6 @@ export function initWorldIndices() {
   // thẳng ra UI. Hai bản nf() kia (historyEngine.js, dashboardEngine.js) đã
   // chặn — bản này thì chưa, nên là bản duy nhất có thể in "NaN".
   const bad = v => v == null || Number.isNaN(+v);
-  const nf = (v, d = 2) => bad(v) ? "—" : (+v).toLocaleString("vi-VN", { minimumFractionDigits: d, maximumFractionDigits: d });
-  const sgn = (v, d = 2) => bad(v) ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + nf(Math.abs(v), d);
-  const cls = v => bad(v) ? "flat" : v > 0 ? "up" : v < 0 ? "down" : "flat";
-  const hhmm = h => {
-    const H = Math.floor(h) % 24, M = Math.round((h - Math.floor(h)) * 60);
-    return String(H).padStart(2, "0") + ":" + String(M).padStart(2, "0");
-  };
 
   MARKETS.forEach(m => {
     if (m.c == null && m.v != null && m.p != null) m.c = m.v - m.v / (1 + m.p / 100);
@@ -62,8 +56,8 @@ export function initWorldIndices() {
     const chart = m.tv ? `<div class="tv-slot" data-sym="${m.tv}"></div>` : "";
     const inner = `
       <div class="t-top">
-        <span class="t-name">${m.name}</span>
-        <span class="t-cty">${m.cty}</span>
+        <span class="t-name">${esc(m.name)}</span>
+        <span class="t-cty">${esc(m.cty)}</span>
       </div>
       <div class="t-val">${nf(m.v, m.dec)}</div>
       <div class="t-chg">
@@ -73,7 +67,7 @@ export function initWorldIndices() {
       <div class="t-spark">${chart}</div>
       <div class="t-foot">
         <span class="t-stat ${st.open ? "open" : ""}"><i></i>${st.label}</span>
-        ${m.note ? `<span class="t-note">${m.note}</span>` : `<span class="t-note">${st.local} giờ ĐP</span>`}
+        ${m.note ? `<span class="t-note">${esc(m.note)}</span>` : `<span class="t-note">${st.local} giờ ĐP</span>`}
       </div>`;
     if (!m.tv) return `<article class="tile ${k}">${inner}</article>`;
     return `<a class="tile ${k}" href="${tvChartURL(m.tv)}" target="_blank" rel="noopener"
@@ -90,7 +84,7 @@ export function initWorldIndices() {
     const c247 = m.sess[0] === 0 && m.sess[1] === 24;
     return `<tr>
       <td>${m.tv ? `<a class="tvlink" href="${tvChartURL(m.tv)}" target="_blank" rel="noopener">${m.name}</a>`
-        : `<b style="font-weight:600">${m.name}</b>`} <span style="color:var(--dim);font-size:11.5px">${m.cty}</span></td>
+        : `<b style="font-weight:600">${esc(m.name)}</b>`} <span style="color:var(--dim);font-size:11.5px">${esc(m.cty)}</span></td>
       <td><span class="grp-tag grp-${m.grp}">${m.sub || GRP_NAME[m.grp]}</span></td>
       <td class="num" style="font-weight:600">${nf(m.v, m.dec)}</td>
       <td class="num ${cls(m.p)}">${sgn(m.c, m.dec)}</td>
@@ -138,7 +132,7 @@ export function initWorldIndices() {
 
   function subBlockHTML(sub, items) {
     const pri = SUB_PRI[sub] ? `<span class="sub-pri">${SUB_PRI[sub]}</span>` : "";
-    return `<div class="sub-hd"><h3><span class="region">${sub}</span>${pri}<span class="sub-n">${items.length}</span></h3>${
+    return `<div class="sub-hd"><h3><span class="region">${esc(sub)}</span>${pri}<span class="sub-n">${items.length}</span></h3>${
       SUBDESC[sub] ? `<p>${SUBDESC[sub]}</p>` : ""}</div>` + items.map(tileHTML).join("");
   }
   function tilesHTML(list) {
@@ -208,7 +202,7 @@ export function initWorldIndices() {
     el("clock").textContent = [d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds()]
       .map(x => String(x).padStart(2, "0")).join(":");
   }
-  tick(); setInterval(tick, 1000);
+  tick(); const _tickId = setInterval(tick, 1000);
   // Không tự render() lại định kỳ nữa — mỗi lần render sẽ tạo lại toàn bộ DOM tile,
   // buộc mọi widget TradingView đang chạy phải tải lại từ đầu (xấu trải nghiệm vì
   // widget đã tự cập nhật realtime bên trong iframe của nó rồi).
@@ -267,4 +261,9 @@ export function initWorldIndices() {
       setAsof("Số liệu: không tải được · đang hiển thị số tĩnh");
     }
   }
+
+  return function cleanup() {
+    clearInterval(_tickId);
+    if (tvObserver) tvObserver.disconnect();
+  };
 }

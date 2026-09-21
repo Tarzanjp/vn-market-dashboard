@@ -12,11 +12,13 @@ export default function CashoutApp() {
   const { data, status } = useCashout();
   const { data: insight, status: insightStatus } = useMarketInsight();
   const initedRef = useRef(false);
+  const cleanupRef = useRef(null);
 
   useEffect(() => {
     if (status === "loading" || insightStatus === "loading" || initedRef.current) return;
     initedRef.current = true;
-    initCashout(status === "ready" ? data : null, insightStatus === "ready" ? insight : null);
+    cleanupRef.current = initCashout(status === "ready" ? data : null, insightStatus === "ready" ? insight : null);
+    return () => { if (cleanupRef.current) { cleanupRef.current(); cleanupRef.current = null; } };
   }, [status, data, insightStatus, insight]);
 
   return (

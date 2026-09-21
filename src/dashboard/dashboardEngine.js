@@ -8,6 +8,7 @@
    calls initMarketDashboard(LIVE) once after the shell is mounted
    and live data has been fetched.
    ============================================================ */
+import { nf, sgn, cls, dmy, dmyF, esc } from "../lib/format.js";
 export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   let ASOF = (LIVE && LIVE.asof) ? LIVE.asof : "2026-08-07";
   const WINDOWS = [25, 15, 10, 6]; // các chu kỳ tính hệ số ADR (phiên)
@@ -380,30 +381,6 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   const LAST = ROWS[ROWS.length - 1];
   const MG_LAST = (MARGIN.days && MARGIN.days.length) ? MARGIN.days[MARGIN.days.length - 1] : { date: ASOF, debt: 0, net: 0 };
 
-  const nf = (v, d = 2) => {
-    if (v == null || v === "" || (typeof v === "number" && Number.isNaN(v))) return "—";
-    const n = Number(v);
-    if (Number.isNaN(n)) return "—";
-    return n.toLocaleString("vi-VN", { minimumFractionDigits: d, maximumFractionDigits: d });
-  };
-  const sgn = (v, d = 2) => {
-    if (v == null || (typeof v === "number" && Number.isNaN(v))) return "—";
-    const n = Number(v);
-    if (Number.isNaN(n)) return "—";
-    return (n > 0 ? "+" : n < 0 ? "−" : "") + nf(Math.abs(n), d);
-  };
-  const cls = v => {
-    if (v == null || (typeof v === "number" && Number.isNaN(v))) return "flat";
-    return v > 0 ? "up" : v < 0 ? "down" : "flat";
-  };
-  const dmy = iso => !iso ? "—" : String(iso).slice(5).replace("-", "/");
-  const dmyF = iso => !iso ? "—" : String(iso).replace(/-/g, "/");
-  const el = id => document.getElementById(id);
-  const yieldAt = (arr, x) => {
-    const hit = (arr || []).find(r => +r.x === +x);
-    return hit && hit.y != null ? +hit.y : null;
-  };
-  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
   /* ============================================================
      3. ĐỒNG HỒ & TRẠNG THÁI PHIÊN
@@ -431,7 +408,7 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     el("mkStatus").textContent = s.label;
     el("mkDot").className = "dot" + (s.live ? " live" : "");
   }
-  tickClock(); setInterval(tickClock, 1000);
+  tickClock(); const _tickId = setInterval(tickClock, 1000);
   el("asof").textContent = dmyF(ASOF);
   el("boardDate").textContent = "Phiên " + dmyF(LAST.date) + " · HOSE";
 
@@ -470,7 +447,7 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   })();
 
   function buildTape() {
-    const mbr = window.__mbrScore, mbrZ = window.__mbrZone || "";
+    const mbr = _mbrScore, mbrZ = _mbrZone || "";
     const items = [
       { k: "VN-INDEX", v: nf(LAST.close), c: LAST.pct == null ? "—" : sgn(LAST.pct) + "%", cl: cls(LAST.pct) },
       { k: "GTGD HOSE", v: LAST.gtgd == null ? "—" : nf(LAST.gtgd, 0) + " tỷ", c: "", cl: "flat" },
@@ -1083,8 +1060,8 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
 
     renderMgRisk(el("mgRiskBox"), risk);
 
-    window.__mbrScore = risk ? risk.score : null;
-    window.__mbrZone = rz.n;
+    _mbrScore = risk ? risk.score : null;
+    _mbrZone = rz.n;
     buildTape();
   })();
 
@@ -1176,7 +1153,8 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     svg.addEventListener("mouseleave", () => { tip.style.opacity = 0; cross.parentElement.style.opacity = 0; });
   }
   drawMargin();
-  window.addEventListener("resize", () => { clearTimeout(window.__mgR); window.__mgR = setTimeout(drawMargin, 120); });
+  const _onMgResize = () => { clearTimeout(window.__mgR); window.__mgR = setTimeout(drawMargin, 120); };
+  window.addEventListener("resize", _onMgResize);
 
   /* ============================================================
      9. BIỂU ĐỒ HỆ SỐ ADR
@@ -1587,23 +1565,23 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
     const cardHtml = n => {
       const fresh = isNew(n.date);
       const srcHtml = n.srcUrl
-        ? `<a href="${esc(n.srcUrl)}" target="_blank" rel="noopener">Nguồn: ${n.src}</a>`
-        : `Nguồn: ${n.src}`;
+        ? `<a href="${esc(n.srcUrl)}" target="_blank" rel="noopener">Nguồn: ${esc(n.src)}</a>`
+        : `Nguồn: ${esc(n.src)}`;
       return `
-      <article class="ncard ${n.cls}${n.hot ? ' hot' : ''}">
+      <article class="ncard ${esc(n.cls)}${n.hot ? ' hot' : ''}">
         <div class="nc-in">
           <div class="nmeta">
             ${fresh ? `<span class="badge-new">${NEWICON}New</span>` : ``}
-            <span class="badge ${n.badgeCls}">${n.badge}</span>
-            <span class="ntime">${dmyF(n.date)}${n.time ? " · " + n.time : ""}</span>
+            <span class="badge ${esc(n.badgeCls)}">${esc(n.badge)}</span>
+            <span class="ntime">${dmyF(n.date)}${n.time ? " · " + esc(n.time) : ""}</span>
             ${impactBars(n.impact)}
           </div>
-          <h3 class="ntitle">${n.title}</h3>
+          <h3 class="ntitle">${esc(n.title)}</h3>
           ${n.data.length ? `<div class="ndata">${n.data.map(([k, v, c]) =>
-            `<div><div class="lb">${k}</div><div class="vl ${c === 'dim' ? '' : c}" ${c === 'dim' ? 'style="color:var(--muted)"' : ''}>${v}</div></div>`).join("")}</div>` : ""}
-          <ul class="nlist">${n.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
-          ${n.chips.length ? `<div class="nchips">${n.chips.map(([t, c]) => `<span class="chipx ${c}">${t}</span>`).join("")}</div>` : ""}
-          ${n.vn ? `<div class="nvn">${n.vn}</div>` : ""}
+            `<div><div class="lb">${esc(k)}</div><div class="vl ${c === 'dim' ? '' : esc(c)}" ${c === 'dim' ? 'style="color:var(--muted)"' : ''}>${esc(v)}</div></div>`).join("")}</div>` : ""}
+          <ul class="nlist">${n.bullets.map(b => `<li>${esc(b)}</li>`).join("")}</ul>
+          ${n.chips.length ? `<div class="nchips">${n.chips.map(([t, c]) => `<span class="chipx ${esc(c)}">${esc(t)}</span>`).join("")}</div>` : ""}
+          ${n.vn ? `<div class="nvn">${esc(n.vn)}</div>` : ""}
           <div class="nsrc">${srcHtml}</div>
         </div>
       </article>`;
@@ -1759,5 +1737,11 @@ export function initMarketDashboard(LIVE, HISTORY, NEWS_DATA, ECON_ACTUALS) {
   catch (e) { console.error("init fail", e); }
 
   let rt;
-  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderAll, 140); });
+  const _onResize = () => { clearTimeout(rt); rt = setTimeout(renderAll, 140); };
+  window.addEventListener("resize", _onResize);
+  return function cleanup() {
+    clearInterval(_tickId);
+    clearTimeout(rt);
+    window.removeEventListener("resize", _onResize);
+  };
 }

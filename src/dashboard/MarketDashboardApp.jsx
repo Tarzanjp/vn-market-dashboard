@@ -16,11 +16,13 @@ export default function MarketDashboardApp() {
   const { items: newsItems, generatedAtIct: newsGeneratedAtIct, status: newsStatus } = useNews();
   const { items: econActuals, status: econActualsStatus } = useEconActuals();
   const initedRef = useRef(false);
+  const cleanupRef = useRef(null);
 
   useEffect(() => {
     if (status !== "ready" || historyStatus !== "ready" || newsStatus !== "ready" || econActualsStatus !== "ready" || initedRef.current) return;
     initedRef.current = true;
-    initMarketDashboard(live, history, { items: newsItems, generatedAtIct: newsGeneratedAtIct }, econActuals);
+    cleanupRef.current = initMarketDashboard(live, history, { items: newsItems, generatedAtIct: newsGeneratedAtIct }, econActuals);
+    return () => { if (cleanupRef.current) { cleanupRef.current(); cleanupRef.current = null; } };
   }, [status, live, historyStatus, history, newsStatus, newsItems, newsGeneratedAtIct, econActualsStatus, econActuals]);
 
   return (

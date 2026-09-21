@@ -8,11 +8,13 @@ import "./world.css";
 
 export default function WorldIndicesApp() {
   const initedRef = useRef(false);
+  const cleanupRef = useRef(null);
 
   useEffect(() => {
     if (initedRef.current) return;
     initedRef.current = true;
-    initWorldIndices();
+    cleanupRef.current = initWorldIndices();
+    return () => { if (cleanupRef.current) { cleanupRef.current(); cleanupRef.current = null; } };
   }, []);
 
   return (

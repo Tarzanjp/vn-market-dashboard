@@ -7,6 +7,7 @@
    initHistory(rows, events) is called once after both have been
    fetched (see hooks/useHistory.js) and the page shell has mounted.
    ============================================================ */
+import { nf, dmyF } from "../lib/format.js";
 
 const RANGE_DAYS = { "3T": 90, "6T": 180, "1N": 365, all: Infinity };
 
@@ -33,9 +34,6 @@ const DEFAULT_ON = new Set(["vnIndex", "us10y", "dxy"]);
 
 export function initHistory(rows, events) {
   const el = (id) => document.getElementById(id);
-  const nf = (v, d = 2) => (v == null || Number.isNaN(+v) ? "—" : (+v).toLocaleString("vi-VN", { minimumFractionDigits: d, maximumFractionDigits: d }));
-  const sgn = (v, d = 2) => (v == null || Number.isNaN(+v) ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + nf(Math.abs(v), d));
-  const dmyF = (iso) => (!iso ? "—" : String(iso).replace(/-/g, "/"));
 
   const on = new Set(DEFAULT_ON);
   let rangeKey = "1N";
@@ -321,8 +319,10 @@ export function initHistory(rows, events) {
   drawEvents();
 
   let rt;
-  window.addEventListener("resize", () => {
+  const _onResize = () => { clearTimeout(rt); rt = setTimeout(renderAll, 140); };
+  window.addEventListener("resize", _onResize);
+  return function cleanup() {
     clearTimeout(rt);
-    rt = setTimeout(renderAll, 140);
-  });
+    window.removeEventListener("resize", _onResize);
+  };
 }

@@ -4,6 +4,7 @@
    public/data/cashout-vn.json (null nếu fetch lỗi/chưa có file — khi đó
    dùng nguyên dữ liệu mẫu bên dưới, không tự bịa số).
    ============================================================ */
+import { esc } from "../lib/format.js";
 
 // Dữ liệu mẫu (preset/simulated) — fallback khi chưa fetch được cashout-vn.json.
 const PRESET_SECTORS = [
@@ -67,7 +68,7 @@ export function initCashout(data, insight) {
       .map((x) => String(x).padStart(2, "0")).join(":");
   }
   tick();
-  setInterval(tick, 1000);
+  const _tickId = setInterval(tick, 1000);
 
   /* ============ Cashout Alert ============ */
   const numInput = el("turnoverInput");
@@ -228,8 +229,8 @@ export function initCashout(data, insight) {
       card.className = "co-stock-card";
       card.innerHTML = `
         <div class="co-stock-card-hd">
-          <span class="s-name">${s.code}</span>
-          <span class="s-sector">${s.sector}</span>
+          <span class="s-name">${esc(s.code)}</span>
+          <span class="s-sector">${esc(s.sector)}</span>
         </div>
         <div class="co-bar-row">
           <div class="bar-label"><span>Foreign Buy Value</span><span class="bar-val num">${s.buy.toLocaleString("en-US")} tỷ</span></div>
@@ -409,8 +410,8 @@ export function initCashout(data, insight) {
       const isBuy = (t.direction || "").toLowerCase() === "buy";
       const isSell = (t.direction || "").toLowerCase() === "sell";
       row.innerHTML = `
-        <span class="co-insider-code">${t.ticker}</span>
-        <span class="co-insider-title">${t.title_vi || t.title_en || "—"}</span>
+        <span class="co-insider-code">${esc(t.ticker)}</span>
+        <span class="co-insider-title">${esc(t.title_vi || t.title_en || "—")}</span>
         <span class="dir-tag ${isBuy ? "buy" : isSell ? "sell" : ""}">${isBuy ? "Mua" : isSell ? "Bán" : "—"}</span>
         <span class="co-insider-date">${t.date || "—"}</span>
       `;
@@ -468,4 +469,8 @@ export function initCashout(data, insight) {
     statusEl.className = "pill";
     statusText.textContent = "Dữ liệu mẫu (preset)";
   }
+
+  return function cleanup() {
+    clearInterval(_tickId);
+  };
 }

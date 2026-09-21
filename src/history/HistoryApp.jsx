@@ -10,6 +10,7 @@ import "./history.css";
 export default function HistoryApp() {
   const { rows, events, status } = useHistory();
   const initedRef = useRef(false);
+  const cleanupRef = useRef(null);
 
   useEffect(() => {
     if (status !== "ready" || initedRef.current) return;
