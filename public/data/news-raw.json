@@ -1,95 +1,7 @@
 {
-  "generatedAtIct": "2026-09-21T13:17:29+07:00",
-  "count": 19,
+  "generatedAtIct": "2026-09-22T16:41:27+07:00",
+  "count": 5,
   "items": [
-    {
-      "title": "Siêu chu kỳ hàng hóa đang tăng mạnh, đón đầu cơ hội ở cổ phiếu nào?",
-      "link": "https://vneconomy.vn/sieu-chu-ky-hang-hoa-dang-tang-manh-don-dau-co-hoi-o-co-phieu-nao.htm",
-      "description": "Chỉ số VN-Index tiếp tục củng cố xu hướng tăng ngắn hạn khi tạo các đáy sau cao hơn đáy trước, lúc này vùng 1.790 điểm là hỗ trợ cho thị trường để bảo toàn xu hướng hồi phục của thị trường kể từ khi tạo đáy ở vùng 1.660 điểm.",
-      "publishedAt": "2026-09-21T05:34:28+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Dòng vốn rút khỏi các quỹ cổ phiếu toàn cầu cao nhất trong 9 tháng",
-      "link": "https://vneconomy.vn/dong-von-rut-khoi-cac-quy-co-phieu-toan-cau-cao-nhat-trong-9-thang.htm",
-      "description": "Fed tăng lãi suất thêm 25 điểm cơ bản trong tuần và phát tín hiệu có thể tiếp tục thắt chặt. Giá dầu thô lên mức cao nhất 4 tháng, làm gia tăng lo ngại lạm phát và đẩy lợi suất trái phiếu kỳ hạn Mỹ tăng, gây áp lực lên các quỹ tăng trưởng.",
-      "publishedAt": "2026-09-21T05:34:15+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Khối ngoại vẫn xả mạnh, thanh khoản “èo uột”, đà giảm áp đảo trong phiên nâng hạng",
-      "link": "https://vneconomy.vn/khoi-ngoai-van-xa-manh-thanh-khoan-eo-uot-da-giam-ap-dao-trong-phien-nang-hang.htm",
-      "description": "Từ ngày 21/9 thị trường chứng khoán Việt Nam chính thức được phân loại trong nhóm “thị trường mới nổi” của FTSE. Tuy nhiên giao dịch không có gì thay đổi, khối ngoại vẫn bán ròng mạnh và cổ phiếu giảm giá trên diện rộng cùng với thanh khoản rất thấp.",
-      "publishedAt": "2026-09-21T05:07:22+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Tỷ phú Buffett rời ghế Chủ tịch Berkshire Hathaway",
-      "link": "https://vneconomy.vn/ty-phu-buffett-roi-ghe-chu-tich-berkshire-hathaway.htm",
-      "description": "Vào ngày thứ Sáu (18/9), tỷ phú Warren Buffett đã rời ghế Chủ tịch Berkshire Hathaway, khép lại hành trình hơn 6 thập kỷ xây dựng tập đoàn này và trở thành nhà đầu tư huyền thoại được kính nể bậc nhất thế giới...",
-      "publishedAt": "2026-09-21T03:23:01+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Dòng tiền tiếp tục chảy ra khỏi Bất động sản và phân bổ vào nhóm Ngân hàng",
-      "link": "https://vneconomy.vn/dong-tien-tiep-tuc-chay-ra-khoi-bat-dong-san-va-phan-bo-vao-nhom-ngan-hang.htm",
-      "description": "VN-Index kết thúc tuần 38/2026 tại 1.815,66 điểm, tăng 20,45 điếm (+1,14%) so với tuần trước, qua đó hồi phục sau nhịp giảm mạnh của tuần 37 và lấy lại mốc 1.800 điểm, với thanh khoản cải thiện rõ rệt.",
-      "publishedAt": "2026-09-21T02:03:31+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Nhu cầu “hầm trú ẩn” đang nâng đỡ giá vàng",
-      "link": "https://vneconomy.vn/nhu-cau-ham-tru-an-dang-nang-do-gia-vang.htm",
-      "description": "Dù Cục Dự trữ Liên bang Mỹ (Fed) tăng lãi suất và phát tín hiệu cứng rắn trong tuần vừa rồi, giá vàng vẫn hoàn tất tuần tăng đầu tiên sau hai tuần giảm liên tiếp...",
-      "publishedAt": "2026-09-21T02:02:40+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "KIS triển khai ưu đãi cho khách hàng mở mới tài khoản ký quỹ",
-      "link": "https://vneconomy.vn/kis-trien-khai-uu-dai-cho-khach-hang-mo-moi-tai-khoan-ky-quy.htm",
-      "description": "Chứng khoán KIS triển khai chương trình “Chứng sỹ mã đáo” dành cho khách hàng cá nhân trong nước mở mới tiểu khoản ký quỹ M1. Chương trình kéo dài đến hết năm 2026, với phần thưởng tương đương 3 cổ phiếu cho mỗi tài khoản đáp ứng đầy đủ điều kiện.",
-      "publishedAt": "2026-09-21T01:00:00+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Ông Trần Thanh Lâm giữ chức Bí thư Đảng ủy Cơ quan Ban Tuyên giáo Trung ương",
-      "link": "https://vneconomy.vn/ong-tran-thanh-lam-giu-chuc-bi-thu-dang-uy-co-quan-ban-tuyen-giao-trung-uong.htm",
-      "description": "Ông Trần Thanh Lâm, Ủy viên Trung ương Đảng, Phó Trưởng ban Thường trực Ban Tuyên giáo Trung ương, tham gia Ban Chấp hành, Ban Thường vụ và giữ chức Bí thư Đảng ủy Cơ quan Ban Tuyên giáo Trung ương nhiệm kỳ 2025-2030.",
-      "publishedAt": "2026-09-20T03:50:45+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Xu thế dòng tiền: Chính thức nâng hạng có tạo bước ngoặt cho thị trường?",
-      "link": "https://vneconomy.vn/xu-the-dong-tien-chinh-thuc-nang-hang-co-tao-buoc-ngoat-cho-thi-truong.htm",
-      "description": "Từ phiên giao dịch ngày 21/9, thị trường chứng khoán Việt Nam chính thức được phân loại thành thị trường mới nổi thứ cấp theo chuẩn của FTSE Russell. VN-Index sau phiên rung lắc dưới mốc 1800 điểm đầu tuần qua đã phục hồi trở lại, bảo toàn xu hướng tăng ngắn hạn được thiết lập từ cuối tháng 7.",
-      "publishedAt": "2026-09-20T03:21:59+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Chứng khoán"
-    },
-    {
-      "title": "Tổng Bí thư, Chủ tịch nước Tô Lâm: Xây dựng Bắc Ninh thành đô thị hiện đại, đậm đà hồn cốt Kinh Bắc",
-      "link": "https://vneconomy.vn/tong-bi-thu-chu-tich-nuoc-to-lam-xay-dung-bac-ninh-thanh-do-thi-hien-dai-dam-da-hon-cot-kinh-bac.htm",
-      "description": "Tổng Bí thư, Chủ tịch nước Tô Lâm đề nghị Bắc Ninh xác lập tầm nhìn dài hạn, nâng cao nội lực, từng bước làm chủ công nghệ, xây dựng đô thị xanh, thông minh, hiện đại, đồng thời gìn giữ bản sắc văn hóa Kinh Bắc và nâng cao đời sống nhân dân.",
-      "publishedAt": "2026-09-20T01:58:21+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Phát biểu của Tổng Bí thư, Chủ tịch nước Tô Lâm tại Lễ kỷ niệm 72 năm Ngày Bác Hồ về thăm Đền Hùng",
-      "link": "https://vneconomy.vn/phat-bieu-cua-tong-bi-thu-chu-tich-nuoc-to-lam-tai-le-ky-niem-72-nam-ngay-bac-ho-ve-tham-den-hung.htm",
-      "description": "Sáng 19/9, Tổng Bí thư, Chủ tịch nước Tô Lâm đã có bài phát biểu tại Lễ kỷ niệm 72 năm Ngày Bác Hồ về thăm Đền Hùng. Tạp chí Kinh tế Việt Nam/VnEconomy trân trọng giới thiệu toàn văn bài phát biểu.",
-      "publishedAt": "2026-09-20T01:40:31+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
     {
       "title": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
       "link": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
@@ -105,30 +17,6 @@
       "publishedAt": "2026-09-18T15:00:00+00:00",
       "category": "us-macro",
       "source": "Federal Reserve — All Press Releases"
-    },
-    {
-      "title": "Hà Nội phải đi đầu trong xây dựng đội ngũ cán bộ",
-      "link": "https://vneconomy.vn/ha-noi-phai-di-dau-trong-xay-dung-doi-ngu-can-bo.htm",
-      "description": "Tổng Bí thư, Chủ tịch nước Tô Lâm nhấn mạnh thước đo của cán bộ Thủ đô là hiệu quả công việc, sự chuyển biến của địa bàn và niềm tin của nhân dân; yêu cầu Hà Nội coi đổi mới công tác đánh giá cán bộ là khâu đột phá.",
-      "publishedAt": "2026-09-18T00:58:13+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Tổng Bí thư, Chủ tịch nước Tô Lâm: Phòng, chống tham nhũng phải “nói ít làm nhiều”, “làm đến cùng”",
-      "link": "https://vneconomy.vn/tong-bi-thu-chu-tich-nuoc-to-lam-phong-chong-tham-nhung-phai-noi-it-lam-nhieu-lam-den-cung.htm",
-      "description": "Tổng Bí thư, Chủ tịch nước Tô Lâm yêu cầu công tác phòng, chống tham nhũng, lãng phí, tiêu cực thực hiện đúng phương châm “nói ít làm nhiều”, “làm đến cùng”; kết quả phải được đo bằng những sai phạm được khắc phục, tài sản được thu hồi, nguồn lực được khơi thông và nhũng nhiễu giảm.",
-      "publishedAt": "2026-09-18T00:56:32+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
-    },
-    {
-      "title": "Tổng Bí thư, Chủ tịch nước Tô Lâm dự Đại hội đồng Liên hợp quốc 81, hoạt động song phương tại Hoa Kỳ và thăm cấp Nhà nước tới Canada",
-      "link": "https://vneconomy.vn/tong-bi-thu-chu-tich-nuoc-to-lam-du-dai-hoi-dong-lien-hop-quoc-81-hoat-dong-song-phuong-tai-hoa-ky-va-tham-cap-nha-nuoc-toi-canada.htm",
-      "description": "Theo Thông cáo của Bộ Ngoại giao, từ ngày 20 - 25/9, Tổng Bí thư, Chủ tịch nước Tô Lâm và đoàn đại biểu cấp cao Việt Nam sẽ tham dự Phiên thảo luận cấp cao Đại hội đồng Liên hợp quốc khóa 81, hoạt động song phương tại Hoa Kỳ và thăm cấp Nhà nước tới Canada theo lời mời của Toàn quyền Canada Louise Arbour.",
-      "publishedAt": "2026-09-18T00:47:10+00:00",
-      "category": "vn-macro",
-      "source": "VnEconomy — Tiêu điểm"
     },
     {
       "title": "Federal Reserve issues FOMC statement",
