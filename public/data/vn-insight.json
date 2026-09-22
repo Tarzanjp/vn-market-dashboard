@@ -1,21 +1,49 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-21T23:40:37+07:00",
+  "generatedAtIct": "2026-09-22T21:18:23+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — VN30F1M futures history + company events cho 30 mã cấu thành VN30",
   "method": {
     "vn30Basis": "VN30F1M (hợp đồng gần nhất, giá đóng cửa phiên gần nhất) trừ VN30 giao ngay — số thật. basis_pct = basis/spot×100. Có thể lệch ngày nếu 1 trong 2 chưa có phiên mới nhất.",
     "insiderTrades": "company.events() lọc category=MAJOR_SHAREHOLDER_TRADING, 30 ngày gần nhất, CHỈ 30 mã VN30 (không phải toàn thị trường, xem giới hạn API). Tiêu đề lấy nguyên văn từ công bố HOSE, không tự tách số lượng."
   },
   "vn30": {
-    "spot": 1953.26,
-    "futures": 1949.0,
+    "spot": 1965.36,
+    "futures": 1962.9,
     "contract": "VN30F1M",
-    "basis": -4.26,
-    "basis_pct": -0.22,
-    "asof": "2026-09-21",
+    "basis": -2.46,
+    "basis_pct": -0.13,
+    "asof": "2026-09-22",
     "quality": "live"
   },
   "insiderTrades": [
+    {
+      "ticker": "SSB",
+      "date": "2026-09-23",
+      "direction": "Sell",
+      "title_vi": "Vũ Đình Khoán - Đăng kí Bán 95,000 SSB",
+      "title_en": "Vu Dinh Khoan - Subscribe to Sell 95,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-09-23",
+      "direction": "Sell",
+      "title_vi": "Đặng Thu Trang - Đăng kí Bán 70,000 SSB",
+      "title_en": "Dang Thu Trang - Subscribe to Sell 70,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-09-23",
+      "direction": "Sell",
+      "title_vi": "Lê Tuấn Anh - Đăng kí Bán 8,000,000 SSB",
+      "title_en": "Le Tuan Anh - Subscribe to Sell 8,000,000 SSB shares"
+    },
+    {
+      "ticker": "SSB",
+      "date": "2026-09-23",
+      "direction": "Sell",
+      "title_vi": "Nguyễn Tường Huy - Đăng kí Bán 214,100 SSB",
+      "title_en": "Nguyen Tuong Huy - Subscribe to Sell 214,100 SSB shares"
+    },
     {
       "ticker": "SSB",
       "date": "2026-09-18",
