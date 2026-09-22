@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-22T13:10:51+07:00",
+  "generatedAtIct": "2026-09-22T20:54:21+07:00",
   "asof": "2026-09-22",
   "quality": {
     "usYields": "live",
@@ -64,7 +64,7 @@
   ],
   "usYieldsAsof": "2026-09-21",
   "fgUs": {
-    "score": 33.7,
+    "score": 38.7,
     "hist": {
       "prev": 33.7,
       "week": 28.0,
@@ -73,18 +73,18 @@
     },
     "asofEt": "2026-09-22"
   },
-  "fgUsFetchedAt": "2026-09-22T13:10:47.748809+07:00",
+  "fgUsFetchedAt": "2026-09-22T20:54:15.900048+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
-    "price": 1809.22,
+    "price": 1816.93,
     "prev": 1799.67,
-    "chg": 9.55,
-    "pct": 0.53,
+    "chg": 17.26,
+    "pct": 0.96,
     "date": "2026-09-22"
   },
-  "vnIndexFetchedAt": "2026-09-22T13:10:47.816872+07:00",
-  "dxy": 100.38,
-  "dxyFetchedAt": "2026-09-22T13:10:47.854811+07:00",
+  "vnIndexFetchedAt": "2026-09-22T20:54:15.959768+07:00",
+  "dxy": 100.43,
+  "dxyFetchedAt": "2026-09-22T20:54:15.998469+07:00",
   "vnYields": [
     {
       "t": "5 năm",
@@ -129,12 +129,12 @@
   "margin": null,
   "breadth": {
     "date": "2026-09-22",
-    "gtgd": 5466.7,
+    "gtgd": 10230.5,
     "all": {
-      "a": 157,
-      "d": 144,
-      "u": 128,
-      "ceil": 4,
+      "a": 174,
+      "d": 130,
+      "u": 125,
+      "ceil": 6,
       "floor": 7,
       "total": 429
     },
@@ -142,9 +142,9 @@
   },
   "usdVnd": null,
   "foreign": {
-    "net": -230.9,
-    "buy": 593.4,
-    "sell": 824.3,
+    "net": 63.9,
+    "buy": 1583.5,
+    "sell": 1519.6,
     "unit": "tỷ VND",
     "scope": "HOSE, toàn phiên (khớp lệnh + thoả thuận)",
     "n": 405,
@@ -155,7 +155,7 @@
     "buyTransfer": 25830.0,
     "sell": 26210.0,
     "unit": "VND / 1 USD",
-    "asof": "2026-09-22T08:01:49+07:00",
+    "asof": "2026-09-22T16:43:23+07:00",
     "bank": "Vietcombank",
     "source": "Vietcombank api/exchangerates (tỷ giá NHTM, KHÔNG phải tỷ giá trung tâm NHNN)"
   },
