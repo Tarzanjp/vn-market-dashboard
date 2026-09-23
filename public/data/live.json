@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-23T12:56:16+07:00",
+  "generatedAtIct": "2026-09-23T21:04:59+07:00",
   "asof": "2026-09-23",
   "quality": {
     "usYields": "live",
@@ -64,7 +64,7 @@
   ],
   "usYieldsAsof": "2026-09-22",
   "fgUs": {
-    "score": 35.2,
+    "score": 37.3,
     "hist": {
       "prev": 35.2,
       "week": 27.3,
@@ -73,18 +73,18 @@
     },
     "asofEt": "2026-09-23"
   },
-  "fgUsFetchedAt": "2026-09-23T12:56:07.229002+07:00",
+  "fgUsFetchedAt": "2026-09-23T21:04:53.179315+07:00",
   "vnIndex": {
     "symbol": "^VNINDEX.VN",
-    "price": 1819.14,
+    "price": 1801.65,
     "prev": 1816.93,
-    "chg": 2.21,
-    "pct": 0.12,
+    "chg": -15.28,
+    "pct": -0.84,
     "date": "2026-09-23"
   },
-  "vnIndexFetchedAt": "2026-09-23T12:56:07.273775+07:00",
-  "dxy": 100.73,
-  "dxyFetchedAt": "2026-09-23T12:56:07.308075+07:00",
+  "vnIndexFetchedAt": "2026-09-23T21:04:53.230247+07:00",
+  "dxy": 101.04,
+  "dxyFetchedAt": "2026-09-23T21:04:53.259395+07:00",
   "vnYields": [
     {
       "t": "5 năm",
@@ -129,33 +129,33 @@
   "margin": null,
   "breadth": {
     "date": "2026-09-23",
-    "gtgd": 6309.9,
+    "gtgd": 12614.4,
     "all": {
-      "a": 160,
-      "d": 131,
-      "u": 138,
-      "ceil": 3,
-      "floor": 2,
+      "a": 140,
+      "d": 184,
+      "u": 105,
+      "ceil": 6,
+      "floor": 5,
       "total": 429
     },
     "source": "VNDirect finfo (đếm từ giá đóng cửa từng mã HOSE)"
   },
   "usdVnd": null,
   "foreign": {
-    "net": -583.0,
-    "buy": 637.5,
-    "sell": 1220.5,
+    "net": -1127.9,
+    "buy": 1361.8,
+    "sell": 2489.7,
     "unit": "tỷ VND",
     "scope": "HOSE, toàn phiên (khớp lệnh + thoả thuận)",
     "n": 405,
     "source": "VNDirect finfo (cộng từ buyVal/sellVal từng mã HOSE, chỉ type=STOCK)"
   },
   "usdVndVcb": {
-    "buyCash": 25770.0,
-    "buyTransfer": 25800.0,
-    "sell": 26180.0,
+    "buyCash": 25780.0,
+    "buyTransfer": 25810.0,
+    "sell": 26190.0,
     "unit": "VND / 1 USD",
-    "asof": "2026-09-23T10:45:22+07:00",
+    "asof": "2026-09-23T16:59:22+07:00",
     "bank": "Vietcombank",
     "source": "Vietcombank api/exchangerates (tỷ giá NHTM, KHÔNG phải tỷ giá trung tâm NHNN)"
   },
