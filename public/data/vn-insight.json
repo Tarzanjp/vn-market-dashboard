@@ -1,21 +1,28 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtIct": "2026-09-23T21:31:27+07:00",
+  "generatedAtIct": "2026-09-24T21:33:04+07:00",
   "source": "VCI (qua thư viện mã nguồn mở vnstock) — VN30F1M futures history + company events cho 30 mã cấu thành VN30",
   "method": {
     "vn30Basis": "VN30F1M (hợp đồng gần nhất, giá đóng cửa phiên gần nhất) trừ VN30 giao ngay — số thật. basis_pct = basis/spot×100. Có thể lệch ngày nếu 1 trong 2 chưa có phiên mới nhất.",
     "insiderTrades": "company.events() lọc category=MAJOR_SHAREHOLDER_TRADING, 30 ngày gần nhất, CHỈ 30 mã VN30 (không phải toàn thị trường, xem giới hạn API). Tiêu đề lấy nguyên văn từ công bố HOSE, không tự tách số lượng."
   },
   "vn30": {
-    "spot": 1954.91,
-    "futures": 1950.0,
+    "spot": 1932.15,
+    "futures": 1937.5,
     "contract": "VN30F1M",
-    "basis": -4.91,
-    "basis_pct": -0.25,
-    "asof": "2026-09-23",
+    "basis": 5.35,
+    "basis_pct": 0.28,
+    "asof": "2026-09-24",
     "quality": "live"
   },
   "insiderTrades": [
+    {
+      "ticker": "SSB",
+      "date": "2026-09-25",
+      "direction": "Buy",
+      "title_vi": "Lê Hữu Báu - Đăng kí Mua 8,000,000 SSB",
+      "title_en": "Le Huu Bau - Subscribe to Buy 8,000,000 SSB shares"
+    },
     {
       "ticker": "SSB",
       "date": "2026-09-24",
@@ -491,13 +498,6 @@
       "direction": "Buy",
       "title_vi": "Nguyễn Thị Thanh Nga - Đăng kí Mua 328,843 MBB",
       "title_en": "Nguyen Thi Thanh Nga - Subscribe to Buy 328,843 MBB shares"
-    },
-    {
-      "ticker": "SSI",
-      "date": "2026-08-25",
-      "direction": "Buy",
-      "title_vi": "Nguyễn Hồng Nam - Đăng kí Mua 5,000,000 SSI",
-      "title_en": "Nguyen Hong Nam - Subscribe to Buy 5,000,000 SSI shares"
     }
   ]
 }
